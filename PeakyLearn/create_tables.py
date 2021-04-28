@@ -69,7 +69,7 @@ if __name__=='__main__':
                 prereq BOOLEAN);')
 
     exec_query('CREATE TABLE IF NOT EXISTS note(\
-                note_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                note_id INTEGER,\
                 s_id INTEGER,\
                 c_id INTEGER,\
                 content VARCHAR(32765),\
@@ -77,7 +77,7 @@ if __name__=='__main__':
                 FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS question(\
-                question_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                question_id INTEGER,\
                 q_content VARCHAR(32765));')
 
     exec_query('CREATE TABLE IF NOT EXISTS quiz(\
@@ -99,8 +99,8 @@ if __name__=='__main__':
                 studentID INTEGER,\
                 courseID INTEGER,\
                 req_content VARCHAR(32765),\
-                FOREIGN KEY (studentID) REFERENCES student(studentID),\
-                FOREIGN KEY (courseID) REFERENCES course(courseID));')
+                FOREIGN KEY (studentID) REFERENCES student(student_id),\
+                FOREIGN KEY (courseID) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS wishlist(\
                 list_id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -108,8 +108,8 @@ if __name__=='__main__':
                 FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS decide(\
+                requestID INTEGER PRIMARY KEY AUTOINCREMENT,\
                 adminID INTEGER NOT NULL,\
-                requestID INTEGER NOT NULL,\
                 response VARCHAR(300),\
                 FOREIGN KEY (adminID) REFERENCES admin(admin_id),\
                 FOREIGN KEY (requestID) REFERENCES course(request_id));')
@@ -133,8 +133,8 @@ if __name__=='__main__':
                 FOREIGN KEY (e_id) REFERENCES exam(exam_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS has(\
+                course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                 cert_id INTEGER NOT NULL,\
-                course_id INTEGER NOT NULL,\
                 FOREIGN KEY (course_id) REFERENCES course(course_id),\
                 FOREIGN KEY (cert_id) REFERENCES certificate(certificate_id));')
 
@@ -144,11 +144,13 @@ if __name__=='__main__':
                 FOREIGN KEY (course_id) REFERENCES course(course_id),\
                 FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
-    exec_query('CREATE TABLE IF NOT EXISTS contain(\
-                course_id INTEGER NOT NULL,\
+    exec_query('CREATE TABLE IF NOT EXISTS buy(\
+                course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                student_id INTEGER NOT NULL,\
                 lec_id INTEGER NOT NULL,\
                 FOREIGN KEY (course_id) REFERENCES course(course_id),\
-                FOREIGN KEY (lec_id) REFERENCES lecture(lecture_id));')
+                FOREIGN KEY (student_id) REFERENCES student(student_id),\
+                FOREIGN KEY (lec_id) REFERENCES student(lecture_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS on_t(\
                 note_id INTEGER NOT NULL,\
@@ -157,8 +159,8 @@ if __name__=='__main__':
                 FOREIGN KEY (lec_id) REFERENCES lecture(lecture_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS answer(\
+                q_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                 a_date DATE,\
-                q_id INTEGER NOT NULL,\
                 edu_id INTEGER NOT NULL,\
                 FOREIGN KEY (q_id) REFERENCES question(question_id),\
                 FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
@@ -171,8 +173,8 @@ if __name__=='__main__':
                 FOREIGN KEY (note_id) REFERENCES note(note_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS ask(\
+                q_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                 q_date DATE,\
-                q_id INTEGER NOT NULL,\
                 s_id INTEGER NOT NULL,\
                 FOREIGN KEY (s_id) REFERENCES student(student_id),\
                 FOREIGN KEY (q_id) REFERENCES question(question_id));')
