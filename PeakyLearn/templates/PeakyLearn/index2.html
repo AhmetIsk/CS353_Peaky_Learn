@@ -1,0 +1,78 @@
+
+
+{% extends "layout.html" %}
+
+{% block b1 %}
+
+
+<h1>ANASAYFA</h1>
+    
+    <br>
+        
+   <div class = "jumbotron text-center" >
+        
+        <h3> Lisans Listesi </h3>
+        
+        <hr> 
+        
+        {% if beaml %}
+        
+        <form action="/search" method = "post">
+        
+        <input type="text" name = "keyword" class="input-sm" maxlength="64" placeholder="Şirket Ara...">
+        
+        <button type="submit" class="btn btn-dark btn-sm">Search</button>
+        
+        </form>
+        
+        <br>
+        <ul class = "list-group">
+        <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Şirket</th>
+          <th scope="col">Yetkili</th>
+          <th scope="col">Model</th>
+          <th scope="col">Type</th>
+          <th scope="col">Bitiş</th>
+          <th scope="col">Kullanıcı</th>
+          <th scope="col">ID</th>
+          <th scope="col"></th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        
+        
+        {% for license in beaml %}
+        
+        <tr>
+          <th scope="row">{{license.company}}</th>
+          <td><a href="/details/{{license.id}}">{{license.person}}</a></td>
+          <td>{{license.model}}</td>
+          <td>{{license.type}}</td>
+          <td>{{license.time}}</td>
+          <td>{{license.counter}}</td>
+          <td>{{license.id}}</td>
+          <td><a href="/edit/{{license.id}}" class = "btn btn-danger">Düzenle</a></td>
+          <td><a href="/delete/{{license.id}}" class = "btn btn-danger">Sil</a></td>
+          
+          
+        </tr>
+        
+        {% endfor %}
+        
+      </tbody>
+    </table>
+      </ul>
+     {% else %}  
+         
+         <div class = "alert alert-danger">Henüz lisans bulunmuyor..</div>
+         
+     {% endif %}
+        
+  </div>
+
+
+
+{% endblock %}

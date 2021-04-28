@@ -1,0 +1,30 @@
+
+
+
+{% extends "layout.html" %}
+
+{% block b1 %}
+
+{% from "includes/formhelpers.html" import render_field %}
+
+<h3>Yeni Lisans Oluştur</h3>
+<hr> 
+
+<form method = "post">
+
+    {{ render_field(form.company , class = "form-control") }}
+    {{ render_field(form.person , class = "form-control") }}
+    {{ render_field(form.position , class = "form-control") }}
+    {{ render_field(form.tel , class = "form-control") }}
+    {{ render_field(form.model, class = "form-control") }}
+    {{ render_field(form.type, class = "form-control") }}
+    {{ render_field(form.time, class = "form-control") }}
+    {{ render_field(form.counter, class = "form-control") }}
+   
+
+    <button type="submit" class="btn btn-dark">Kaydet</button>
+  
+</form>
+
+        
+{% endblock %}

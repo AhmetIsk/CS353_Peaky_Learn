@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block b1 %}
+
+
+
+{% if beaml %}
+
+<h4>{{beaml.person}}</h4>
+
+<hr>
+
+Yetkilinin Görevi : {{beaml.position}}
+
+<hr>
+
+Yetkilinin İletişim Bilgisi: {{beaml.tel}}
+
+<hr>
+
+
+{% else %}
+
+    <div class = "alert alert-danger">İşlem Başarısız</div>
+
+{% endif %}
+
+
+{% endblock %}
+
+
+
+
