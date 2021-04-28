@@ -35,3 +35,4 @@ if __name__=='__main__':
                 lastName VARCHAR(50) NOT NULL,\
                 email VARCHAR(50) NOT NULL,\
                 phone VARCHAR(50));')
+

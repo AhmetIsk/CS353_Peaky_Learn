@@ -36,7 +36,7 @@ def exec_query(sql_query):
 
 def login(request):
     if request.method == 'POST':
-        """
+        ""
         exec_query('CREATE TABLE user(\
                         user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                         username VARCHAR(50) UNIQUE NOT NULL,\
@@ -46,7 +46,7 @@ def login(request):
                         lastName VARCHAR(50) NOT NULL,\
                         email VARCHAR(50) NOT NULL,\
                         phone VARCHAR(50));')
-        """
+        ""
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -94,3 +94,8 @@ def signup(request):
         form = UserForm()
         context = { 'form': form }
         return render( request, 'PeakyLearn/signup.html', context )
+
+
+def courseDetails(request):
+    context = {}
+    return render(request, 'PeakyLearn/courseDetails.html', context)
