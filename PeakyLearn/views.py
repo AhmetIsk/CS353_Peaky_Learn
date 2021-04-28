@@ -4,6 +4,8 @@ from sqlite3 import Error
 from django.http import HttpResponse
 from django.shortcuts import render
 from .forms import UserForm
+from django.contrib.auth import login,authenticate,logout
+from django.contrib import messages
 
 # Create your views here.
 def home(request):
@@ -96,6 +98,15 @@ def signup(request):
         return render( request, 'PeakyLearn/signup.html', context )
 
 
+def userLogout(request):
+    context = {}
+    logout(request)
+    messages.success(request,"Logout Succesful")
+    return render( request, 'PeakyLearn/home.html', context )
+
+
 def courseDetails(request):
     context = {}
     return render(request, 'PeakyLearn/courseDetails.html', context)
+
+
