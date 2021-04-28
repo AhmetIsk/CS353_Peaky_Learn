@@ -109,4 +109,14 @@ def courseDetails(request):
     context = {}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
+def adminMainPage(request):
+    context = {}
+    return render(request, 'PeakyLearn/adminMainPage.html', context)
+
+def addCourse(request):
+
+    if request.method == 'GET':
+            form = UserForm()
+            context = { 'form': form }
+            return render( request, 'PeakyLearn/addCourse.html', context )
 

@@ -1,6 +1,8 @@
 from django import forms
 
 
+
+
 class UserForm(forms.Form):
     email = forms.EmailField(max_length=254)
     fname = forms.CharField(max_length=30)

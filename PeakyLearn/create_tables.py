@@ -30,6 +30,7 @@ if __name__=='__main__':
                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                 username VARCHAR(50) UNIQUE NOT NULL,\
                 password VARCHAR(50) NOT NULL,\
+                userType VARCHAR(50) NOT NULL,\
                 registerDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                 firstName VARCHAR(50) NOT NULL,\
                 lastName VARCHAR(50) NOT NULL,\
