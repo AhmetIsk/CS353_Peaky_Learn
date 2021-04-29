@@ -1,8 +1,5 @@
 from django import forms
 
-
-
-
 class UserForm(forms.Form):
     email = forms.EmailField(max_length=254)
     fname = forms.CharField(max_length=30)
@@ -13,4 +10,19 @@ class UserForm(forms.Form):
 
     def get_fields(self):
         return { 'email': self.email, 'fname': self.fname, 'lname': self.lname,
-                'uname': self.uname, 'phone': self.phone, 'pw': self.pw }
+              'uname': self.uname, 'phone': self.phone, 'pw': self.pw }
+
+class AddCourseForm(forms.Form):
+    courseName = forms.CharField(max_length= 50, label = "Course Name")
+    category = forms.CharField(max_length= 50, label = "Category - Topic")
+    price = forms.CharField(max_length= 50,label = "Price")
+    language = forms.CharField(max_length= 50, label = "Language")
+
+    values = {
+
+            'courseName' : courseName,
+            'category' : category,
+            'price' : price,
+            'language' : language
+
+    }

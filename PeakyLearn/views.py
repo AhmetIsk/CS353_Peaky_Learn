@@ -3,7 +3,8 @@ from sqlite3 import Error
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from .forms import UserForm
+from .forms import UserForm, AddCourseForm
+
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
 
@@ -38,7 +39,7 @@ def exec_query(sql_query):
 
 def login(request):
     if request.method == 'POST':
-        ""
+        """
         exec_query('CREATE TABLE user(\
                         user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                         username VARCHAR(50) UNIQUE NOT NULL,\
@@ -48,7 +49,7 @@ def login(request):
                         lastName VARCHAR(50) NOT NULL,\
                         email VARCHAR(50) NOT NULL,\
                         phone VARCHAR(50));')
-        ""
+        """
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -115,10 +116,40 @@ def adminMainPage(request):
     context = {}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
+
+def educatorMainPage(request):
+    context = {}
+    return render(request, 'PeakyLearn/educatorMainPage.html', context)
+
 def addCourse(request):
 
-    if request.method == 'GET':
-            form = UserForm()
+    if request.method == 'POST':
+
+        form = AddCourseForm(request.POST)
+        if form.is_valid():
+            courseName = form.cleaned_data.get('courseName')
+            category = form.cleaned_data.get('category')
+            price = form.cleaned_data.get('price')
+            language = form.cleaned_data.get('language')
+
+            query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params2 = [courseName, category,price,language, 0,"1",0,0,]
+            try:
+                cursor.execute(query, params2)
+                print("successful- course created")
+            except sqlite3.IntegrityError:
+                print("unsuccessful-course is not created")
+                    #return HttpResponse('Username already exists!', status=409)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse("Course Creation Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+    elif request.method == 'GET':
+            form = AddCourseForm()
             context = { 'form': form }
             return render( request, 'PeakyLearn/addCourse.html', context )
 

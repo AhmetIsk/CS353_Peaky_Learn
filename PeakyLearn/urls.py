@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -16,6 +15,7 @@ urlpatterns = [
     path('userLogout/', views.userLogout, name='logout'),
     path('addCourse/', views.addCourse, name='addCourse'),
     path('adminMainPage/', views.adminMainPage, name='adminMainPage'),
+    path('educatorMainPage/', views.educatorMainPage, name='educatorMainPage'),
 
 
 ]

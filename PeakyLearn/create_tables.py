@@ -55,12 +55,12 @@ if __name__=='__main__':
                 course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                 courseName VARCHAR(50) NOT NULL,\
                 category VARCHAR(50) NOT NULL,\
-                price INTEGER,\
+                price VARCHAR(20) NOT NULL,\
+                language VARCHAR(20) NOT NULL,\
                 lec_cnt INTEGER,\
                 certificate_id VARCHAR(50) NOT NULL,\
                 rate INTEGER NOT NULL,\
                 edu_id INTEGER NOT NULL,\
-                language VARCHAR(20) NOT NULL,\
                 FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS lecture(\
