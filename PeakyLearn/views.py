@@ -63,6 +63,8 @@ def login(request):
         print('Success=', success)
         context = {'username': username}
         if success == 1:
+            request.session['username'] = username
+            # Add user type too into session here
             return render(request, 'PeakyLearn/userPage.html', context)
         else:
             return render(request, 'PeakyLearn/login.html', {})
