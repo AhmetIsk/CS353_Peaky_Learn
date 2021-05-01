@@ -5,8 +5,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from .forms import UserForm, AddCourseForm
 
-from django.contrib.auth import login,authenticate,logout
+from django.contrib.auth import logout
 from django.contrib import messages
+
 
 # Create your views here.
 def home(request):
@@ -36,11 +37,10 @@ def exec_query(sql_query):
         print(e)
 
 
-
 def login(request):
     if request.method == 'POST':
-        """
-        exec_query('CREATE TABLE user(\
+
+        exec_query('CREATE TABLE IF NOT EXISTS user(\
                         user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                         username VARCHAR(50) UNIQUE NOT NULL,\
                         password VARCHAR(50) NOT NULL,\
@@ -49,7 +49,7 @@ def login(request):
                         lastName VARCHAR(50) NOT NULL,\
                         email VARCHAR(50) NOT NULL,\
                         phone VARCHAR(50));')
-        """
+
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -71,6 +71,7 @@ def login(request):
             return render(request, 'PeakyLearn/login.html', {})
     elif request.method == 'GET':
         return render(request, 'PeakyLearn/login.html', {})
+
 
 def signup(request):
     if request.method == 'POST':
@@ -97,20 +98,21 @@ def signup(request):
 
     elif request.method == 'GET':
         form = UserForm()
-        context = { 'form': form }
-        return render( request, 'PeakyLearn/signup.html', context )
+        context = {'form': form}
+        return render(request, 'PeakyLearn/signup.html', context)
 
 
 def userLogout(request):
     context = {}
     logout(request)
-    messages.success(request,"Logout Succesful")
-    return render( request, 'PeakyLearn/home.html', context )
+    messages.success(request, "Logout Succesful")
+    return render(request, 'PeakyLearn/home.html', context)
 
 
 def courseDetails(request):
     context = {}
     return render(request, 'PeakyLearn/courseDetails.html', context)
+
 
 def adminMainPage(request):
     context = {}
@@ -121,8 +123,8 @@ def educatorMainPage(request):
     context = {}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
-def addCourse(request):
 
+def addCourse(request):
     if request.method == 'POST':
 
         form = AddCourseForm(request.POST)
@@ -135,13 +137,13 @@ def addCourse(request):
             query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params2 = [courseName, category,price,language, 0,"1",0,0,]
+            params2 = [courseName, category, price, language, 0, "1", 0, 0, ]
             try:
                 cursor.execute(query, params2)
                 print("successful- course created")
             except sqlite3.IntegrityError:
                 print("unsuccessful-course is not created")
-                    #return HttpResponse('Username already exists!', status=409)
+                # return HttpResponse('Username already exists!', status=409)
 
             connection.commit()
             connection.close()
@@ -149,7 +151,6 @@ def addCourse(request):
             return HttpResponse("Course Creation Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
-            form = AddCourseForm()
-            context = { 'form': form }
-            return render( request, 'PeakyLearn/addCourse.html', context )
-
+        form = AddCourseForm()
+        context = {'form': form}
+        return render(request, 'PeakyLearn/addCourse.html', context)
