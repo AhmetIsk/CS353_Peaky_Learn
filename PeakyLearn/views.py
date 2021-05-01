@@ -64,7 +64,6 @@ def login(request):
         print('Success=', success)
         context = {'username': username}
 
-        messages.info(request, 'Kullanıcı adı ya da şifre hatalı.')
         if success == 1:
             request.session['username'] = username
             # Add user type too into session here
