@@ -18,7 +18,6 @@ urlpatterns = [
     path('adminMainPage/', views.adminMainPage, name='adminMainPage'),
     path('educatorMainPage/', views.educatorMainPage, name='educatorMainPage'),
     path('educatorMainPage/', views.educatorMainPage, name='educatorMainPage'),
-    path('userPage/', views.userPage, name='userPage'),
 
 
 ]
