@@ -113,6 +113,9 @@ def courseDetails(request):
     context = {}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
+def userPage(request):
+    context = {}
+    return render(request, 'PeakyLearn/userPage.html', context)
 
 def adminMainPage(request):
     context = {}
