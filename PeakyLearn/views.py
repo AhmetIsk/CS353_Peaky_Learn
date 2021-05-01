@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import UserForm, AddCourseForm
 
 from django.contrib.auth import logout
@@ -63,11 +63,14 @@ def login(request):
         print("Username=", username, "Password=", password)
         print('Success=', success)
         context = {'username': username}
+
+        messages.info(request, 'Kullanıcı adı ya da şifre hatalı.')
         if success == 1:
             request.session['username'] = username
             # Add user type too into session here
-            return render(request, 'PeakyLearn/userPage.html', context)
+            return redirect('userPage')
         else:
+            messages.info(request, 'Wrong username or password.')
             return render(request, 'PeakyLearn/login.html', {})
     elif request.method == 'GET':
         return render(request, 'PeakyLearn/login.html', {})
@@ -101,6 +104,11 @@ def signup(request):
         context = {'form': form}
         return render(request, 'PeakyLearn/signup.html', context)
 
+def userPage(request):
+    context = {}
+    uname = request.session['username']
+    context = { 'username': uname }
+    return render(request, 'PeakyLearn/userPage.html', context)
 
 def userLogout(request):
     context = {}
