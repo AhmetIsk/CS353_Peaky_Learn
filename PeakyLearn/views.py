@@ -8,6 +8,7 @@ from .forms import UserForm, AddCourseForm
 from django.contrib.auth import logout
 from django.contrib import messages
 
+objects = [];
 
 # Create your views here.
 def home(request):
@@ -103,10 +104,33 @@ def signup(request):
         context = {'form': form}
         return render(request, 'PeakyLearn/signup.html', context)
 
+def createCourseObjects(courseName, category, price):
+    obj = type('obj', (object,), {'courseName' : courseName, 'category' : category, 'price' : price})
+    objects.append(obj)
+    return objects
+
+
 def userPage(request):
-    context = {}
+
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    c = connection.execute("SELECT * FROM course")
+    rows = c.fetchall()
+    counter = 0;
+    for row in rows:
+        c_courseName = connection.execute("SELECT DISTINCT courseName FROM course")
+        courseName = c_courseName.fetchall().__getitem__(counter)
+        c_category = connection.execute("SELECT category FROM course")
+        category = c_category.fetchall().__getitem__(counter)
+        c_price = connection.execute("SELECT price FROM course")
+        price = c_price.fetchall().__getitem__(counter)
+        counter += 1;
+
+        objects = createCourseObjects(courseName,category,price)
+
     uname = request.session['username']
-    context = { 'username': uname }
+    context = {'username': uname, 'objects': objects}
     return render(request, 'PeakyLearn/userPage.html', context)
 
 def userLogout(request):

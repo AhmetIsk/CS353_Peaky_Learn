@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome {{ username }}
-
     </title>
 
 </head>
@@ -17,37 +16,36 @@
     <hr>
 
     <ul class = "list-group">
+
         <table class="table table-hover">
 
-        <thead>
-        <tr>
-            <th scope="col">Course Name</th>
-            <th scope="col">Category</th>
-            <th scope="col">Instructor</th>
-            <th scope="col">Price</th>
-        </tr>
+            <thead>
+            <tr>
+                <th scope="col">Course Name</th>
+                <th scope="col">Category </th>
+                <th scope="col">Instructor</th>
+                <th scope="col">Price</th>
+            </tr>
 
-        </thead>
+            </thead>
 
-        <tbody>
-        <tr>
-            <td>Python Development</td>
-            <td>Software</td>
-            <td>Arda Korkmaz</td>
-            <th>30</th>
-            <td><a href="/courseDetails/" class = "btn btn-danger">See Detail</a></td>
-        </tr>
-        <tr>
-            <td>Database Systems</td>
-            <td>Software</td>
-            <td>Özgür Ulusoy</td>
-            <th>100</th>
-            <td><a href="/courseDetails/" class = "btn btn-danger">See Detail</a></td>
-        </tr>
-        </tbody>
+            {% for obj in objects %}
+            <tbody>
+            <tr>
+                <td>{{obj.courseName}}</td>
+                <td>{{obj.category}}</td>
+                <td>Özgür Ulusoy</td>
+                <th>{{obj.price}}</th>
+                <td><a href="/courseDetails/" class = "btn btn-danger">See Detail</a></td>
+
+            </tr>
+            </tbody>
+
+            {% endfor %}
+
         </table>
-    </ul>
 
+    </ul>
 
 
 </div>
