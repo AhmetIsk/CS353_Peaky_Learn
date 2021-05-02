@@ -397,7 +397,7 @@ def addCourse(request):
         return render(request, 'PeakyLearn/addCourse.html', context)
 
 
-def addLecture(request, cid):
+def addLecture(request, course_id):
     if request.method == 'POST':
 
         form = LectureForm(request.POST)
@@ -420,7 +420,7 @@ def addLecture(request, cid):
             lec_id = cursor.lastrowid
 
             query = "INSERT INTO contain (course_id, lec_id) VALUES (?,?);"
-            params = [cid, lec_id]
+            params = [course_id, lec_id]
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
             try:
@@ -515,8 +515,24 @@ def deleteUser(request, pk):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
-def lectures(request, lec_id):
-    context = {}
+def lectures(request, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [course_id]
+    query = ""
+    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lecture_id FROM contain WHERE course_id=?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('Error in lectures', status=404)
+
+    lectures = cursor.fetchall()
+    connection.close()
+
+
+    context = {'lectures': lectures, 'course_id': course_id}
+
+
     return render(request, 'PeakyLearn/lectures.html', context)
 
 def get_created_courses(uid):
