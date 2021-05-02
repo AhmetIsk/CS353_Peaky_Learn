@@ -50,7 +50,7 @@
                         </div>
 
                             <div class="d-flex justify-content-center mt-3 login_container">
-                                <input class="btn login_btn" type="submit" value="Giriş Yap">
+                                <input class="btn login_btn" type="submit" value="Login">
                             </div>
                     </form>
 
@@ -67,7 +67,8 @@
 
                 <div class="mt-4">
                     <div class="d-flex justify-content-center links">
-                        Don't have an account? <a href="{% url 'signup' %}" class="ml-2">Sign Up</a>
+                        Do not have an account? <a href="{% url 'signup' 2 %}" class="btn login_btn">Student Sign Up</a>
+                        <a href="{% url 'signup' 1 %}" class="btn login_btn">Educator Sign Up</a>
                     </div>
                 </div>
 

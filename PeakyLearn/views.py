@@ -40,7 +40,6 @@ def exec_query(sql_query):
 
 def login(request):
     if request.method == 'POST':
-
         create_all()
 
         username = request.POST.get('username')
@@ -52,48 +51,132 @@ def login(request):
         cursor.execute("SELECT user_id FROM user WHERE username=? AND password=?", params)
 
         auth = cursor.fetchone()
-        print(auth)
         success = 1 if auth else 0
-        print("Username=", username, "Password=", password)
-        print('Success=', success)
-        context = {'username': username}
 
         if success == 1:
+
+            # Check the user type
+            id = auth[0]
+            params = [id]
+            cursor.execute("SELECT * FROM student WHERE student_id = ?;", params)
+            is_student = cursor.fetchone()
+            s = 1 if is_student else 0
+
             request.session['username'] = username
             request.session['uid'] = auth[0]
 
-            # Add user type too into session here
-            return redirect('userPage')
+            if s:
+                request.session['userType'] = 'student'
+                return redirect('userPage')
+            else:
+                request.session['userType'] = 'educator'
+                return redirect('educatorMainPage')
         else:
             messages.info(request, 'Wrong username or password.')
             return render(request, 'PeakyLearn/login.html', {})
     elif request.method == 'GET':
         return render(request, 'PeakyLearn/login.html', {})
 
-
-def signup(request):
+# Type = 1 -> educator
+# Type = 2 -> student
+def signup(request, type):
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data.get('email')
-            print(name)
+            if type == '2':  # Student
+                query = "INSERT INTO user (username, password, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?, ?);"
 
-            query = "INSERT INTO user (username, password, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?, ?);"
+                connection = sqlite3.connect('db.sqlite3')
+                cursor = connection.cursor()
+                params = [form.cleaned_data.get('uname'), form.cleaned_data.get('pw'), form.cleaned_data.get('fname'),
+                          form.cleaned_data.get('lname'), form.cleaned_data.get('email'), form.cleaned_data.get('phone')]
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'This student already exists!')
+                    return redirect('signup', type=2)
 
-            connection = sqlite3.connect('db.sqlite3')
-            cursor = connection.cursor()
-            params = [form.cleaned_data.get('uname'), form.cleaned_data.get('pw'), form.cleaned_data.get('fname'),
-                      form.cleaned_data.get('lname'), form.cleaned_data.get('email'), form.cleaned_data.get('phone')]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError:
-                messages.info(request, 'User already exists!')
-                return redirect('signup')
+                connection.commit()
+                connection.close()
 
-            connection.commit()
-            connection.close()
+                # Get the id of the newly added user
+                query = "SELECT user_id FROM user WHERE username = ?;"
+                params = [form.cleaned_data.get('uname')]
 
-            return HttpResponse("Registration Succesful. Sign in: <a href='/login'>Login</a>")
+                connection = sqlite3.connect('db.sqlite3')
+                cursor = connection.cursor()
+
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'Unsuccessful fetch!')
+                    return redirect('signup', type=2)
+
+                id = cursor.fetchone()
+
+                query = "INSERT INTO student (student_id, level) VALUES (?, ?);"
+                params = [id[0], 0]
+
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'Unsuccessful student insert!')
+                    return redirect('signup', type=2)
+
+                connection.commit()
+                connection.close()
+
+                messages.info(request, 'Registration of Student {} is Succesful.'.format(form.cleaned_data.get('uname')))
+                return redirect('login')
+            elif type == '1':  # Educator
+                query = "INSERT INTO user (username, password, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?, ?);"
+
+                connection = sqlite3.connect('db.sqlite3')
+                cursor = connection.cursor()
+                params = [form.cleaned_data.get('uname'), form.cleaned_data.get('pw'), form.cleaned_data.get('fname'),
+                          form.cleaned_data.get('lname'), form.cleaned_data.get('email'),
+                          form.cleaned_data.get('phone')]
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'This educator already exists!')
+                    return redirect('signup', type=1)
+
+                connection.commit()
+                connection.close()
+
+                # Get the id of the newly added user
+                query = "SELECT user_id FROM user WHERE username = ?;"
+                params = [form.cleaned_data.get('uname')]
+
+                connection = sqlite3.connect('db.sqlite3')
+                cursor = connection.cursor()
+
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'Unsuccessful fetch!')
+                    return redirect('signup', type=1)
+
+                id = cursor.fetchone()
+
+                query = "INSERT INTO educator (educator_id, wallet) VALUES (?, ?);"
+                params = [id[0], 1000]
+
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.IntegrityError:
+                    messages.info(request, 'Unsuccessful educator insert!')
+                    return redirect('signup', type=1)
+
+                connection.commit()
+                connection.close()
+
+                messages.info(request,
+                              'Registration of Educator {} is Succesful.'.format(form.cleaned_data.get('uname')))
+                return redirect('login')
+        else:
+            return HttpResponse("Invalid form!")
 
     elif request.method == 'GET':
         create_all()
@@ -192,7 +275,7 @@ def adminMainPage(request):
 
 
 def educatorMainPage(request):
-    context = {}
+    context = {'username': request.session['username']}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
 
