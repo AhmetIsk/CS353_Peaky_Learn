@@ -95,6 +95,7 @@ def signup(request):
             return HttpResponse("Registration Succesful. Sign in: <a href='/login'>Login</a>")
 
     elif request.method == 'GET':
+        create_all()
         form = UserForm()
         context = {'form': form}
         return render(request, 'PeakyLearn/signup.html', context)
