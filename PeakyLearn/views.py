@@ -13,6 +13,8 @@ from .create_tables import create_all
 # Create your views here.
 def home(request):
     context = {}
+    create_all()
+    default_insert()
     return render(request, 'PeakyLearn/home.html', context)
 
 
@@ -38,6 +40,33 @@ def exec_query(sql_query):
         print(e)
 
 
+# Returns:
+# 1 if educator
+# 2 if student
+# 3 if admin
+def get_user_type(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    print("user id:", uid)
+    params = [uid]
+    cursor.execute("SELECT * FROM student WHERE student_id = ?;", params)
+    is_student = cursor.fetchone()
+    s = True if is_student else False
+
+    cursor.execute("SELECT * FROM admin WHERE admin_id = ?;", params)
+    is_admin = cursor.fetchone()
+    s_admin = True if is_admin else False
+
+    if s:
+        return 2
+    elif s_admin:
+        return 3
+    else:
+        return 1
+
+
+
+
 def login(request):
     if request.method == 'POST':
         create_all()
@@ -54,20 +83,19 @@ def login(request):
         success = 1 if auth else 0
 
         if success == 1:
-
             # Check the user type
-            id = auth[0]
-            params = [id]
-            cursor.execute("SELECT * FROM student WHERE student_id = ?;", params)
-            is_student = cursor.fetchone()
-            s = 1 if is_student else 0
+            userid = auth[0]
+            user_type = get_user_type(userid)
 
             request.session['username'] = username
             request.session['uid'] = auth[0]
 
-            if s:
+            if user_type == 2:
                 request.session['userType'] = 'student'
                 return redirect('userPage')
+            elif user_type == 3:
+                request.session['userType'] = 'admin'
+                return redirect('adminMainPage')
             else:
                 request.session['userType'] = 'educator'
                 return redirect('educatorMainPage')
@@ -193,6 +221,24 @@ def default_insert():
 
     cursor.execute(query, params)
 
+    cursor.execute(query, params)
+    connection.commit()
+
+    query = "SELECT user_id FROM user WHERE username = 'admin';"
+    cursor.execute(query)
+    uid = cursor.fetchone()
+
+    if not uid:
+        # Add admin
+        query = "INSERT INTO user (username, password, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?, ?);"
+        params = ["admin", "0000", "a", "b", "admin@g.c", "123"]
+
+        cursor.execute(query, params)
+        connection.commit()
+
+        query = "INSERT INTO admin (admin_id) VALUES (1);"
+        cursor.execute(query)
+
     connection.commit()
     connection.close()
 
@@ -236,7 +282,6 @@ def ownedCourses(request):
 
 
 def userPage(request):
-    #default_insert()
     uname = request.session['username']
 
     all_courses = get_all_courses()
@@ -270,7 +315,33 @@ def courseDetails(request, pk):
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
 def adminMainPage(request):
-    context = {}
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    query = "SELECT * FROM user;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in adminpage', status=404)
+
+    all_users = cursor.fetchall()
+
+    query = "SELECT * FROM student;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in adminpage', status=404)
+
+    students = cursor.fetchall()
+    query = "SELECT * FROM educator;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in adminpage', status=404)
+    educators = cursor.fetchall()
+    connection.close()
+
+    context = {'students': students, 'educators': educators, 'all_users': all_users}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
 
@@ -338,9 +409,52 @@ def purchaseCourse(request, pk):
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
-        return HttpResponse('404! error in purchaseCourse', status=404)
+        return HttpResponse('Error in purchaseCourse', status=404)
 
     connection.commit()
     connection.close()
 
     return HttpResponse("Success!. Back to Main: <a href='/userPage'>Back</a>")
+
+def deleteUser(request, pk):
+    user_type = get_user_type(pk)
+
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    #cursor.execute("PRAGMA foreign_keys=ON")
+    params = [pk]
+    type_str = ""
+
+    if user_type == 3:  # Admin
+        connection.close()
+        return HttpResponse("Cannot delete admin. Back to Main: <a href='/adminMainPage'>Back</a>")
+
+    print("USER TYPE: ", user_type, " PK: ", pk)
+
+    if user_type == 1:  # edu
+        type_str = "educator"
+    elif user_type == 2:  # student
+        type_str = "student"
+
+    query = "DELETE FROM {} WHERE {}_id = ?;".format(type_str, type_str)
+    print(query)
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteUser', e, status=404)
+
+    # delete user
+    query = "DELETE FROM user WHERE user_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteUser', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
+
+

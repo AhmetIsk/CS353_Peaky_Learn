@@ -24,11 +24,11 @@ def exec_query(sql_query):
         print(e)
 
 def create_all():
+    exec_query("PRAGMA foreign_keys=1")
     exec_query('CREATE TABLE IF NOT EXISTS user(\
                     user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     username VARCHAR(50) UNIQUE NOT NULL,\
                     password VARCHAR(50) NOT NULL,\
-                    userType VARCHAR(50) NOT NULL,\
                     registerDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                     firstName VARCHAR(50) NOT NULL,\
                     lastName VARCHAR(50) NOT NULL,\
@@ -42,12 +42,12 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS educator(\
                     educator_id INTEGER PRIMARY KEY,\
                     wallet INTEGER NOT NULL,\
-                    FOREIGN KEY (educator_id) REFERENCES user(user_id));')
+                    FOREIGN KEY (educator_id) REFERENCES user(user_id) ON DELETE CASCADE);')
 
     exec_query('CREATE TABLE IF NOT EXISTS student(\
                     student_id INTEGER PRIMARY KEY,\
                     level INTEGER,\
-                    FOREIGN KEY (student_id) REFERENCES user(user_id));')
+                    FOREIGN KEY (student_id) REFERENCES user(user_id) ON DELETE CASCADE);')
 
     exec_query('CREATE TABLE IF NOT EXISTS course(\
                     course_id INTEGER PRIMARY KEY AUTOINCREMENT,\

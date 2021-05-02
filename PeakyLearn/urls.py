@@ -20,5 +20,8 @@ urlpatterns = [
     path('educatorMainPage/', views.educatorMainPage, name='educatorMainPage'),
     path('ownedCourses/', views.ownedCourses, name='ownedCourses'),
     path('purchaseCourse/<str:pk>', views.purchaseCourse, name='purchaseCourse'),
+    path('studentProfile/<str:pk>', views.purchaseCourse, name='studentProfile'),
+    path('educatorProfile/<str:pk>', views.purchaseCourse, name='educatorProfile'),
+    path('deleteUser/<str:pk>', views.deleteUser, name='deleteUser'),
 
 ]

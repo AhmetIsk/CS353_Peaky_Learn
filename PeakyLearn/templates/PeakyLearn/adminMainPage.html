@@ -1,17 +1,135 @@
+{%  extends 'PeakyLearn/main.html' %}
+
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Main Page</title>
-    This page is opened when admin enter the system
+    <title>ADMIN PAGE</title>
+
 </head>
 <body>
+<br>
+<td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
 
-<!-- To try to search user html
-    <form action=""name = search_box"method="post">
-        <input type = "text"name="search"placeholder="Enter user name..." />
-        <input type="submit"name="search"value="Search User" />
-    </form>
--->
+<div class = "jumbotron text-center" >
+    <h1>Welcome ADMIN</h1>
+
+    <h3> All Students </h3>
+    <hr>
+
+    <table id="students" class="table table-striped table-bordered" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Level</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for student in students %}
+              <tr>
+
+                    <td>{{ student.0 }}</td>
+                    <td>{{ student.1 }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'studentProfile' student.0 %}">Profile</a></td>
+              </tr>
+          {% endfor %}
+      </tbody>
+      <tfoot>
+            <th>Student ID</th>
+            <th>Level</th>
+      </tfoot>
+    </table>
+
+<h3> All Educators </h3>
+    <hr>
+
+    <table id="educators" class="table table-striped table-bordered" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+            <th>Educator ID</th>
+            <th>Wallet</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for ed in educators %}
+              <tr>
+
+                    <td>{{ ed.0 }}</td>
+                    <td>{{ ed.1 }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'educatorProfile' ed.0 %}">Profile</a></td>
+              </tr>
+          {% endfor %}
+      </tbody>
+      <tfoot>
+            <th>Student ID</th>
+            <th>Level</th>
+      </tfoot>
+    </table>
+
+<h3> All Users </h3>
+    <hr>
+
+    <table id="users" class="table table-striped table-bordered" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+            <th>user_id</th>
+            <th>username</th>
+            <th>registerDate</th>
+            <th>firstName</th>
+            <th>lastName</th>
+            <th>email</th>
+            <th>phone</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for u in all_users %}
+              <tr>
+
+                 <td>{{ u.0 }}</td>
+                  <td>{{ u.1 }}</td>
+                  <td>{{ u.2 }}</td>
+                  <td>{{ u.3 }}</td>
+                  <td>{{ u.4 }}</td>
+                  <td>{{ u.5 }}</td>
+                  <td>{{ u.6 }}</td>
+                  <td><a class="btn btn-sm btn-outline-warning" href="{% url 'deleteUser' u.0 %}">Delete User</a></td>
+              </tr>
+          {% endfor %}
+      </tbody>
+      <tfoot>
+            <th>user_id</th>
+            <th>username</th>
+            <th>registerDate</th>
+            <th>firstName</th>
+            <th>lastName</th>
+            <th>email</th>
+            <th>phone</th>
+      </tfoot>
+    </table>
+
+<script>
+
+
+<script>
+$(document).ready(function() {
+    $('#products').DataTable();
+} );
+
+</script>
+
+</div>
+
 </body>
 </html>
+
+{% endblock %}
