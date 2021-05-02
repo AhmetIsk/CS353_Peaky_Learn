@@ -29,15 +29,16 @@ def create_connection(db_file='db.sqlite3'):
     return conn
 
 
-def exec_query(sql_query):
+def exec_query(sql_query, params):
     conn = create_connection()
     try:
         c = conn.cursor()
-        c.execute(sql_query)
+        c.execute(sql_query, params)
         conn.commit()
         conn.close()
     except Error as e:
         print(e)
+        return HttpResponse(e)
 
 
 # Returns:
@@ -437,7 +438,7 @@ def deleteUser(request, pk):
         type_str = "student"
 
     query = "DELETE FROM {} WHERE {}_id = ?;".format(type_str, type_str)
-    print(query)
+
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
