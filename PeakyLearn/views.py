@@ -278,6 +278,8 @@ def get_all_courses():
 def ownedCourses(request):
     owned_courses = get_owned_courses(request.session['uid'])
 
+
+
     context = { 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
@@ -458,4 +460,8 @@ def deleteUser(request, pk):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
+def lectures(request):
+    context = {}
 
+    messages.success(request, "Logout Succesful")
+    return render(request, 'PeakyLearn/lectures.html', context)
