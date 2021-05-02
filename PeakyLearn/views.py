@@ -8,7 +8,7 @@ from .forms import UserForm, AddCourseForm
 from django.contrib.auth import logout
 from django.contrib import messages
 
-objects = [];
+from .create_tables import create_all
 
 # Create your views here.
 def home(request):
@@ -41,15 +41,7 @@ def exec_query(sql_query):
 def login(request):
     if request.method == 'POST':
 
-        exec_query('CREATE TABLE IF NOT EXISTS user(\
-                        user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                        username VARCHAR(50) UNIQUE NOT NULL,\
-                        password VARCHAR(50) NOT NULL,\
-                        registerDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-                        firstName VARCHAR(50) NOT NULL,\
-                        lastName VARCHAR(50) NOT NULL,\
-                        email VARCHAR(50) NOT NULL,\
-                        phone VARCHAR(50));')
+        create_all()
 
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -57,9 +49,10 @@ def login(request):
         connection = sqlite3.connect('db.sqlite3')
         cursor = connection.cursor()
         params = [username, password]
-        cursor.execute("SELECT username FROM user WHERE username=? AND password=?", params)
+        cursor.execute("SELECT user_id FROM user WHERE username=? AND password=?", params)
 
         auth = cursor.fetchone()
+        print(auth)
         success = 1 if auth else 0
         print("Username=", username, "Password=", password)
         print('Success=', success)
@@ -67,6 +60,8 @@ def login(request):
 
         if success == 1:
             request.session['username'] = username
+            request.session['uid'] = auth[0]
+
             # Add user type too into session here
             return redirect('userPage')
         else:
@@ -104,33 +99,73 @@ def signup(request):
         context = {'form': form}
         return render(request, 'PeakyLearn/signup.html', context)
 
-def createCourseObjects(courseName, category, price):
-    obj = type('obj', (object,), {'courseName' : courseName, 'category' : category, 'price' : price})
-    objects.append(obj)
-    return objects
+# Insert some items for testing
+def default_insert():
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
+    params = ['CS101', 'CS', 4, 'Eng', 4, 0, 0, 0 ]
+
+    cursor.execute(query, params)
+
+    connection.commit()
+    connection.close()
+
+
+def get_owned_courses(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    query = "SELECT * FROM buy WHERE student-id = ?;"
+
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_owned_courses', status=404)
+
+    course_ids = cursor.fetchall()
+
+    query = "SELECT * FROM course WHERE course-id IN ?;"
+    params = [course_ids]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_owned_courses', status=404)
+
+    courses = cursor.fetchall()
+    connection.close()
+
+    print(courses)
+    return courses
+
+def get_all_courses():
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT * FROM course;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_all_courses', status=404)
+
+    courses = cursor.fetchall()
+    connection.close()
+
+    return courses
+
+def ownedCourses(request):
+    owned_courses = get_owned_courses(request.session['uid'])
+
+    context = { 'owned_courses': owned_courses }
+    return render(request, 'PeakyLearn/ownedCourses.html', context)
 
 
 def userPage(request):
-
-    connection = sqlite3.connect('db.sqlite3')
-    cursor = connection.cursor()
-
-    c = connection.execute("SELECT * FROM course")
-    rows = c.fetchall()
-    counter = 0;
-    for row in rows:
-        c_courseName = connection.execute("SELECT DISTINCT courseName FROM course")
-        courseName = c_courseName.fetchall().__getitem__(counter)
-        c_category = connection.execute("SELECT category FROM course")
-        category = c_category.fetchall().__getitem__(counter)
-        c_price = connection.execute("SELECT price FROM course")
-        price = c_price.fetchall().__getitem__(counter)
-        counter += 1;
-
-        objects = createCourseObjects(courseName,category,price)
-
+    #default_insert()
     uname = request.session['username']
-    context = {'username': uname, 'objects': objects}
+
+    all_courses = get_all_courses()
+
+    context = {'username': uname, 'all_courses': all_courses }
     return render(request, 'PeakyLearn/userPage.html', context)
 
 def userLogout(request):

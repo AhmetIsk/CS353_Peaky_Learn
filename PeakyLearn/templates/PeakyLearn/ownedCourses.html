@@ -13,12 +13,12 @@
 <body>
 <br>
 <td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
-<a class="btn btn-sm btn-outline-primary" href="{% url 'ownedCourses' %}">See My Purchased Courses</a>
+<a class="btn btn-sm btn-outline-secondary" href="{% url 'userPage' %}">See All Courses</a>
 
 <div class = "jumbotron text-center" >
     <h1>Welcome {{ username }}</h1>
 
-    <h3> All Courses </h3>
+    <h3> Purchased Courses </h3>
     <hr>
 
     <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -38,7 +38,7 @@
         </tr>
       </thead>
       <tbody>
-          {% for course in all_courses %}
+          {% for course in owned_courses %}
               <tr>
 
                     <td>{{ course.0 }}</td>
