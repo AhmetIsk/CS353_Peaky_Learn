@@ -143,7 +143,7 @@ def create_all():
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS buy(\
-                    course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                    course_id INTEGER NOT NULL,\
                     student_id INTEGER NOT NULL,\
                     lec_id INTEGER NOT NULL,\
                     FOREIGN KEY (course_id) REFERENCES course(course_id),\

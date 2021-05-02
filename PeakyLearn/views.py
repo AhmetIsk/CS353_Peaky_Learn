@@ -116,17 +116,8 @@ def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [uid]
-    query = "SELECT * FROM buy WHERE student-id = ?;"
-
-    try:
-        cursor.execute(query, params)
-    except sqlite3.OperationalError:
-        return HttpResponse('404! error in get_owned_courses', status=404)
-
-    course_ids = cursor.fetchall()
-
-    query = "SELECT * FROM course WHERE course-id IN ?;"
-    params = [course_ids]
+    print(uid)
+    query = "SELECT * FROM course WHERE course_id IN (SELECT course_id FROM buy WHERE student_id = ?);"
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
@@ -175,8 +166,22 @@ def userLogout(request):
     return render(request, 'PeakyLearn/home.html', context)
 
 
-def courseDetails(request):
-    context = {}
+def courseDetails(request, pk):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [pk]
+    print(pk)
+    query = "SELECT * FROM course WHERE course_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in courseDetails', status=404)
+
+    course = cursor.fetchone()
+    print(course)
+    connection.close()
+
+    context = {'course': course}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
 def adminMainPage(request):
@@ -219,3 +224,38 @@ def addCourse(request):
         form = AddCourseForm()
         context = {'form': form}
         return render(request, 'PeakyLearn/addCourse.html', context)
+
+
+def purchaseCourse(request, pk):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    uid = request.session['uid']
+    params = [pk, uid]
+    print(params)
+
+    # First check if the course is already bought
+    query = "SELECT * FROM buy WHERE course_id = ? AND student_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in purchaseCourse', status=404)
+
+    course = cursor.fetchone()
+    print(course)
+    already_bought = 1 if course else 0
+
+    if already_bought:
+        return HttpResponse("You have already purchased this course. Back to Main: <a href='/userPage'>Back</a>")
+
+    # Add the course
+    params = [pk, uid, 0]
+    query = "INSERT INTO buy VALUES( ?, ?, ? )"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in purchaseCourse', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Success!. Back to Main: <a href='/userPage'>Back</a>")
