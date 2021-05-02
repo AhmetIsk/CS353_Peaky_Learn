@@ -63,8 +63,9 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS lecture(\
                     lecture_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    lecName VARCHAR(50),\
-                    prereq BOOLEAN);')
+                    lecName VARCHAR(50), \
+                    prereq BOOLEAN, \
+                    lec_url VARCHAR(50));')
 
     exec_query('CREATE TABLE IF NOT EXISTS note(\
                     note_id INTEGER,\
@@ -73,6 +74,12 @@ def create_all():
                     content VARCHAR(32765),\
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\
                     FOREIGN KEY (c_id) REFERENCES course(course_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS contain(\
+               course_id INTEGER NOT NULL, \
+               lec_id INTEGER NOT NULL, \
+               FOREIGN KEY(course_id) REFERENCES course(course_id), \
+               FOREIGN KEY(lec_id) REFERENCES lecture(lecture_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS question(\
                     question_id INTEGER,\

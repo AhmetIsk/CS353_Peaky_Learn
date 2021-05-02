@@ -26,3 +26,15 @@ class AddCourseForm(forms.Form):
             'language' : language
 
     }
+
+
+class LectureForm(forms.Form):
+    lecName = forms.CharField(max_length= 50, label="Lecture Name")
+    lec_url = forms.URLField(label = "Lecture URL")
+    prereq = forms.BooleanField(label="Prerequisite")
+
+    values = {
+            'lecName': lecName,
+            'lec_url': lec_url,
+            'prereq': prereq,
+    }

@@ -38,6 +38,7 @@
             <th>Certificate ID</th>
             <th>Rate</th>
             <th>Educator ID</th>
+            <th></th>
 
 
         </tr>
@@ -51,14 +52,11 @@
                     <td>{{ course.2 }}</td>
                     <td>{{ course.3 }}</td>
                     <td>{{ course.4 }}</td>
-                    <td>{{ course.5 }}
-                        <a href="http://127.0.0.1:8000/lectures/" >
-                            <button type="button">Show Lectures</button>
-                        </a>
-                    </td>
+                    <td>{{ course.5 }}</td>
                     <td>{{ course.6 }}</td>
                     <td>{{ course.7 }}</td>
                     <td>{{ course.8 }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'lectures' course.0 %}">Course Page</a></td>
               </tr>
           {% endfor %}
       </tbody>
@@ -73,6 +71,7 @@
             <th>Certificate ID</th>
             <th>Rate</th>
             <th>Educator ID</th>
+      <th></th>
 
       </tfoot>
     </table>

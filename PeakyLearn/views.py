@@ -3,7 +3,7 @@ from sqlite3 import Error
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import UserForm, AddCourseForm
+from .forms import UserForm, AddCourseForm, LectureForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -277,9 +277,6 @@ def get_all_courses():
 
 def ownedCourses(request):
     owned_courses = get_owned_courses(request.session['uid'])
-
-
-
     context = { 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
@@ -350,6 +347,9 @@ def adminMainPage(request):
 
 def educatorMainPage(request):
     context = {'username': request.session['username']}
+    all_courses = get_all_courses()
+
+    context = {'username': request.session['username'], 'all_courses': all_courses}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
 
@@ -366,13 +366,25 @@ def addCourse(request):
             query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params2 = [courseName, category, price, language, 0, "1", 0, 0, ]
+            params = [courseName, category, price, language, 0, "1", 0, request.session['uid'] ]
             try:
-                cursor.execute(query, params2)
-                print("successful- course created")
-            except sqlite3.IntegrityError:
-                print("unsuccessful-course is not created")
-                # return HttpResponse('Username already exists!', status=409)
+                cursor.execute( query, params )
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-course is not created!', status=409)
+
+            connection.commit()
+
+            course_id = cursor.lastrowid
+            query = "INSERT INTO creates (course_id, edu_id) VALUES (?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [course_id, request.session['uid']]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-course is not created!', status=409)
 
             connection.commit()
             connection.close()
@@ -383,6 +395,49 @@ def addCourse(request):
         form = AddCourseForm()
         context = {'form': form}
         return render(request, 'PeakyLearn/addCourse.html', context)
+
+
+def addLecture(request, cid):
+    if request.method == 'POST':
+
+        form = LectureForm(request.POST)
+        if form.is_valid():
+            lecName = form.cleaned_data.get('lecName')
+            lec_url = form.cleaned_data.get('lec_url')
+            prereq = form.cleaned_data.get('prereq')
+
+            query = "INSERT INTO lecture (lecName, prereq, lec_url) VALUES (?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [lecName, prereq, lec_url]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('Cannot add lecture!', status=409)
+
+            connection.commit()
+            lec_id = cursor.lastrowid
+
+            query = "INSERT INTO contain (course_id, lec_id) VALUES (?,?);"
+            params = [cid, lec_id]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('Cannot add lecture!', status=409)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+    elif request.method == 'GET':
+        form = LectureForm()
+        context = {'form': form}
+        return render(request, 'PeakyLearn/addLecture.html', context)
 
 
 def purchaseCourse(request, pk):
@@ -460,8 +515,29 @@ def deleteUser(request, pk):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
-def lectures(request):
+def lectures(request, lec_id):
     context = {}
-
-    messages.success(request, "Logout Succesful")
     return render(request, 'PeakyLearn/lectures.html', context)
+
+def get_created_courses(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    print(uid)
+    query = "SELECT * FROM course WHERE course_id IN (SELECT course_id FROM creates WHERE edu_id = ?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_owned_courses', status=404)
+
+    courses = cursor.fetchall()
+    connection.close()
+
+    print(courses)
+    return courses
+
+
+def educatorCreatedCourses(request):
+    created_courses = get_created_courses(request.session['uid'])
+    context = {'created_courses': created_courses, 'username': request.session['username']}
+    return render(request, 'PeakyLearn/educatorCreatedCourses.html', context)

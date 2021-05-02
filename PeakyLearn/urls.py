@@ -23,6 +23,8 @@ urlpatterns = [
     path('studentProfile/<str:pk>', views.purchaseCourse, name='studentProfile'),
     path('educatorProfile/<str:pk>', views.purchaseCourse, name='educatorProfile'),
     path('deleteUser/<str:pk>', views.deleteUser, name='deleteUser'),
-    path('lectures/', views.lectures, name='lectures'),
+    path('lectures/<str:lec_id>', views.lectures, name='lectures'),
+    path('educatorCreatedCourses', views.educatorCreatedCourses, name='educatorCreatedCourses'),
+    path('addLecture', views.addLecture, name='addLecture'),
 
 ]
