@@ -87,7 +87,8 @@ def signup(request):
             try:
                 cursor.execute(query, params)
             except sqlite3.IntegrityError:
-                return HttpResponse('Username already exists!', status=409)
+                messages.info(request, 'User already exists!')
+                return redirect('signup')
 
             connection.commit()
             connection.close()
