@@ -56,19 +56,10 @@
 
                 </div>
 
-
-{#                        {% for message in messages %}#}
-{#                            <p id="messages">{{message}}</p>#}
-{#                        {% endfor %}#}
-
-
-
-
-
                 <div class="mt-4">
                     <div class="d-flex justify-content-center links">
-                        Do not have an account? <a href="{% url 'signup' 2 %}" class="btn login_btn">Student Sign Up</a>
-                        <a href="{% url 'signup' 1 %}" class="btn login_btn">Educator Sign Up</a>
+                        Do not have an account? Sign up if you're a <a href="{% url 'signup' 2 %}" class="ml-2"> Student </a> -
+                        <a href="{% url 'signup' 1 %}" class="ml-2">Educator</a>
                     </div>
                 </div>
 

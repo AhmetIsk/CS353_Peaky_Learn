@@ -352,6 +352,14 @@ def educatorMainPage(request):
     context = {'username': request.session['username'], 'all_courses': all_courses}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
+def studentProfile(request):
+    context = {'username': request.session['username']}
+    return render(request, 'PeakyLearn/studentProfile.html', context)
+
+def shoppingCart(request):
+    context = {'username': request.session['username']}
+    return render(request, 'PeakyLearn/shoppingCart.html', context)
+
 
 def addCourse(request):
     if request.method == 'POST':
