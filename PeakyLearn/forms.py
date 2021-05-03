@@ -27,6 +27,20 @@ class AddCourseForm(forms.Form):
 
     }
 
+class UpdateCourseForm(forms.Form):
+    courseName = forms.CharField(max_length= 50, label = "Change Course Name")
+    category = forms.CharField(max_length= 50, label = "Change Category - Topic")
+    price = forms.CharField(max_length= 50,label = "Change Price")
+    language = forms.CharField(max_length= 50, label = "Change Language")
+
+    values = {
+
+            'courseName' : courseName,
+            'category' : category,
+            'price' : price,
+            'language' : language
+
+    }
 
 class LectureForm(forms.Form):
     lecName = forms.CharField(max_length= 50, label="Lecture Name")
@@ -38,3 +52,4 @@ class LectureForm(forms.Form):
             'lec_url': lec_url,
             'prereq': prereq,
     }
+

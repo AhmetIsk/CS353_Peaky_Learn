@@ -3,7 +3,7 @@ from sqlite3 import Error
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import UserForm, AddCourseForm, LectureForm
+from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -586,3 +586,37 @@ def deleteCourse(request, course_id):
     connection.close()
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+
+def updateCourse(request, course_id):
+
+    temp = course_id
+    if request.method == 'POST':
+
+        form = UpdateCourseForm(request.POST)
+        if form.is_valid():
+            courseName = form.cleaned_data.get('courseName')
+            category = form.cleaned_data.get('category')
+            price = form.cleaned_data.get('price')
+            language = form.cleaned_data.get('language')
+
+            query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ? WHERE course_id = ?"
+            params = [courseName, category, price, language,course_id]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute( query, params )
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-course is not updated!', status=409)
+
+            connection.commit()
+            connection.close()
+            return HttpResponse("Course is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+    elif request.method == 'GET':
+        form = UpdateCourseForm()
+        context = {'form': form, 'course_id': course_id}
+        return render(request, 'PeakyLearn/updateCourse.html', context)
+

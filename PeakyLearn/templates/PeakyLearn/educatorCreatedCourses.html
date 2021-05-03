@@ -58,6 +58,7 @@
                     <td>{{ course.8 }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'lectures' course.0 %}">See Lectures</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteCourse' course.0%}">Delete Course</a></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'updateCourse' course.0%}">Update </a></td>
               </tr>
           {% endfor %}
       </tbody>
