@@ -53,3 +53,16 @@ class LectureForm(forms.Form):
             'prereq': prereq,
     }
 
+class AddNote(forms.Form):
+    note_id = forms.IntegerField(label="note_id")
+    s_id = forms.IntegerField(label="s_id")
+    c_id = forms.IntegerField(label="c_id")
+    content = forms.CharField(max_length= 10000, label = "note")
+
+    values = {
+        'content' : content,
+    }
+
+
+
+

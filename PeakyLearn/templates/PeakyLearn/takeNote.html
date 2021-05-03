@@ -1,0 +1,31 @@
+
+<form method="POST" action="">
+    <div class="d-flex justify-content-center form_container">
+
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{ form }}
+
+            <div class="d-flex justify-content-center mt-3 login_container">
+                <input class="btn login_btn" type="submit" value="Enter">
+            </div>
+        </form>
+    </div>
+
+    {{ form.errors }}
+
+</form>
+
+
+<script>
+    //Query All input fields
+    var form_fields = document.getElementsByTagName('input')
+        form_fields[1].placeholder='...';
+        form_fields[2].placeholder='...';
+        form_fields[3].placeholder='...';
+        form_fields[4].placeholder='Take note...';
+
+    for (var field in form_fields){
+        form_fields[field].className += ' form-control'
+    }
+</script>

@@ -3,7 +3,7 @@ from sqlite3 import Error
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm
+from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -627,4 +627,58 @@ def updateCourse(request, course_id):
         form = UpdateCourseForm()
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/updateCourse.html', context)
+
+def takeNote(request):
+    if request.method == 'POST':
+
+        form = AddNote(request.POST)
+        if form.is_valid():
+            note_id = form.cleaned_data.get('note_id')
+            s_id = form.cleaned_data.get('note_id')
+            c_id = form.cleaned_data.get('note_id')
+            content = form.cleaned_data.get('content')
+
+
+            query = "INSERT INTO note (note_id, s_id, c_id, content) VALUES (?,?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [note_id, s_id, c_id, content]
+            try:
+                cursor.execute( query, params )
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-note is not created!', status=409)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse("Note Creation Succesful.")
+
+    elif request.method == 'GET':
+        form = AddNote()
+        context = {'form': form}
+        return render(request, 'PeakyLearn/takeNote.html', context)
+
+def get_all_notes():
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT * FROM notes;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_all_courses', status=404)
+
+    notes = cursor.fetchall()
+    connection.close()
+
+    return notes
+
+
+
+def notes(request):
+    all_notes = get_all_notes()
+    context = {'all_notes': all_notes}
+    return render(request, 'PeakyLearn/notes.html', context)
+
+
 
