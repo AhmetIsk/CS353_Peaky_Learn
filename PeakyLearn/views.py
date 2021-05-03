@@ -355,7 +355,19 @@ def educatorMainPage(request):
 
 def addCourse(request):
     if request.method == 'POST':
-
+        """
+        exec_query('CREATE TABLE IF NOT EXISTS course(\
+                   course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                   courseName VARCHAR(50) NOT NULL,\
+                   category VARCHAR(50) NOT NULL,\
+                   price VARCHAR(20) NOT NULL,\
+                   language VARCHAR(20) NOT NULL,\
+                   lec_cnt INTEGER,\
+                   certificate_id VARCHAR(50) NOT NULL,\
+                   rate INTEGER NOT NULL,\
+                   edu_id INTEGER NOT NULL,\
+                   FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
+        """
         form = AddCourseForm(request.POST)
         if form.is_valid():
             courseName = form.cleaned_data.get('courseName')
@@ -388,7 +400,7 @@ def addCourse(request):
 
             connection.commit()
             connection.close()
-
+            
             return HttpResponse("Course Creation Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
@@ -557,3 +569,20 @@ def educatorCreatedCourses(request):
     created_courses = get_created_courses(request.session['uid'])
     context = {'created_courses': created_courses, 'username': request.session['username']}
     return render(request, 'PeakyLearn/educatorCreatedCourses.html', context)
+
+def deleteCourse(request, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    # delete course
+    query = "DELETE FROM course WHERE course_id = ?;"
+    params = [course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteCourse', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
