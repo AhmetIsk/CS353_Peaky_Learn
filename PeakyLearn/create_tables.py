@@ -68,7 +68,7 @@ def create_all():
                     lec_url VARCHAR(50));')
 
     exec_query('CREATE TABLE IF NOT EXISTS note(\
-                    note_id INTEGER,\
+                    note_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     s_id INTEGER,\
                     c_id INTEGER,\
                     content VARCHAR(32765),\
@@ -171,7 +171,7 @@ def create_all():
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS take(\
-                    date DATE,\
+                    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                     s_id INTEGER NOT NULL,\
                     note_id INTEGER NOT NULL,\
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\

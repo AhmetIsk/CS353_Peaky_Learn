@@ -353,10 +353,35 @@ def educatorMainPage(request):
     context = {'username': request.session['username'], 'all_courses': all_courses}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
+def get_user_data(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    query = "SELECT * FROM user WHERE user_id=?;"
+    param = [uid]
+    try:
+        cursor.execute(query, param)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in adminpage', status=404)
+
+    data = cursor.fetchall()[0]
+    regDate = data[3]
+
+    fname = data[4]
+    lname = data[5]
+    email = data[6]
+    phone = data[7]
+    connection.close()
+
+    return regDate, fname, lname, email, phone
+
+
 def studentProfile(request):
     uname = request.session['username']
+    regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
     owned_courses = get_owned_courses(request.session['uid'])
-    context = {'username': uname, 'owned_courses': owned_courses }
+    context = {'username': uname, 'owned_courses': owned_courses, 'fname': fname, 'lname': lname,
+               'email': email, 'phone': phone, 'regDate': regDate }
     return render(request, 'PeakyLearn/studentProfile.html', context)
 
 def shoppingCart(request):
@@ -538,7 +563,8 @@ def deleteUser(request, pk):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
-def lectures(request, course_id):
+
+def educator_lectures(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [course_id]
@@ -556,7 +582,27 @@ def lectures(request, course_id):
     context = {'lectures': lectures, 'course_id': course_id}
 
 
-    return render(request, 'PeakyLearn/lectures.html', context)
+    return render(request, 'PeakyLearn/lecturesEducator.html', context)
+
+def student_lectures(request, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [course_id]
+    query = ""
+    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lecture_id FROM contain WHERE course_id=?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('Error in lectures', status=404)
+
+    lectures = cursor.fetchall()
+    connection.close()
+
+
+    context = {'lectures': lectures, 'course_id': course_id}
+
+
+    return render(request, 'PeakyLearn/lecturesStudent.html', context)
 
 def get_created_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
@@ -631,23 +677,46 @@ def updateCourse(request, course_id):
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/updateCourse.html', context)
 
-def takeNote(request):
+from datetime import datetime
+
+def takeNote(request, course_id, lecture_id):
     if request.method == 'POST':
 
         form = AddNote(request.POST)
         if form.is_valid():
-            note_id = form.cleaned_data.get('note_id')
-            s_id = form.cleaned_data.get('note_id')
-            c_id = form.cleaned_data.get('note_id')
+            s_id = request.session.get('uid')
+            c_id = course_id
             content = form.cleaned_data.get('content')
 
 
-            query = "INSERT INTO note (note_id, s_id, c_id, content) VALUES (?,?,?,?);"
+            query = "INSERT INTO note (s_id, c_id, content) VALUES (?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params = [note_id, s_id, c_id, content]
+            params = [s_id, c_id, content]
             try:
-                cursor.execute( query, params )
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-note is not created!', status=409)
+
+            connection.commit()
+
+            note_id = cursor.lastrowid
+
+            query = "INSERT INTO take (s_id, note_id) VALUES (?,?);"
+            params = [s_id, note_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-note is not created!', status=409)
+
+            connection.commit()
+
+            query = "INSERT INTO on_t (note_id, lec_id) VALUES (?,?);"
+            params = [note_id, lecture_id]
+            try:
+                cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('unsuccessful-note is not created!', status=409)
@@ -655,31 +724,61 @@ def takeNote(request):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Note Creation Succesful.")
+            return HttpResponse("Note Creation Succesful. Back to Lectures Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
 
     elif request.method == 'GET':
         form = AddNote()
-        context = {'form': form}
+
+        # Get course name and lecture name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('takenote', status=409)
+
+        course_name = cursor.fetchone()[0]
+
+        query = "SELECT lecName FROM lecture WHERE lecture_id=?;"
+        params = [lecture_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('takenote', status=409)
+
+        lecture_name = cursor.fetchone()[0]
+        connection.close()
+
+        context = {'form': form, 'c_id': course_id, 'cname':course_name, 'lec_id': lecture_id, 'lec_name': lecture_name}
         return render(request, 'PeakyLearn/takeNote.html', context)
 
-def get_all_notes():
+# Returns all of the notes taken by the student in the specifies lecture
+def get_all_notes(uid, course_id, lecture_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
-    query = "SELECT * FROM notes;"
+    query = "SELECT * FROM note WHERE c_id=? AND note_id IN (SELECT note_id FROM take NATURAL JOIN on_t WHERE s_id=? AND lec_id=?);"
+    params = [course_id, uid, lecture_id]
     try:
-        cursor.execute(query)
-    except sqlite3.OperationalError:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
         return HttpResponse('404! error in get_all_courses', status=404)
 
-    notes = cursor.fetchall()
+    my_notes = cursor.fetchall()
+    print("Notes: ", my_notes)
     connection.close()
 
-    return notes
+    return my_notes
 
 
 
-def notes(request):
-    all_notes = get_all_notes()
+def notes(request, course_id, lecture_id):
+    all_notes = get_all_notes(request.session['uid'], course_id, lecture_id)
+    print(all_notes)
     context = {'all_notes': all_notes}
     return render(request, 'PeakyLearn/notes.html', context)
 

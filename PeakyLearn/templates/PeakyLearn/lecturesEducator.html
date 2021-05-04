@@ -22,7 +22,7 @@
 <a class="btn btn-sm btn-outline-primary" href="{% url 'addLecture' course_id %}">Add Lecture</a>
 
 <div class = "jumbotron text-center" >
-    <h1>Welcome {{ username }}</h1>
+    <h1>Welcome {{ username }} [Educator]</h1>
 
     <h3> All lectures of course with course id {{ course_id }} </h3>
     <hr>
@@ -46,8 +46,8 @@
                     <td>{{ lecture.1 }}</td>
                     <td>{{ lecture.2 }}</td>
                     <td>{{ lecture.3 }}</td>
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a>
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a>
+                    <!--<a class="btn btn-sm btn-outline-primary" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a>-->
+                    <!--<a class="btn btn-sm btn-outline-primary" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a>-->
               </tr>
           {% endfor %}
       </tbody>

@@ -23,15 +23,18 @@ urlpatterns = [
     path('studentProfile/<str:pk>', views.purchaseCourse, name='studentProfile'),
     path('educatorProfile/<str:pk>', views.purchaseCourse, name='educatorProfile'),
     path('deleteUser/<str:pk>', views.deleteUser, name='deleteUser'),
-    path('lectures/<str:course_id>', views.lectures, name='lectures'),
+
+    path('studentLectures/<str:course_id>', views.student_lectures, name='studentLectures'),
+    path('educatorLectures/<str:course_id>', views.educator_lectures, name='educatorLectures'),
+
     path('educatorCreatedCourses', views.educatorCreatedCourses, name='educatorCreatedCourses'),
     path('studentProfile/', views.studentProfile, name='studentProfile'),
     path('shoppingCart/', views.shoppingCart, name='shoppingCart'),
     path('addLecture/<str:course_id>', views.addLecture, name='addLecture'),
     path('deleteCourse/<str:course_id>', views.deleteCourse, name='deleteCourse'),
     path('updateCourse/<str:course_id>', views.updateCourse, name='updateCourse'),
-    path('notes/', views.notes, name='notes'),
-    path('takeNote/', views.takeNote, name='takeNote'),
+    path('notes/<str:course_id>/<str:lecture_id>/', views.notes, name='notes'),
+    path('takeNote/<str:course_id>/<str:lecture_id>/', views.takeNote, name='takeNote'),
 
 
 ]
