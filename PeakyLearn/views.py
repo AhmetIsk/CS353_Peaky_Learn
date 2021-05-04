@@ -67,9 +67,6 @@ def get_user_type(uid):
     else:
         return 1
 
-
-
-
 def login(request):
     if request.method == 'POST':
         create_all()
@@ -390,8 +387,38 @@ def studentProfile(request):
                'email': email, 'phone': phone, 'regDate': regDate }
     return render(request, 'PeakyLearn/studentProfile.html', context)
 
+def get_wishlist(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    query = "SELECT list_id FROM wishlist WHERE s_id=?"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in wishlist', status=404)
+
+    list_id = cursor.fetchone()[0]
+    params = [list_id]
+
+    # now add into include
+    query = "SELECT * FROM course WHERE course_id IN (SELECT c_id FROM include WHERE list_id=?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in wishlist', status=404)
+
+    wishlist = cursor.fetchall()
+    connection.close()
+    print(wishlist)
+
+    return wishlist
+
+
 def shoppingCart(request):
-    context = {'username': request.session['username']}
+    wishlist = get_wishlist(request.session['uid'])
+    context = {'username': request.session['username'], 'wishlist': wishlist}
     return render(request, 'PeakyLearn/shoppingCart.html', context)
 
 
@@ -792,6 +819,92 @@ def notes(request, course_id, lecture_id):
     print(all_notes)
     context = {'all_notes': all_notes}
     return render(request, 'PeakyLearn/notes.html', context)
+
+@allowed_users(allowed_roles=['educator', 'admin', 'student'])
+def addToWishlist(request, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    uid = request.session['uid']
+    params = [course_id, uid]
+    print(params)
+
+    # First check if the course is already wishlisted
+    query = "SELECT * FROM include WHERE c_id=? AND list_id=(SELECT list_id FROM wishlist WHERE s_id = ?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('409! error in wishlist', status=409)
+
+    course = cursor.fetchone()
+    print(course)
+    already_wishlisted = 1 if course else 0
+
+    if already_wishlisted:
+        return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/userPage'>Back</a>")
+
+    # Add the course into wishlist
+    # Create the student's own wishlist, if not created yet
+    params = [uid]
+    query = "SELECT * FROM wishlist WHERE s_id=?"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in wishlist', status=404)
+
+    wl = cursor.fetchone()
+    has_wishlist = 1 if wl else 0
+
+    if not has_wishlist:  # Does not have a wishlist
+        params = [uid]
+        query = "INSERT INTO wishlist (s_id) VALUES(?)"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in wishlist', status=404)
+
+        connection.commit()
+        list_id = cursor.lastrowid
+
+        # now add into include
+        query = "INSERT INTO include (list_id, c_id) VALUES(?, ?)"
+        params = [list_id, course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in wishlist', status=404)
+
+        connection.commit()
+        connection.close()
+    else:  # Has a wishlist
+        # Get the list id
+        params = [uid]
+        query = "SELECT list_id FROM wishlist WHERE s_id=?"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in wishlist', status=404)
+
+        list_id = cursor.fetchone()[0]
+        params = [list_id, course_id]
+
+        # now add into include
+        query = "INSERT INTO include (list_id, c_id) VALUES(?, ?)"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in wishlist', status=404)
+
+        connection.commit()
+        connection.close()
+
+    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
+
 
 
 

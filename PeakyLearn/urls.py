@@ -36,5 +36,7 @@ urlpatterns = [
     path('notes/<str:course_id>/<str:lecture_id>/', views.notes, name='notes'),
     path('takeNote/<str:course_id>/<str:lecture_id>/', views.takeNote, name='takeNote'),
 
+    path('addToWishlist/<str:course_id>', views.addToWishlist, name='addToWishlist'),
+
 
 ]

@@ -109,8 +109,8 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS wishlist(\
                     list_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    c_id INTEGER,\
-                    FOREIGN KEY (c_id) REFERENCES course(course_id));')
+                    s_id INTEGER,\
+                    FOREIGN KEY (s_id) REFERENCES student(student_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS decide(\
                     requestID INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -192,12 +192,6 @@ def create_all():
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\
                     FOREIGN KEY (lec_id) REFERENCES lecture(lecture_id),\
                     FOREIGN KEY (quiz_id) REFERENCES quiz(quiz_id));')
-
-    exec_query('CREATE TABLE IF NOT EXISTS have(\
-                    s_id INTEGER NOT NULL,\
-                    list_id INTEGER NOT NULL,\
-                    FOREIGN KEY (s_id) REFERENCES student(student_id),\
-                    FOREIGN KEY (list_id) REFERENCES wishlist(list_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS include(\
                     c_id INTEGER NOT NULL,\
