@@ -313,8 +313,8 @@ def courseDetails(request, pk):
     course = cursor.fetchone()
     print(course)
     connection.close()
-
-    context = {'course': course}
+    uname = request.session['username']
+    context = {'username': uname,'course': course}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
 @allowed_users(allowed_roles=['admin'])

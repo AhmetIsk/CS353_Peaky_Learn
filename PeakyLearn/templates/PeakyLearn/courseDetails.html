@@ -1,37 +1,125 @@
 {%  extends 'PeakyLearn/main.html' %}
-
+{% load static %}
 {% block content %}
+    <!DOCTYPE html>
+    <style>
+        .Leanor {border-color: #e0b8b8;
+            border-width:5px;
+            background: #c27070;
+            height: 300px;
+            align-items: center;
+            align-content: center;
+        }
+        .courseName {
+            text-align: center;
+            padding: 0px;
+            color: #9d0e0e;
+            font-size: 60px;
+            font-family: Bahnschrift;
+        }
 
-    <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
-    <h2>Course Details</h2>
-    <thead>
-        <tr>
-            <th>Course ID</th>
-            <th>Course Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Language</th>
-            <th>Lecture Count</th>
-            <th>Certificate ID</th>
-            <th>Rate</th>
-            <th>Educator ID</th>
-        </tr>
-      </thead>
-      <tbody>
-              <tr>
-                    <td>{{ course.0 }}</td>
-                    <td>{{ course.1 }}</td>
-                    <td>{{ course.2 }}</td>
-                    <td>{{ course.3 }}</td>
-                    <td>{{ course.4 }}</td>
-                    <td>{{ course.5 }}</td>
-                    <td>{{ course.6 }}</td>
-                    <td>{{ course.7 }}</td>
-                    <td>{{ course.8 }}</td>
-                  <td><a class="btn btn-sm btn-outline-primary" href="{% url 'purchaseCourse' course.0 %}">Purchase Course</a></td>
-              </tr>
-      </tbody>
-    </table>
+        .star-ratings-css {
+            unicode-bidi: bidi-override;
+            color: #c5c5c5;
+            font-size: 50px;
+            height: 50px;
+            width: 200px;
+            margin: 0 auto;
+            position: relative;
+            text-shadow: 0 1px 0 #a2a2a2;
+        }
+        .star-ratings-css::before {
+            content: '★★★★★';
+            opacity: .3;
+        }
 
+        [title="0"]::after {
+            width: 0%;
+        }
+        [title="1"]::after {
+            width: 20%;
+        }
+        [title="2"]::after {
+            width: 40%;
+        }
+        [title="3"]::after {
+            width: 60%;
+        }
+        [title="4"]::after {
+            width: 80%;
+        }
+
+        .star-ratings-css::after {
+            color: gold;
+            content: '★★★★★';
+            text-shadow: 0 1px 0 #ab5414;
+            position: absolute;
+            z-index: 1;
+            display: block;
+            left: 0;
+            top:0;
+            width: attr(rating);
+            overflow: hidden;
+        }
+
+
+
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+    </style>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <div class="well well-sm Leanor" style="display: flex; justify-content: center;">
+                <a href="{% url 'addToWishlist' course.0 %}" class="btn btn-lg btn btn-warning" style="width: 300px; margin-right: 50px">
+                    <span><i class="fas fa-heart"></i></span> Add Wishlist</a>
+                <div>
+                    <img src="../../../static/images/courseImage.jpg" alt="course image" width="450" height="230" >
+                    <h2 style="text-align: center"> Course Rate: <div class="star-ratings-css" title="{{ course.7 }}" style="display: inline"></div> </h2>
+                </div>
+
+                <a href="{% url 'purchaseCourse' course.0 %}" class="btn btn-lg btn btn-success" style="width: 300px; margin-left: 50px">
+                    <span><i class="fas fa-dollar-sign"></i></span> Buy Now</a>
+            </div>
+        </head>
+
+        <body>
+            <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <div class="card card-body">
+
+                    <h1 class="courseName">{{ course.1 }}</h1>
+                </div>
+                <div class="card card-body">
+                    <h2 style="text-align: center">Course Details</h2>
+                </div>
+                <thead>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Language</th>
+                        <th>Lecture Count</th>
+                        <th>Certificate ID</th>
+                        <th>Rate</th>
+                        <th>Educator ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                          <tr>
+                                <td>{{ course.0 }}</td>
+                                <td>{{ course.1 }}</td>
+                                <td>{{ course.2 }}</td>
+                                <td>{{ course.3 }}</td>
+                                <td>{{ course.4 }}</td>
+                                <td>{{ course.5 }}</td>
+                                <td>{{ course.6 }}</td>
+                                <td>{{ course.7 }}</td>
+                                <td>{{ course.8 }}</td>
+                              <td><a class="btn btn-sm btn-outline-primary" href="{% url 'purchaseCourse' course.0 %}">Purchase Course</a></td>
+                          </tr>
+                  </tbody>
+            </table>
+        </body>
+    </html>
 
 {% endblock %}

@@ -17,17 +17,23 @@
         <div class="modal-body row">
             <div class="col-md-5">
                 <!-- Your first column here -->
-                <div class="card card-body">
-                    <img class="round" width="500" height="500" avatar={{ username }}>
+                <div style="align-items: center" class="card card-body">
+                    <img class="round" width="300" height="300" avatar= "{{ fname }} {{ lname }}">
                     <hr>
-                    <h3 style="text-align: center">{{ username }} Student Account</h3>
+{#                    <h3 style="text-align: center">{{ fname }} {{ lname }}  Account</h3>#}
                     <h3 style="text-align: center">Name: {{ fname }} {{ lname }}</h3>
                     <h3 style="text-align: center">Email: {{ email }}</h3>
                     <h3 style="text-align: center">Phone: {{ phone }}</h3>
                     <h3 style="text-align: center">Register Date: {{ regDate }}</h3>
                     <hr>
-
                 </div>
+                <div style="align-items: center" class="card card-columns">
+                    <div class="modal-body row">
+                        <a href="{% url 'shoppingCart'%}" class="btn btn-lg btn-outline-danger" style="width: 300px; margin-right: 50px">Show Wishlist</a>
+                        <a class="btn btn-lg btn-outline-info" style="width: 300px; margin-left: 50px">Show Certificates</a>
+                    </div>
+                </div>
+
             </div>
             <div class="col-md-6">
                 <!-- Your second column here -->
@@ -71,20 +77,20 @@
                         </tr>
                     {% endfor %}
                     </tbody>
-                    <tfoot>
-
-                    <th>Course ID</th>
-                    <th>Course Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Language</th>
-                    <th>Lecture Count</th>
-                    <th>Certificate ID</th>
-                    <th>Rate</th>
-                    <th>Educator ID</th>
-                    <th></th>
-
-                    </tfoot>
+{#                    <tfoot>#}
+{##}
+{#                    <th>Course ID</th>#}
+{#                    <th>Course Name</th>#}
+{#                    <th>Category</th>#}
+{#                    <th>Price</th>#}
+{#                    <th>Language</th>#}
+{#                    <th>Lecture Count</th>#}
+{#                    <th>Certificate ID</th>#}
+{#                    <th>Rate</th>#}
+{#                    <th>Educator ID</th>#}
+{#                    <th></th>#}
+{##}
+{#                    </tfoot>#}
                 </table>
 
                 <script>
