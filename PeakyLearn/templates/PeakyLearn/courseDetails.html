@@ -77,7 +77,7 @@
                     <h2 style="text-align: center"> Course Rate: <div class="star-ratings-css" title="{{ course.7 }}" style="display: inline"></div> </h2>
                 </div>
 
-                <a href="{% url 'purchaseCourse' course.0 %}" class="btn btn-lg btn btn-success" style="width: 300px; margin-left: 50px">
+                <a href="{% url 'buyCourse' course.0 %}" class="btn btn-lg btn btn-success" style="width: 300px; margin-left: 50px">
                     <span><i class="fas fa-dollar-sign"></i></span> Buy Now</a>
             </div>
         </head>
@@ -115,7 +115,7 @@
                                 <td>{{ course.6 }}</td>
                                 <td>{{ course.7 }}</td>
                                 <td>{{ course.8 }}</td>
-                              <td><a class="btn btn-sm btn-outline-primary" href="{% url 'purchaseCourse' course.0 %}">Purchase Course</a></td>
+                              <td><a class="btn btn-sm btn-outline-primary" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
                           </tr>
                   </tbody>
             </table>
