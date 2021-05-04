@@ -3,6 +3,8 @@ from sqlite3 import Error
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+from .decorators import allowed_users
 from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote
 
 from django.contrib.auth import logout
@@ -220,9 +222,9 @@ def default_insert():
     query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
     params = ['CS101', 'CS', 4, 'Eng', 4, 0, 0, 0 ]
 
-    cursor.execute(query, params)
+    #cursor.execute(query, params)
 
-    cursor.execute(query, params)
+    #cursor.execute(query, params)
     connection.commit()
 
     query = "SELECT user_id FROM user WHERE username = 'admin';"
@@ -275,13 +277,14 @@ def get_all_courses():
 
     return courses
 
+@allowed_users(allowed_roles=['student'])
 def ownedCourses(request):
     uname = request.session['username']
     owned_courses = get_owned_courses(request.session['uid'])
     context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
-
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def userPage(request):
     uname = request.session['username']
 
@@ -290,6 +293,7 @@ def userPage(request):
     context = {'username': uname, 'all_courses': all_courses }
     return render(request, 'PeakyLearn/userPage.html', context)
 
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def userLogout(request):
     context = {}
     logout(request)
@@ -297,6 +301,7 @@ def userLogout(request):
     return render(request, 'PeakyLearn/home.html', context)
 
 
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def courseDetails(request, pk):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -315,6 +320,7 @@ def courseDetails(request, pk):
     context = {'course': course}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
+@allowed_users(allowed_roles=['admin'])
 def adminMainPage(request):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -345,7 +351,7 @@ def adminMainPage(request):
     context = {'students': students, 'educators': educators, 'all_users': all_users}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
-
+@allowed_users(allowed_roles=['educator'])
 def educatorMainPage(request):
     context = {'username': request.session['username']}
     all_courses = get_all_courses()
@@ -375,7 +381,7 @@ def get_user_data(uid):
 
     return regDate, fname, lname, email, phone
 
-
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def studentProfile(request):
     uname = request.session['username']
     regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
@@ -389,6 +395,7 @@ def shoppingCart(request):
     return render(request, 'PeakyLearn/shoppingCart.html', context)
 
 
+@allowed_users(allowed_roles=['educator'])
 def addCourse(request):
     if request.method == 'POST':
         """
@@ -445,6 +452,7 @@ def addCourse(request):
         return render(request, 'PeakyLearn/addCourse.html', context)
 
 
+@allowed_users(allowed_roles=['educator'])
 def addLecture(request, course_id):
     if request.method == 'POST':
 
@@ -487,7 +495,7 @@ def addLecture(request, course_id):
         context = {'form': form}
         return render(request, 'PeakyLearn/addLecture.html', context)
 
-
+@allowed_users(allowed_roles=['educator', 'student'])
 def purchaseCourse(request, pk):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -522,6 +530,7 @@ def purchaseCourse(request, pk):
 
     return HttpResponse("Success!. Back to Main: <a href='/userPage'>Back</a>")
 
+@allowed_users(allowed_roles=['admin'])
 def deleteUser(request, pk):
     user_type = get_user_type(pk)
 
@@ -563,7 +572,7 @@ def deleteUser(request, pk):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
-
+@allowed_users(allowed_roles=['educator'])
 def educator_lectures(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -584,6 +593,7 @@ def educator_lectures(request, course_id):
 
     return render(request, 'PeakyLearn/lecturesEducator.html', context)
 
+@allowed_users(allowed_roles=['student'])
 def student_lectures(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -622,11 +632,13 @@ def get_created_courses(uid):
     return courses
 
 
+@allowed_users(allowed_roles=['educator', 'admin'])
 def educatorCreatedCourses(request):
     created_courses = get_created_courses(request.session['uid'])
     context = {'created_courses': created_courses, 'username': request.session['username']}
     return render(request, 'PeakyLearn/educatorCreatedCourses.html', context)
 
+@allowed_users(allowed_roles=['educator', 'admin'])
 def deleteCourse(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -644,7 +656,7 @@ def deleteCourse(request, course_id):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
-
+@allowed_users(allowed_roles=['educator', 'admin'])
 def updateCourse(request, course_id):
 
     temp = course_id
@@ -677,8 +689,7 @@ def updateCourse(request, course_id):
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/updateCourse.html', context)
 
-from datetime import datetime
-
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def takeNote(request, course_id, lecture_id):
     if request.method == 'POST':
 
@@ -775,7 +786,7 @@ def get_all_notes(uid, course_id, lecture_id):
     return my_notes
 
 
-
+@allowed_users(allowed_roles=['educator', 'admin', 'student'])
 def notes(request, course_id, lecture_id):
     all_notes = get_all_notes(request.session['uid'], course_id, lecture_id)
     print(all_notes)
