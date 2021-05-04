@@ -276,8 +276,9 @@ def get_all_courses():
     return courses
 
 def ownedCourses(request):
+    uname = request.session['username']
     owned_courses = get_owned_courses(request.session['uid'])
-    context = { 'owned_courses': owned_courses }
+    context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
 
@@ -353,7 +354,9 @@ def educatorMainPage(request):
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
 def studentProfile(request):
-    context = {'username': request.session['username']}
+    uname = request.session['username']
+    owned_courses = get_owned_courses(request.session['uid'])
+    context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/studentProfile.html', context)
 
 def shoppingCart(request):
