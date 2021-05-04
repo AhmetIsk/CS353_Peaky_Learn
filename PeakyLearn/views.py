@@ -317,6 +317,25 @@ def courseDetails(request, pk):
     context = {'username': uname,'course': course}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
+def buyCourse(request, pk):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [pk]
+    print(pk)
+    query = "SELECT * FROM course WHERE course_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in courseDetails', status=404)
+
+    course = cursor.fetchone()
+    print(course)
+    connection.close()
+    uname = request.session['username']
+    context = {'username': uname,'course': course}
+    return render(request, 'PeakyLearn/buyCourse.html', context)
+
 @allowed_users(allowed_roles=['admin'])
 def adminMainPage(request):
     connection = sqlite3.connect('db.sqlite3')

@@ -59,7 +59,7 @@
                     <td>{{ course.7 }}</td>
                     <td>{{ course.8 }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'purchaseCourse' course.0 %}">Purchase Course</a></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'addToWishlist' course.0 %}">Add to Wishlist</a></td>
               </tr>
           {% endfor %}
