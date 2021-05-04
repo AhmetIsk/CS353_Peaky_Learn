@@ -38,5 +38,7 @@ urlpatterns = [
 
     path('addToWishlist/<str:course_id>', views.addToWishlist, name='addToWishlist'),
 
+    path('quizPage/<str:course_id>', views.quizPage, name='quizPage'),
+    path('createQuiz/<str:course_id>', views.createQuiz, name='createQuiz'),
 
 ]

@@ -60,6 +60,27 @@ class AddNote(forms.Form):
         'content': content,
     }
 
+class CreateQuiz(forms.Form):
+    question = forms.CharField(max_length= 1000, label = "Your Question:")
+    choiceA = forms.CharField(max_length = 1000, label = "A:")
+    choiceB = forms.CharField(max_length = 1000, label = "B:")
+    choiceC = forms.CharField(max_length = 1000, label = "C:")
+    answer = forms.CharField(max_length = 10, label = "Answer:")
 
+    values = {
+        'question' : question,
+        'choiceA' : choiceA,
+        'choiceB' : choiceB,
+        'choiceC' : choiceC,
+        'answer' : answer,
+    }
+
+
+class QuizForm(forms.Form):
+    CHOICES = (('a','a'),
+               ('b','b'),
+               ('c','c'),
+               ('d','d'),)
+    picked = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple())
 
 

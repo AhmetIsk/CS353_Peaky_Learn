@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
-from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote
+from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote, QuizForm, CreateQuiz
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -686,7 +686,6 @@ def deleteCourse(request, course_id):
 @allowed_users(allowed_roles=['educator', 'admin'])
 def updateCourse(request, course_id):
 
-    temp = course_id
     if request.method == 'POST':
 
         form = UpdateCourseForm(request.POST)
@@ -904,6 +903,51 @@ def addToWishlist(request, course_id):
         connection.close()
 
     return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
+
+def quizPage(request,course_id):
+    if request.method == 'POST':
+        form = QuizForm(request.POST)
+        if form.is_valid():
+            picked = form.cleaned_data.get('picked')
+            # do something with your results
+
+    else:
+        form = QuizForm()
+        context = {'form': form, 'course_id': course_id}
+        return render(request, 'PeakyLearn/quizPage.html', context)
+
+
+def createQuiz(request,course_id):
+
+    if request.method == 'POST':
+        form = CreateQuiz(request.POST)
+        if form.is_valid():
+            form = CreateQuiz(request.POST)
+            question = form.cleaned_data.get('question')
+            choiceA = form.cleaned_data.get('choiceA')
+            choiceB = form.cleaned_data.get('choiceB')
+            choiceC = form.cleaned_data.get('choiceC')
+            answer = form.cleaned_data.get('answer')
+
+            query = "INSERT INTO quiz (quiz_question, answer) VALUES(?, ?)"
+            params = [question,answer]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute( query, params )
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-quiz is not created!', status=409)
+
+            connection.commit()
+            connection.close()
+            return HttpResponse("Course is Created. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+    elif request.method == 'GET':
+        form = CreateQuiz()
+        context = {'form': form, 'course_id': course_id}
+        return render(request, 'PeakyLearn/createQuiz.html', context)
 
 
 
