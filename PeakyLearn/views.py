@@ -976,5 +976,17 @@ def createQuiz(request,course_id):
         return render(request, 'PeakyLearn/createQuiz.html', context)
 
 
+# Redirect into user's page based on user type
+@allowed_users(allowed_roles=['educator', 'student', 'admin'])
+def userPage(request):
+    utype = request.session.get('userType')
+    print("utype:", utype)
+
+    if utype == 'student':
+        return redirect('studentMainPage')
+    elif utype == 'educator':
+        return redirect('educatorMainPage')
+    else:
+        return redirect('adminMainPage')
 
 

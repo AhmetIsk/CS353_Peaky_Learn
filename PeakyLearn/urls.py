@@ -42,4 +42,6 @@ urlpatterns = [
     path('quizPage/<str:course_id>', views.quizPage, name='quizPage'),
     path('createQuiz/<str:course_id>', views.createQuiz, name='createQuiz'),
 
+    path('userPage/', views.userPage, name='userPage'),
+
 ]
