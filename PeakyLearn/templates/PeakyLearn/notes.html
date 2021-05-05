@@ -1,44 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<meta charset="UTF-8">
-{%  extends 'PeakyLearn/main.html' %}
-{% load static %}
-{% block content %}
+<h3> Notes </h3>
+<hr>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
-{#<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap.min.css">#}
-{#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">#}
+<table cellspacing="10" >
+    <thead>
+    <tr>
 
+        <th>content</th>
 
-<head>
+    </tr>
+    </thead>
+    <tbody>
+    {% for notes in all_notes %}
+        <tr>
 
-</head>
+            <td>{{ notes.3 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 
-<title> Notes
-</title>
-<body>
-<br>
-<td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
-<a class="btn btn-sm btn-outline-primary" href="{% url 'ownedCourses' %}">Back to Purchased Courses</a>
-
-<div class = "jumbotron text-left" >
-
-    <h3> Lecture Notes on  </h3>
-    <hr>
-    <p> {{ content }} </p>
-
-
-    <script>
-$(document).ready(function() {
-    $('#products').DataTable();
-} );
-
-</script>
-
-</div>
-
-</body>
-</html>
-
-{% endblock %}
+</table>

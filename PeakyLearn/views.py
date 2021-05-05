@@ -833,26 +833,10 @@ def get_all_notes(uid, course_id, lecture_id):
 
 @allowed_users(allowed_roles=['educator', 'admin', 'student'])
 def notes(request, course_id, lecture_id):
-
-    connection = sqlite3.connect('db.sqlite3')
-    cursor = connection.cursor()
-    query = "SELECT content FROM note WHERE c_id= ? GROUP BY content;"
-    params = [course_id]
-    try:
-        cursor.execute(query, params)
-    except sqlite3.OperationalError as e:
-        print(e)
-        return HttpResponse('Error in showing notes', status=404)
-
-    content = cursor.fetchone()
-    connection.commit()
-    connection.close()
-
-    context = {'course_id': course_id, 'content': content}
+    all_notes = get_all_notes(request.session['uid'], course_id, lecture_id)
+    print(all_notes)
+    context = {'all_notes': all_notes}
     return render(request, 'PeakyLearn/notes.html', context)
-
-
-
 
 @allowed_users(allowed_roles=['educator', 'admin', 'student'])
 def addToWishlist(request, course_id):
