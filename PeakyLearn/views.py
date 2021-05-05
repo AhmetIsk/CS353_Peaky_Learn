@@ -541,7 +541,7 @@ def addLecture(request, course_id):
         context = {'form': form}
         return render(request, 'PeakyLearn/addLecture.html', context)
 
-@allowed_users(allowed_roles=['educator', 'student'])
+@allowed_users(allowed_roles=['student'])
 def purchaseCourse(request, pk):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -624,7 +624,7 @@ def educator_lectures(request, course_id):
     cursor = connection.cursor()
     params = [course_id]
     query = ""
-    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lecture_id FROM contain WHERE course_id=?);"
+    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
@@ -645,7 +645,7 @@ def student_lectures(request, course_id):
     cursor = connection.cursor()
     params = [course_id]
     query = ""
-    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lecture_id FROM contain WHERE course_id=?);"
+    query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
