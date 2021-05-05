@@ -938,18 +938,25 @@ def quizPage(request,course_id):
 
 def createQuiz(request,course_id):
 
+
     if request.method == 'POST':
+        """
+        exec_query('CREATE TABLE IF NOT EXISTS quiz(\
+                   quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                   quiz_question VARCHAR(32765),\
+                   answer VARCHAR(32765));')
+        """
         form = CreateQuiz(request.POST)
         if form.is_valid():
-            form = CreateQuiz(request.POST)
-            question = form.cleaned_data.get('question')
+
+            quiz_question = form.cleaned_data.get('question')
             choiceA = form.cleaned_data.get('choiceA')
             choiceB = form.cleaned_data.get('choiceB')
             choiceC = form.cleaned_data.get('choiceC')
             answer = form.cleaned_data.get('answer')
 
-            query = "INSERT INTO quiz (quiz_question, answer) VALUES(?, ?)"
-            params = [question,answer]
+            query = "INSERT INTO quiz(quiz_question, answer) VALUES (?, ?);"
+            params = [quiz_question,answer]
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
 

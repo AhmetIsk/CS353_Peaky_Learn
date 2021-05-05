@@ -61,14 +61,14 @@ class AddNote(forms.Form):
     }
 
 class CreateQuiz(forms.Form):
-    question = forms.CharField(max_length= 1000, label = "Your Question:")
+    quiz_question = forms.CharField(max_length= 1000, label = "Your Question:")
     choiceA = forms.CharField(max_length = 1000, label = "A:")
     choiceB = forms.CharField(max_length = 1000, label = "B:")
     choiceC = forms.CharField(max_length = 1000, label = "C:")
     answer = forms.CharField(max_length = 10, label = "Answer:")
 
     values = {
-        'question' : question,
+        'quiz_question' : quiz_question,
         'choiceA' : choiceA,
         'choiceB' : choiceB,
         'choiceC' : choiceC,
