@@ -92,7 +92,7 @@ def login(request):
 
             if user_type == 2:
                 request.session['userType'] = 'student'
-                return redirect('userPage')
+                return redirect('studentMainPage')
             elif user_type == 3:
                 request.session['userType'] = 'admin'
                 return redirect('adminMainPage')
@@ -281,14 +281,14 @@ def ownedCourses(request):
     context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
-@allowed_users(allowed_roles=['student', 'educator', 'admin'])
-def userPage(request):
+@allowed_users(allowed_roles=['student'])
+def studentMainPage(request):
     uname = request.session['username']
 
     all_courses = get_all_courses()
 
     context = {'username': uname, 'all_courses': all_courses }
-    return render(request, 'PeakyLearn/userPage.html', context)
+    return render(request, 'PeakyLearn/studentMainPage.html', context)
 
 @allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def userLogout(request):
@@ -561,7 +561,7 @@ def purchaseCourse(request, pk):
     already_bought = 1 if course else 0
 
     if already_bought:
-        return HttpResponse("You have already purchased this course. Back to Main: <a href='/userPage'>Back</a>")
+        return HttpResponse("You have already purchased this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course
     params = [pk, uid, 0]
@@ -574,7 +574,7 @@ def purchaseCourse(request, pk):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Success!. Back to Main: <a href='/userPage'>Back</a>")
+    return HttpResponse("Success!. Back to Main: <a href='/studentMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['admin'])
 def deleteUser(request, pk):
@@ -859,7 +859,7 @@ def addToWishlist(request, course_id):
     already_wishlisted = 1 if course else 0
 
     if already_wishlisted:
-        return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/userPage'>Back</a>")
+        return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course into wishlist
     # Create the student's own wishlist, if not created yet
@@ -921,7 +921,7 @@ def addToWishlist(request, course_id):
         connection.commit()
         connection.close()
 
-    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
+    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/studentMainPage'>Back</a>")
 
 def quizPage(request,course_id):
     if request.method == 'POST':
