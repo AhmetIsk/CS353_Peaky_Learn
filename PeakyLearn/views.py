@@ -317,7 +317,7 @@ def courseDetails(request, pk):
     context = {'username': uname,'course': course}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
-@allowed_users(allowed_roles=['student', 'educator', 'admin'])
+@allowed_users(allowed_roles=['student'])
 def buyCourse(request, pk):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -417,8 +417,12 @@ def get_wishlist(uid):
         print(e)
         return HttpResponse('Error in wishlist', status=404)
 
-    list_id = cursor.fetchone()[0]
-    params = [list_id]
+    list_id = cursor.fetchone()
+
+    if not list_id:
+        return None
+
+    params = [list_id[0]]
 
     # now add into include
     query = "SELECT * FROM course WHERE course_id IN (SELECT c_id FROM include WHERE list_id=?);"
@@ -564,8 +568,8 @@ def purchaseCourse(request, pk):
         return HttpResponse("You have already purchased this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course
-    params = [pk, uid, 0]
-    query = "INSERT INTO buy VALUES( ?, ?, ? )"
+    params = [pk, uid]
+    query = "INSERT INTO buy VALUES( ?, ? )"
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
@@ -643,12 +647,25 @@ def educator_lectures(request, course_id):
 def student_lectures(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
+    params = [request.session['uid'], course_id]
+    query = "SELECT * FROM buy WHERE student_id=? AND course_id=?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in lectures', status=404)
+    bought = cursor.fetchone()
+    bought_course = 1 if bought else 0
+
+    if not bought:
+        return HttpResponse("You do not own this course. Back to Main: <a href='/userPage'>Back</a>")
+
     params = [course_id]
-    query = ""
     query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
     try:
         cursor.execute(query, params)
-    except sqlite3.OperationalError:
+    except sqlite3.OperationalError as e:
+        print(e)
         return HttpResponse('Error in lectures', status=404)
 
     lectures = cursor.fetchall()
@@ -921,7 +938,7 @@ def addToWishlist(request, course_id):
         connection.commit()
         connection.close()
 
-    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/studentMainPage'>Back</a>")
+    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
 
 def quizPage(request,course_id):
     if request.method == 'POST':
