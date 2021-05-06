@@ -197,6 +197,28 @@ def create_all():
                     FOREIGN KEY (c_id) REFERENCES course(course_id),\
                     FOREIGN KEY (list_id) REFERENCES wishlist(list_id));')
 
+    exec_query('CREATE TABLE IF NOT EXISTS review(\
+               review_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+               s_id INTEGER NOT NULL, \
+               c_id INTEGER NOT NULL, \
+               r_content VARCHAR(32765), \
+               FOREIGN KEY(c_id) REFERENCES course(course_id), \
+               FOREIGN KEY(s_id) REFERENCES student(student_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS add_r (\
+                    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+                    s_id INTEGER NOT NULL,\
+                    review_id INTEGER NOT NULL,\
+                    FOREIGN KEY (s_id) REFERENCES student(student_id),\
+                    FOREIGN KEY (review_id) REFERENCES review(review_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS on_r(\
+                    review_id INTEGER NOT NULL,\
+                    c_id INTEGER NOT NULL,\
+                    FOREIGN KEY (review_id) REFERENCES review(review_id),\
+                    FOREIGN KEY (c_id) REFERENCES lecture(course_id));')
+
+
 
 
 

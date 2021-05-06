@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
-from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote, QuizForm, CreateQuiz
+from .forms import UserForm, AddCourseForm, LectureForm , UpdateCourseForm, AddNote, QuizForm, CreateQuiz, AddReview
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -992,6 +992,72 @@ def createQuiz(request,course_id):
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/createQuiz.html', context)
 
+@allowed_users(allowed_roles=['student'])
+def review(request, course_id):
+    if request.method == 'POST':
+
+        form = AddReview(request.POST)
+        if form.is_valid():
+            s_id = request.session.get('uid')
+            c_id = course_id
+            r_content = form.cleaned_data.get('content')
+
+            query = "INSERT INTO review (s_id, c_id, r_content) VALUES (?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [s_id, c_id, r_content]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-review is not created!', status=409)
+
+            connection.commit()
+
+            review_id = cursor.lastrowid
+
+            query = "INSERT INTO add_r (s_id, review_id) VALUES (?,?);"
+            params = [s_id, review_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-review is not created!', status=409)
+
+            connection.commit()
+
+            query = "INSERT INTO on_r (review_id, c_id) VALUES (?,?);"
+            params = [review_id, c_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-review is not created!', status=409)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/{}'>Back</a>:".format(course_id))
+
+    elif request.method == 'GET':
+        form = AddReview()
+
+        # Get course name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('addreview', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        return render(request, 'PeakyLearn/review.html', context)
 
 # Redirect into user's page based on user type
 @allowed_users(allowed_roles=['educator', 'student', 'admin'])

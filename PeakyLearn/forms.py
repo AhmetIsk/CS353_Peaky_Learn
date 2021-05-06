@@ -35,7 +35,7 @@ class UpdateCourseForm(forms.Form):
 
     values = {
 
-            'courseName' : courseName,
+            'coursneName' : courseName,
             'category' : category,
             'price' : price,
             'language' : language
@@ -73,6 +73,13 @@ class CreateQuiz(forms.Form):
         'choiceB' : choiceB,
         'choiceC' : choiceC,
         'answer' : answer,
+    }
+
+class AddReview(forms.Form):
+    r_content = forms.CharField(max_length=10000, label="Note")
+
+    values = {
+        'r_content': r_content,
     }
 
 

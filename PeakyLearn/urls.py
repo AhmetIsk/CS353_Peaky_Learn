@@ -44,4 +44,6 @@ urlpatterns = [
 
     path('userPage/', views.userPage, name='userPage'),
 
+    path('review/<str:course_id>', views.review, name='review'),
+
 ]
