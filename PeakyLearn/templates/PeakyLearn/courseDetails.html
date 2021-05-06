@@ -2,70 +2,7 @@
 {% load static %}
 {% block content %}
     <!DOCTYPE html>
-    <style>
-        .Leanor {border-color: #e0b8b8;
-            border-width:5px;
-            background: #c27070;
-            height: 300px;
-            align-items: center;
-            align-content: center;
-        }
-        .courseName {
-            text-align: center;
-            padding: 0px;
-            color: #9d0e0e;
-            font-size: 60px;
-            font-family: Bahnschrift;
-        }
-
-        .star-ratings-css {
-            unicode-bidi: bidi-override;
-            color: #c5c5c5;
-            font-size: 50px;
-            height: 50px;
-            width: 200px;
-            margin: 0 auto;
-            position: relative;
-            text-shadow: 0 1px 0 #a2a2a2;
-        }
-        .star-ratings-css::before {
-            content: '★★★★★';
-            opacity: .3;
-        }
-
-        [title="0"]::after {
-            width: 0%;
-        }
-        [title="1"]::after {
-            width: 20%;
-        }
-        [title="2"]::after {
-            width: 40%;
-        }
-        [title="3"]::after {
-            width: 60%;
-        }
-        [title="4"]::after {
-            width: 80%;
-        }
-
-        .star-ratings-css::after {
-            color: gold;
-            content: '★★★★★';
-            text-shadow: 0 1px 0 #ab5414;
-            position: absolute;
-            z-index: 1;
-            display: block;
-            left: 0;
-            top:0;
-            width: attr(rating);
-            overflow: hidden;
-        }
-
-
-
-        @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
-    </style>
+    <link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
     <html lang="en">
         <head>
             <meta charset="UTF-8">

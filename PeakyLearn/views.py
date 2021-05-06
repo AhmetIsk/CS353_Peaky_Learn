@@ -698,10 +698,20 @@ def student_lectures(request, course_id):
         return HttpResponse('Error in lectures', status=404)
 
     lectures = cursor.fetchall()
+
+    query = "SELECT * FROM course WHERE course_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in courseDetails', status=404)
+
+    course = cursor.fetchone()
+    print(course)
     connection.close()
 
+    uname = request.session['username']
 
-    context = {'lectures': lectures, 'course_id': course_id}
+    context = {'course': course,'username': uname,'lectures': lectures, 'course_id': course_id}
 
 
     return render(request, 'PeakyLearn/lecturesStudent.html', context)
