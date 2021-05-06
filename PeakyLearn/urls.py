@@ -46,4 +46,8 @@ urlpatterns = [
 
     path('review/<str:course_id>', views.review, name='review'),
 
+    path('certificateList/', views.certificateList, name='certificateList'),
+
+    path('certificate/<str:pk>', views.certificate, name='certificate'),
+
 ]

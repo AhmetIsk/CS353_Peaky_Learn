@@ -282,6 +282,35 @@ def ownedCourses(request):
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
 @allowed_users(allowed_roles=['student'])
+def certificateList(request):
+    # like owned courses, we can write a finished courses method and push it to context as done in ownedCourses - AHMET
+    uname = request.session['username']
+    owned_courses = get_owned_courses(request.session['uid'])
+    context = {'username': uname, 'owned_courses': owned_courses }
+    return render(request, 'PeakyLearn/certificateList.html', context)
+
+@allowed_users(allowed_roles=['student'])
+def certificate(request, pk):
+    # ayni sekilde course querysi yerine finished course olusturulabilir yahut finish gibi bir attribute eklenebilir
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [pk]
+    print(pk)
+    query = "SELECT * FROM course WHERE course_id = ?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in courseDetails', status=404)
+
+    course = cursor.fetchone()
+    print(course)
+    connection.close()
+    uname = request.session['username']
+    regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
+    context = {'username': uname,'course': course, 'fname': fname, 'lname': lname, 'regDate': regDate}
+    return render(request, 'PeakyLearn/certificate.html', context)
+
+@allowed_users(allowed_roles=['student'])
 def studentMainPage(request):
     uname = request.session['username']
 

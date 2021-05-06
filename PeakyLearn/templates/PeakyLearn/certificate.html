@@ -1,0 +1,51 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>certificate</title>
+</head>
+<style>
+    .image {
+        background-image: url('../../../static/images/certificate.png');
+        {#background-size: cover;#}
+        height: 810px;
+        width: 1100px;
+        background-repeat: no-repeat;
+        {#justify-content: center;#}
+        {#align-items: center;#}
+        {#align-content: center;#}
+        background-position: center;
+        {#background-attachment: fixed;#}
+        {#background-size: cover;#}
+        {#background-position: center;#}
+        {#width: 60%;#}
+        {#position: absolute;#}
+    }
+    .fontStyle {
+        font-family: "Times New Roman";
+        padding-left: 200px;
+    }
+</style>
+<body>
+    <div class="row">
+    <div class="col-md-2"></div>
+        <div class="col-md-8 image">
+            <h2 style="text-align: center; color: #6d1111; padding: 15px"> Here is your {{ course.1 }} course certificate: </h2>
+            <p class="fontStyle" style="padding-top: 200px"> {{ regDate }} </p>
+            <h1 class="fontStyle">{{ fname }} {{ lname }}</h1>
+            <p class="fontStyle">has successfully completed </p>
+            <h2 class="fontStyle">{{ course.1 }} </h2>
+            <p class="fontStyle">an online non-credit course offered
+                through Peaky Learn.</p>
+            <h3  class="fontStyle" style="padding-top: 120px">Congratulations!</h3>
+            <p class="fontStyle">Peaky Learn Company 2021</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}
