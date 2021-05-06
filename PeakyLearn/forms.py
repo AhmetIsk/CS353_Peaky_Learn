@@ -1,4 +1,6 @@
 from django import forms
+from django.core.validators import MaxValueValidator
+
 
 class UserForm(forms.Form):
     email = forms.EmailField(max_length=254)
@@ -76,10 +78,12 @@ class CreateQuiz(forms.Form):
     }
 
 class AddReview(forms.Form):
-    r_content = forms.CharField(max_length=10000, label="Note")
+    r_content = forms.CharField(max_length=10000, label="Comments on this course")
+    rating = forms.IntegerField(min_value=0, max_value=5)
 
     values = {
         'r_content': r_content,
+        'rating': rating
     }
 
 

@@ -917,6 +917,22 @@ def addToWishlist(request, course_id):
     if already_wishlisted:
         return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
+    # And check if the course is already bought
+    query = "SELECT * FROM buy WHERE course_id=? AND student_id=?;"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('409! error in wishlist', status=409)
+
+    course = cursor.fetchone()
+    print(course)
+    already_bought = 1 if course else 0
+
+    if already_bought:
+        return HttpResponse(
+            "You have already bought this course. Back to Main: <a href='/studentMainPage'>Back</a>")
+
     # Add the course into wishlist
     # Create the student's own wishlist, if not created yet
     params = [uid]
@@ -1032,19 +1048,40 @@ def createQuiz(request,course_id):
         return render(request, 'PeakyLearn/createQuiz.html', context)
 
 @allowed_users(allowed_roles=['student'])
-def review(request, course_id):
+def addReview(request, course_id):
+
+    student_id = request.session['uid']
+
+    # First check if this user submitted a review before
+    query = "SELECT * FROM review WHERE s_id=? AND c_id=?;"
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('error in review!', status=409)
+
+    exists = cursor.fetchone()
+    reviewed_before = 1 if exists else 0
+
+    if reviewed_before:
+        return HttpResponse("You have reviewed this course before! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+
     if request.method == 'POST':
 
         form = AddReview(request.POST)
         if form.is_valid():
             s_id = request.session.get('uid')
             c_id = course_id
-            r_content = form.cleaned_data.get('content')
+            r_content = form.cleaned_data.get('r_content')
+            rating = form.cleaned_data.get('rating')
 
-            query = "INSERT INTO review (s_id, c_id, r_content) VALUES (?,?,?);"
+            query = "INSERT INTO review (s_id, c_id, r_content, rating) VALUES (?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params = [s_id, c_id, r_content]
+            params = [s_id, c_id, r_content, rating]
             try:
                 cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
@@ -1090,13 +1127,13 @@ def userPage(request):
         return redirect('adminMainPage')
 
 
-def get_all_reviews(uid, course_id):
-
+def get_all_reviews(course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
-    query = "SELECT r_content FROM review WHERE course_id = ? AND s_id = uid;"
+    params = [course_id]
+    query = "SELECT * FROM review WHERE c_id=?;"
     try:
-        cursor.execute(query)
+        cursor.execute(query, params)
     except sqlite3.OperationalError as e:
         print(e)
         return HttpResponse('404! error in get_all_reviews', status=404)
@@ -1106,18 +1143,18 @@ def get_all_reviews(uid, course_id):
     return reviews
 
 @allowed_users(allowed_roles=['educator', 'admin', 'student'])
-def seeReviews(request, course_id):
-    all_reviews = get_all_reviews(request.session['uid'], course_id)
+def seeCourseReviews(request, course_id):
+    all_reviews = get_all_reviews(course_id)
     print(all_reviews)
     context = {'all_reviews': all_reviews}
-    return render(request, 'PeakyLearn/seeReviews.html', context)
+    return render(request, 'PeakyLearn/courseReviews.html', context)
 
 def deleteNotes(request, course_id,note_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     # delete course
     query = "DELETE FROM note WHERE c_id = ? AND note_id=?;"
-    params = [course_id,note_id]
+    params = [course_id, note_id]
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:

@@ -202,6 +202,7 @@ def create_all():
                s_id INTEGER NOT NULL, \
                c_id INTEGER NOT NULL, \
                r_content VARCHAR(32765), \
+               rating INTEGER, \
                FOREIGN KEY(c_id) REFERENCES course(course_id), \
                FOREIGN KEY(s_id) REFERENCES student(student_id));')
 
