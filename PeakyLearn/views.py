@@ -1089,7 +1089,7 @@ def userPage(request):
     else:
         return redirect('adminMainPage')
 
-
+#
 def get_all_reviews(uid, course_id):
 
     connection = sqlite3.connect('db.sqlite3')
