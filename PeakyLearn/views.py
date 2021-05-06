@@ -1112,6 +1112,23 @@ def seeReviews(request, course_id):
     context = {'all_reviews': all_reviews}
     return render(request, 'PeakyLearn/seeReviews.html', context)
 
+def deleteNotes(request, course_id,note_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    # delete course
+    query = "DELETE FROM note WHERE c_id = ? AND note_id=?;"
+    params = [course_id,note_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteCourse', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
+
 
 
 
