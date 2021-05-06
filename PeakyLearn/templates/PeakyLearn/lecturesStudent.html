@@ -91,7 +91,9 @@ $(document).ready(function() {
 </div>
         <div style="float: right">
             <p>*to enable to take the final exam button, successfully finish all the quizzes.</p>
-            <a href="{% url 'ownedCourses'%}" class="btn btn-lg btn btn-info disabled" style="width: 300px; float: right">Take the Final Exam</a>
+            {% if qualified %}
+                <a href="{% url 'finalExamPage' course_id %}" class="btn btn-lg btn btn-info" style="width: 300px; float: right">Take the Final Exam</a>
+            {% endif %}
         </div>
     </div>
 </div>

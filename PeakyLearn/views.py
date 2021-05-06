@@ -281,12 +281,29 @@ def ownedCourses(request):
     context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
+def get_owned_certificates(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    print(uid)
+    query = "SELECT * FROM certificate WHERE certificate_id IN (SELECT cert_id FROM gain WHERE s_id=?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_owned_courses', status=404)
+
+    certificates = cursor.fetchall()
+    connection.close()
+
+    print(certificates)
+    return certificates
+
+
 @allowed_users(allowed_roles=['student'])
-def certificateList(request):
-    # like owned courses, we can write a finished courses method and push it to context as done in ownedCourses - AHMET
+def studentCertificates(request):
     uname = request.session['username']
-    owned_courses = get_owned_courses(request.session['uid'])
-    context = {'username': uname, 'owned_courses': owned_courses }
+    certificates = get_owned_certificates(request.session['uid'])
+    context = {'username': uname, 'certificates': certificates}
     return render(request, 'PeakyLearn/certificateList.html', context)
 
 @allowed_users(allowed_roles=['student'])
@@ -477,19 +494,6 @@ def shoppingCart(request):
 @allowed_users(allowed_roles=['educator'])
 def addCourse(request):
     if request.method == 'POST':
-        """
-        exec_query('CREATE TABLE IF NOT EXISTS course(\
-                   course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                   courseName VARCHAR(50) NOT NULL,\
-                   category VARCHAR(50) NOT NULL,\
-                   price VARCHAR(20) NOT NULL,\
-                   language VARCHAR(20) NOT NULL,\
-                   lec_cnt INTEGER,\
-                   certificate_id VARCHAR(50) NOT NULL,\
-                   rate INTEGER NOT NULL,\
-                   edu_id INTEGER NOT NULL,\
-                   FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
-        """
         form = AddCourseForm(request.POST)
         if form.is_valid():
             courseName = form.cleaned_data.get('courseName')
@@ -514,6 +518,22 @@ def addCourse(request):
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
             params = [course_id, request.session['uid']]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-course is not created!', status=409)
+
+            connection.commit()
+
+            # Insert the certificate of the course into db
+            params = [course_id]
+            query = "SELECT courseName FROM course WHERE course_id=?;"
+            cursor.execute(query, params)
+            cert_name = cursor.fetchone()[0] + " Certificate"
+
+            query = "INSERT INTO certificate (c_id, cert_name) VALUES (?,?);"
+            params = [course_id, cert_name]
             try:
                 cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
@@ -707,11 +727,27 @@ def student_lectures(request, course_id):
 
     course = cursor.fetchone()
     print(course)
-    connection.close()
+
 
     uname = request.session['username']
 
-    context = {'course': course,'username': uname,'lectures': lectures, 'course_id': course_id}
+    # TODO: Check if the user is qualified for the final exam. Do this after adding the quizzes.
+
+    # If the user completed this course, the student cannot enter final exam again:
+    params = [request.session['uid'], course_id]
+    query = "SELECT * FROM gain WHERE s_id=? AND cert_id IN (SELECT certificate_id FROM certificate WHERE c_id=?);"
+    cursor.execute(query, params)
+    passed = cursor.fetchone()
+    passed_course = 1 if passed else 0
+
+    qualified = True
+    if passed_course:
+        qualified = False
+
+    connection.close()
+    context = {'course': course, 'username': uname,
+               'lectures': lectures, 'course_id': course_id,
+               'qualified': qualified}
 
 
     return render(request, 'PeakyLearn/lecturesStudent.html', context)
@@ -995,54 +1031,121 @@ def addToWishlist(request, course_id):
 
     return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
 
-def quizPage(request,course_id):
+def finalExamPage(request, course_id):
     if request.method == 'POST':
         form = QuizForm(request.POST)
         if form.is_valid():
-            picked = form.cleaned_data.get('picked')
-            # do something with your results
+            picked = int(form.cleaned_data.get('picked')[0])
 
+            # Check if the answer is correct
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [course_id]
+            print(params)
+
+            # First check if the course is already wishlisted
+            query = "SELECT exam_answer FROM final_exam WHERE c_id=?;"
+            try:
+                cursor.execute(query, params)
+            except sqlite3.OperationalError as e:
+                print(e)
+                return HttpResponse('409! error in wishlist', status=409)
+
+            answer = int(cursor.fetchone()[0])
+
+            if picked == answer:  # Correct choice!
+                # Give the student certificate
+                uid = request.session['uid']
+
+                # Get certificate id
+                param = [course_id]
+                query = "SELECT certificate_id FROM certificate WHERE c_id=?"
+                cursor.execute(query, param)
+                cert_id = cursor.fetchone()[0]
+
+                # Get exam id
+                param = [course_id]
+                query = "SELECT exam_id FROM final_exam WHERE c_id=?"
+                cursor.execute(query, param)
+                exam_id = int(cursor.fetchone()[0])
+
+                params = [uid, cert_id, exam_id, True]
+                query = "INSERT INTO gain VALUES(?, ?, ?, ?);"
+                try:
+                    cursor.execute(query, params)
+                except sqlite3.OperationalError as e:
+                    print(e)
+                    return HttpResponse('409! error in wishlist', status=409)
+
+                connection.commit()
+                connection.close()
+
+                return HttpResponse("Yay! You have passed the exam and gained your certificate! Back to Main: <a href='/userPage'>Back</a>")
+            else:  # Incorrect choice!
+                return HttpResponse('Incorrect choice! You need to work more!')
     else:
         form = QuizForm()
-        context = {'form': form, 'course_id': course_id}
-        return render(request, 'PeakyLearn/quizPage.html', context)
+
+        # Get the exam contents:
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        param = [course_id]
+        query = "SELECT * FROM final_exam WHERE c_id=?"
+        cursor.execute(query, param)
+        exam = cursor.fetchone()
+
+        if not exam:
+            return HttpResponse("A final quiz has not been created for this course yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
+
+        connection.close()
+
+        exam_content = exam
+        print("EXAM CONTENT:", exam_content)
+        context = {'form': form, 'course_id': course_id, 'exam_content': exam_content}
+        return render(request, 'PeakyLearn/finalExamPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
-def createQuiz(request,course_id):
-
+def createFinalExam(request, course_id):
 
     if request.method == 'POST':
-        """
-        exec_query('CREATE TABLE IF NOT EXISTS quiz(\
-                   quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                   quiz_question VARCHAR(32765),\
-                   answer VARCHAR(32765));')
-        """
         form = CreateQuiz(request.POST)
         if form.is_valid():
 
-            quiz_question = form.cleaned_data.get('question')
+            quiz_question = form.cleaned_data.get('quiz_question')
             choiceA = form.cleaned_data.get('choiceA')
             choiceB = form.cleaned_data.get('choiceB')
             choiceC = form.cleaned_data.get('choiceC')
+            choiceD = form.cleaned_data.get('choiceD')
+            choiceE = form.cleaned_data.get('choiceE')
             answer = form.cleaned_data.get('answer')
 
-            query = "INSERT INTO quiz(quiz_question, answer) VALUES (?, ?);"
-            params = [quiz_question,answer]
+            query = "INSERT INTO final_exam(exam_question, c_id, choiceA, choiceB, choiceC, choiceD, choiceE, exam_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+            params = [quiz_question, course_id, choiceA, choiceB, choiceC, choiceD, choiceE, answer]
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
 
             try:
-                cursor.execute( query, params )
+                cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('unsuccessful-quiz is not created!', status=409)
 
             connection.commit()
             connection.close()
-            return HttpResponse("Course is Created. Back to Main: <a href='/educatorMainPage'>Back</a>")
+            return HttpResponse("Exam is Created. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
+        query = "SELECT * FROM final_exam WHERE c_id=?"
+        params = [course_id]
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        cursor.execute(query, params)
+        added = cursor.fetchone()
+        abort = 1 if added else 0
+        if abort:
+            return HttpResponse("You can only create a single final exam. Go back: <a href='/educatorMainPage'>Back</a>")
+
+
         form = CreateQuiz()
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/createQuiz.html', context)

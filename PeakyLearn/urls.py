@@ -41,14 +41,14 @@ urlpatterns = [
     path('addToWishlist/<str:course_id>', views.addToWishlist, name='addToWishlist'),
     path('buyCourse/<str:pk>', views.buyCourse, name='buyCourse'),
 
-    path('quizPage/<str:course_id>', views.quizPage, name='quizPage'),
-    path('createQuiz/<str:course_id>', views.createQuiz, name='createQuiz'),
+    path('finalExamPage/<str:course_id>', views.finalExamPage, name='finalExamPage'),
+    path('createFinalExam/<str:course_id>', views.createFinalExam, name='createFinalExam'),
 
     path('userPage/', views.userPage, name='userPage'),
 
     path('addReview/<str:course_id>', views.addReview, name='addReview'),
 
-    path('certificateList/', views.certificateList, name='certificateList'),
+    path('studentCertificates/', views.studentCertificates, name='studentCertificates'),
 
     path('certificate/<str:pk>', views.certificate, name='certificate'),
 

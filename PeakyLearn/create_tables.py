@@ -89,16 +89,26 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS quiz(\
                     quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     quiz_question VARCHAR(32765),\
+                    choice VARCHAR(32765),\
                     answer VARCHAR(32765));')
 
-    exec_query('CREATE TABLE IF NOT EXISTS exam(\
+    exec_query('CREATE TABLE IF NOT EXISTS final_exam(\
                     exam_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     exam_question VARCHAR(32765),\
-                    exam_answer VARCHAR(32765));')
+                    c_id INTEGER,\
+                    choiceA VARCHAR(32765),\
+                    choiceB VARCHAR(32765),\
+                    choiceC VARCHAR(32765),\
+                    choiceD VARCHAR(32765),\
+                    choiceE VARCHAR(32765),\
+                    exam_answer INTEGER,\
+                    FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS certificate(\
                     certificate_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    type VARCHAR(50));')
+                    c_id INTEGER, \
+                    cert_name VARCHAR(32765), \
+                    FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS refundRequest(\
                     request_id INTEGER PRIMARY KEY AUTOINCREMENT,\

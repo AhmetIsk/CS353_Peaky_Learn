@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Final Quiz</title>
+</head>
+<body>
+
+<form method="POST" action="">
+        {% csrf_token %}
+        <p>Question: {{ exam_content.1 }}</p>
+                    <p>A) {{ exam_content.3 }}</p>
+                    <p>B) {{ exam_content.4 }}</p>
+                    <p>C) {{ exam_content.5 }}</p>
+                    <p>D) {{ exam_content.6 }}</p>
+                    <p>E) {{ exam_content.7 }}</p>
+        {{ form }}
+
+        <div class="d-flex justify-content-center mt-3 login_container">
+            <input class="btn login_btn" type="submit" value="Enter">
+        </div>
+</form>
+
+
+</body>
+</html>
