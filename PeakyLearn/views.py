@@ -260,7 +260,6 @@ def get_owned_courses(uid):
     print(courses)
     return courses
 
-
 def get_all_courses():
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -882,7 +881,7 @@ def get_all_notes(uid, course_id, lecture_id):
         return HttpResponse('404! error in get_all_courses', status=404)
 
     my_notes = cursor.fetchall()
-    #print("Notes: ", my_notes)
+    print("Notes: ", my_notes)
     connection.close()
 
     return my_notes
@@ -1053,31 +1052,9 @@ def review(request, course_id):
                 return HttpResponse('unsuccessful-review is not created!', status=409)
 
             connection.commit()
-
-            review_id = cursor.lastrowid
-
-            query = "INSERT INTO add_r (s_id, review_id) VALUES (?,?);"
-            params = [s_id, review_id]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
-
-            connection.commit()
-
-            query = "INSERT INTO on_r (review_id, c_id) VALUES (?,?);"
-            params = [review_id, c_id]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
-
-            connection.commit()
             connection.close()
 
-            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/{}'>Back</a>:".format(course_id))
+            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     elif request.method == 'GET':
         form = AddReview()
@@ -1113,25 +1090,31 @@ def userPage(request):
         return redirect('adminMainPage')
 
 
-@allowed_users(allowed_roles=['student'])
-def deleteNotes(request,note_id,course_id):
+def get_all_reviews(uid, course_id):
 
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
-
-    #delete note
-    query = "DELETE FROM note WHERE note_id = ? AND c_id = ?;"
-    params = [note_id,course_id]
-    print(course_id)
-    print(note_id)
+    query = "SELECT r_content FROM review WHERE course_id = ? AND s_id = uid;"
     try:
-        cursor.execute(query,params)
+        cursor.execute(query)
     except sqlite3.OperationalError as e:
         print(e)
+        return HttpResponse('404! error in get_all_reviews', status=404)
 
-        return HttpResponse('Error in deleting note', status=404)
-
-    connection.commit()
+    reviews = cursor.fetchall()
     connection.close()
+    return reviews
 
-    return HttpResponse("Deletion Succesful. Back to Lectures: <a href='/studentMainPage/'>Back</a>")
+@allowed_users(allowed_roles=['educator', 'admin', 'student'])
+def seeReviews(request, course_id):
+    all_reviews = get_all_reviews(request.session['uid'], course_id)
+    print(all_reviews)
+    context = {'all_reviews': all_reviews}
+    return render(request, 'PeakyLearn/seeReviews.html', context)
+
+
+
+
+
+
+
