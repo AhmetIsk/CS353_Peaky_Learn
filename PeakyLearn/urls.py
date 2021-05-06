@@ -50,4 +50,6 @@ urlpatterns = [
 
     path('certificate/<str:pk>', views.certificate, name='certificate'),
 
+    path('seeReviews/<str:course_id>', views.seeReviews, name='seeReviews'),
+
 ]

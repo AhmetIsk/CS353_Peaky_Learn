@@ -1052,31 +1052,9 @@ def review(request, course_id):
                 return HttpResponse('unsuccessful-review is not created!', status=409)
 
             connection.commit()
-
-            review_id = cursor.lastrowid
-
-            query = "INSERT INTO add_r (s_id, review_id) VALUES (?,?);"
-            params = [s_id, review_id]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
-
-            connection.commit()
-
-            query = "INSERT INTO on_r (review_id, c_id) VALUES (?,?);"
-            params = [review_id, c_id]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
-
-            connection.commit()
             connection.close()
 
-            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/{}'>Back</a>:".format(course_id))
+            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     elif request.method == 'GET':
         form = AddReview()
@@ -1110,5 +1088,33 @@ def userPage(request):
         return redirect('educatorMainPage')
     else:
         return redirect('adminMainPage')
+
+
+def get_all_reviews(uid, course_id):
+
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT r_content FROM review WHERE course_id = ? AND s_id = uid;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('404! error in get_all_reviews', status=404)
+
+    reviews = cursor.fetchall()
+    connection.close()
+    return reviews
+
+@allowed_users(allowed_roles=['educator', 'admin', 'student'])
+def seeReviews(request, course_id):
+    all_reviews = get_all_reviews(request.session['uid'], course_id)
+    print(all_reviews)
+    context = {'all_reviews': all_reviews}
+    return render(request, 'PeakyLearn/seeReviews.html', context)
+
+
+
+
+
 
 
