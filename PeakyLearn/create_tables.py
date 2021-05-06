@@ -70,6 +70,7 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS note(\
                     note_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     s_id INTEGER,\
+                    lecture_id INTEGER,\
                     c_id INTEGER,\
                     content VARCHAR(32765),\
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\

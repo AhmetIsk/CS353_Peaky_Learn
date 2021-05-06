@@ -260,6 +260,7 @@ def get_owned_courses(uid):
     print(courses)
     return courses
 
+
 def get_all_courses():
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -881,7 +882,7 @@ def get_all_notes(uid, course_id, lecture_id):
         return HttpResponse('404! error in get_all_courses', status=404)
 
     my_notes = cursor.fetchall()
-    print("Notes: ", my_notes)
+    #print("Notes: ", my_notes)
     connection.close()
 
     return my_notes
@@ -1112,3 +1113,25 @@ def userPage(request):
         return redirect('adminMainPage')
 
 
+@allowed_users(allowed_roles=['student'])
+def deleteNotes(request,note_id,course_id):
+
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    #delete note
+    query = "DELETE FROM note WHERE note_id = ? AND c_id = ?;"
+    params = [note_id,course_id]
+    print(course_id)
+    print(note_id)
+    try:
+        cursor.execute(query,params)
+    except sqlite3.OperationalError as e:
+        print(e)
+
+        return HttpResponse('Error in deleting note', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Deletion Succesful. Back to Lectures: <a href='/studentMainPage/'>Back</a>")

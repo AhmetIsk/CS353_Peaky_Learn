@@ -14,6 +14,7 @@
         <tr>
 
             <td>{{ notes.3 }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteNotes' notes.0 notes.2  %}">Delete Note</a></td>
         </tr>
     {% endfor %}
     </tbody>
