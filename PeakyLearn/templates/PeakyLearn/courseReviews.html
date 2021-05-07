@@ -5,7 +5,9 @@
     <thead>
     <tr>
 
-        <th>content</th>
+        {% if avg_rating != 0 %}
+            <h2>AVG Rating: {{ avg_rating }}</h2>
+        {% endif %}
 
     </tr>
     </thead>

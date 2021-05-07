@@ -1249,7 +1249,15 @@ def get_all_reviews(course_id):
 def seeCourseReviews(request, course_id):
     all_reviews = get_all_reviews(course_id)
     print(all_reviews)
-    context = {'all_reviews': all_reviews}
+    avg = 0
+    if len(all_reviews) > 0:
+
+        for review in all_reviews:
+            avg += review[3]
+
+        avg /= len(all_reviews)
+
+    context = {'all_reviews': all_reviews, 'avg_rating': avg}
     return render(request, 'PeakyLearn/courseReviews.html', context)
 
 def deleteNotes(request, note_id):
@@ -1269,10 +1277,4 @@ def deleteNotes(request, note_id):
     connection.close()
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
-
-
-
-
-
-
 

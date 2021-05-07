@@ -216,6 +216,13 @@ def create_all():
                FOREIGN KEY(c_id) REFERENCES course(course_id), \
                FOREIGN KEY(s_id) REFERENCES student(student_id));')
 
+    exec_query('CREATE TRIGGER IF NOT EXISTS del_from_wishlist \
+                AFTER INSERT \
+                ON buy \
+                BEGIN \
+                DELETE FROM include WHERE c_id=NEW.course_id AND list_id=(SELECT list_id from wishlist WHERE s_id=NEW.student_id); \
+            END;')
+
 
 
 
