@@ -54,5 +54,6 @@ urlpatterns = [
     path('seeCourseReviews/<str:course_id>', views.seeCourseReviews, name='seeCourseReviews'),
     path('seeFinalExam/<str:course_id>', views.seeFinalExam, name='seeFinalExam'),
     path('addFinalQuestion/<str:course_id>', views.addFinalQuestion, name='addFinalQuestion'),
+    path('deleteFinalQuestion/<str:course_id>/', views.deleteFinalQuestion, name='deleteFinalQuestion'),
 
 ]

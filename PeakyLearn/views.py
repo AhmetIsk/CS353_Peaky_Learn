@@ -1339,9 +1339,23 @@ def deleteNotes(request, note_id):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
 
+@allowed_users(allowed_roles=['educator'])
+def deleteFinalQuestion(request, course_id):
 
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
 
+    # delete question
 
+    query = "DELETE FROM final_exam WHERE c_id=?;"
+    params = [course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteCourse', status=404)
 
+    connection.commit()
+    connection.close()
 
-#def createComplaint(request, course_id):
+    return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
