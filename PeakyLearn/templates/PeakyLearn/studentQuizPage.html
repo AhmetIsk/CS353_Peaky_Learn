@@ -1,0 +1,49 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+
+    {% load listtag %}
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+
+    <div style="justify-content: center">
+        <div class="card card-body">
+            <h2 style="text-align: center"><span style="padding-right: 20px"><img src="../../../static/images/mascot.png" ></span>
+                <strong> {{ username }}Good luck Peaky! </strong>
+                <span style="padding-left: 20px"><img src="../../../static/images/heart.png" style="width: 40px"></span></h2>
+        </div>
+    </div>
+
+    <body>
+
+    <div class = "jumbotron text-center" >
+        <form method="POST" action="">
+            {% csrf_token %}
+            <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <tbody>
+                {% for q in qs %}
+                    <tr>
+                    <td>
+                        <p id="q{{ forloop.counter0 }}">Question {{ forloop.counter }}: {{ q.1 }}</p>
+                        <p id="a{{ forloop.counter0 }}">A) {{ q.3 }}</p>
+                        <p id="b{{ forloop.counter0 }}">B) {{ q.4 }}</p>
+                        <p id="c{{ forloop.counter0 }}">C) {{ q.5 }}</p>
+                        <p id="d{{ forloop.counter0 }}">D) {{ q.6 }}</p>
+                        <p id="e{{ forloop.counter0 }}">E) {{ q.7 }}</p>
+                        <p id="{{ forloop.counter0 }}">{{ forms|return_item:forloop.counter0 }}</p>
+                    <td>
+                {% endfor %}
+                <input type="submit" value="Submit">
+                </tbody>
+            </table>
+        </form>
+    </div>
+    </body>
+    </html>
+
+{% endblock %}

@@ -86,11 +86,34 @@ def create_all():
                     question_id INTEGER,\
                     q_content VARCHAR(32765));')
 
+
     exec_query('CREATE TABLE IF NOT EXISTS quiz(\
-                    quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    quiz_question VARCHAR(32765),\
-                    choice VARCHAR(32765),\
-                    answer VARCHAR(32765));')
+                        quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                        lec_id INTEGER, \
+                        FOREIGN KEY (lec_id) REFERENCES lecture(lecture_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS quiz_has(\
+                        quiz_id INTEGER,\
+                        question_id INTEGER,\
+                        FOREIGN KEY (quiz_id) REFERENCES quiz(quiz_id), \
+                        FOREIGN KEY (question_id) REFERENCES quiz_question(question_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS quiz_question(\
+                            question_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                            exam_question VARCHAR(32765),\
+                            lec_id INTEGER,\
+                            choiceA VARCHAR(32765),\
+                            choiceB VARCHAR(32765),\
+                            choiceC VARCHAR(32765),\
+                            choiceD VARCHAR(32765),\
+                            choiceE VARCHAR(32765),\
+                            exam_answer INTEGER,\
+                            FOREIGN KEY (lec_id) REFERENCES lecture(lecture_id));')
+
+
+
+
+
 
     exec_query('CREATE TABLE IF NOT EXISTS final_exam(\
                     exam_id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -240,6 +263,13 @@ def create_all():
                     BEGIN \
                     INSERT INTO final_exam (c_id) VALUES(NEW.course_id); \
                 END;')
+
+    exec_query('CREATE TRIGGER IF NOT EXISTS add_quiz \
+                        AFTER INSERT \
+                        ON lecture \
+                        BEGIN \
+                        INSERT INTO quiz (lec_id) VALUES(NEW.lecture_id); \
+                    END;')
 
 
 

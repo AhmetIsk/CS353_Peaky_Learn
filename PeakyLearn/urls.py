@@ -57,4 +57,9 @@ urlpatterns = [
     path('deleteFinalQuestion/<str:course_id>/', views.deleteFinalQuestion, name='deleteFinalQuestion'),
     path('updateFinalQuestion/<str:course_id>/', views.updateFinalQuestion, name='updateFinalQuestion'),
 
+    path('add_quiz_question/<str:lec_id>/', views.add_quiz_question, name='add_quiz_question'),
+
+    path('eduSeeQuiz/<str:lec_id>/', views.eduSeeQuiz, name='eduSeeQuiz'),
+    path('quizPage/<str:lec_id>', views.quizPage, name='quizPage'),
+
 ]

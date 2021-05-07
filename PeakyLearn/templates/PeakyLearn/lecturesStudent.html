@@ -68,7 +68,7 @@
                     <td>{{ lecture.3 }}</td>
                     <td><a class="btn btn-sm btn-info" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a></td>
                     <td><a class="btn btn-sm btn-success" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a></td>
-                    <td><a class="btn btn-sm btn-danger" href="{% url 'studentProfile' %}">Go to Quiz</a></td>
+                    <td><a class="btn btn-sm btn-danger" href="{% url 'quizPage' lecture.0 %}">Go to Quiz</a></td>
               </tr>
           {% endfor %}
       </tbody>

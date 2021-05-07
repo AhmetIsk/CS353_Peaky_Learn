@@ -589,7 +589,7 @@ def addLecture(request, course_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorMainPage'>Back</a>")
+            return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorLectures/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
         form = LectureForm()
@@ -733,8 +733,6 @@ def student_lectures(request, course_id):
 
     uname = request.session['username']
 
-    # TODO: Check if the user is qualified for the final exam. Do this after adding the quizzes.
-
     # If the user completed this course, the student cannot enter final exam again:
     params = [request.session['uid'], course_id]
     query = "SELECT * FROM gain WHERE s_id=? AND cert_id IN (SELECT certificate_id FROM certificate WHERE c_id=?);"
@@ -742,8 +740,23 @@ def student_lectures(request, course_id):
     passed = cursor.fetchone()
     passed_course = 1 if passed else 0
 
+    # Student should pass all lectures before entering the final exam
+    # Get amount of lectures
+    query = "SELECT COUNT(*) FROM contain WHERE course_id=?;"
+    param = [course_id]
+    cursor.execute(query, param)
+    lec_amt = cursor.fetchone()[0]
+
+    # Get amount of PASSED lectures
+    query = "SELECT COUNT(*) FROM pass_t WHERE lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
+    param = [course_id]
+    cursor.execute(query, param)
+    pass_amt = cursor.fetchone()[0]
+
+    print("PASS AMT: ", pass_amt, "LEC AMT", lec_amt)
+
     qualified = True
-    if passed_course:
+    if passed_course or (pass_amt < lec_amt):
         qualified = False
 
     connection.close()
@@ -1037,9 +1050,6 @@ def addToWishlist(request, course_id):
 @allowed_users(allowed_roles=['student'])
 def finalExamPage(request, course_id):
     if request.method == 'POST':
-
-#            picked = int(form.cleaned_data.get('picked')[0])
-
         # Check if the answer is correct
         connection = sqlite3.connect('db.sqlite3')
         cursor = connection.cursor()
@@ -1402,3 +1412,182 @@ def updateFinalQuestion(request, course_id):
         form = AddFinalQuestion()
         context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/updateFinalQuestion.html', context)
+
+
+# Add a quiz to a lecture
+@allowed_users(allowed_roles=['educator'])
+def add_quiz_question(request, lec_id):
+    if request.method == 'POST':
+        form = AddFinalQuestion(request.POST)
+        if form.is_valid():
+
+            quiz_question = form.cleaned_data.get('quiz_question')
+            choiceA = form.cleaned_data.get('choiceA')
+            choiceB = form.cleaned_data.get('choiceB')
+            choiceC = form.cleaned_data.get('choiceC')
+            choiceD = form.cleaned_data.get('choiceD')
+            choiceE = form.cleaned_data.get('choiceE')
+            answer = form.cleaned_data.get('answer')
+
+            query = "INSERT INTO quiz_question(exam_question, lec_id, choiceA, choiceB, choiceC, choiceD, choiceE, exam_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+            params = [quiz_question, lec_id, choiceA, choiceB, choiceC, choiceD, choiceE, answer]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-quiz is not created!', status=409)
+
+            connection.commit()
+            q_id = cursor.lastrowid
+
+            # Get the exam id
+            param = [lec_id]
+            query = "SELECT quiz_id FROM quiz WHERE lec_id=?"
+            cursor.execute(query, param)
+            exam_id = cursor.fetchone()[0]
+
+            # Insert into has_question
+            query = "INSERT INTO quiz_has(quiz_id, question_id) VALUES (?, ?);"
+            params = [exam_id, q_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-quiz is not created!', status=409)
+
+            connection.commit()
+            connection.close()
+            return HttpResponse("New quiz question is added. Back to Quiz Page: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+
+    elif request.method == 'GET':
+        form = AddFinalQuestion()
+        context = {'form': form, 'lec_id': lec_id}
+        return render(request, 'PeakyLearn/addQuestion.html', context)
+
+# ONLY FOR EDUCATOR:
+@allowed_users(allowed_roles=['educator'])
+def eduSeeQuiz(request, lec_id):
+    # Return all final exam questions
+    query = "SELECT * FROM quiz_question WHERE question_id IN " \
+            "(SELECT question_id FROM quiz_has WHERE" \
+            " quiz_id=(SELECT quiz_id FROM quiz WHERE lec_id=?));"
+    params = [lec_id]
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('err in seefinalexam!', status=409)
+
+    questions = cursor.fetchall()
+    context = {'qs': questions, 'lec_id': lec_id}
+    return render(request, 'PeakyLearn/eduQuiz.html', context)
+
+
+
+
+# Quiz page for student:
+@allowed_users(allowed_roles=['student'])
+def quizPage(request, lec_id):
+    if request.method == 'POST':
+
+        # Check if the answer is correct
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [lec_id]
+
+        query = "SELECT COUNT(*) FROM quiz_has WHERE quiz_id IN (SELECT quiz_id FROM quiz WHERE lec_id=?);"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('409! error in wishlist', status=409)
+
+        q_amt = cursor.fetchone()[0]
+        print("Q_amt: ", q_amt)
+
+        # Get answers of all questions:
+        query = "SELECT exam_answer FROM quiz_question WHERE question_id IN " \
+            "(SELECT question_id FROM quiz_has WHERE" \
+            " quiz_id=(SELECT quiz_id FROM quiz WHERE lec_id=?));"
+
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('409! error in wishlist', status=409)
+
+        answers = cursor.fetchall()
+
+        print("POST: ", request.POST)
+        for i, corr_answer in enumerate(answers):
+            print("correct answer: ", corr_answer[0])
+            form_name = 'form-' + str(i) + '-picked'
+            answer = request.POST[form_name]
+
+            if int(answer) == corr_answer[0]:
+                print("answer ", answer, " is correct")
+            else:
+                return HttpResponse("You have failed. Back to Main: <a href='/userPage'>Back</a>")
+
+        # SUCCESS!
+        # Student passes to quiz: Insert into pass
+        query = "SELECT quiz_id FROM quiz WHERE lec_id=?;"
+        param = lec_id
+        cursor.execute(query, param)
+        quiz_id = cursor.fetchone()[0]
+        uid = request.session['uid']
+
+        query = "INSERT INTO pass_t (s_id, lec_id, quiz_id, success) VALUES (?,?,?,?);"
+        params = [uid, lec_id, quiz_id, 1]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('409! error in wishlist', status=409)
+
+        connection.commit()
+        connection.close()
+
+        return HttpResponse(
+            "Yay! You have passed the quiz and passed this lecture! Back to Main: <a href='/userPage'>Back</a>")
+    else:
+        # Get the exam contents:
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+
+        # Check if student has already passed this quiz
+        query = "SELECT * FROM pass_t WHERE lec_id=? AND s_id=?;"
+        param = [lec_id, request.session['uid']]
+        cursor.execute(query, param)
+        p = cursor.fetchone()
+        ap = 1 if p else 0
+        if ap:
+            return HttpResponse("You have passed this quiz before.<a href='/userPage'>Back</a>")
+
+        # Select all Questions:
+        # Return all final exam questions
+        query = "SELECT * FROM quiz_question WHERE question_id IN " \
+                "(SELECT question_id FROM quiz_has WHERE" \
+                " quiz_id=(SELECT quiz_id FROM quiz WHERE lec_id=?));"
+        param = [lec_id]
+        cursor.execute(query, param)
+        exam = cursor.fetchall()
+        print("exam: ", exam)
+
+        if len(exam) == 0:
+            return HttpResponse("A quiz has not been created for this lecture yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
+
+
+        connection.close()
+
+        formset = formset_factory(QuizForm, extra=len(exam))  # Create 8 forms.
+        formset = formset()
+
+        context = {'lec_id': lec_id, 'qs': exam, 'forms': formset}
+        return render(request, 'PeakyLearn/studentQuizPage.html', context)
