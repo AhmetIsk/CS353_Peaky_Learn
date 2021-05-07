@@ -32,7 +32,7 @@
                 <div class="row">
                     <div class="col-md-6" style="padding-bottom: 60px">
                         <div class="card">
-                            <div class="card-body text-center"> <span class="myratings">4.5</span>
+                            <div class="card-body text-center"> <span class="myratings">0</span>
                                 <h4 class="mt-1">Rate Course</h4>
                                 <fieldset class="rating"> <input type="radio" id="star5" name="rating" value="5" />
                                     <label class="full" for="star5" title="Awesome - 5 stars"></label> <input type="radio" id="star4half" name="rating" value="4.5" />
@@ -54,8 +54,8 @@
             <div class="input-group-text"  >
                 <input type="text" name="r_content" placeholder="Enter your comment..." class="form-control">
             </div>
-            <div class="input-group mb-2" hidden>
-                <input type="number" name="rating" placeholder="Rating..." class="myratings" >
+            <div class="input-group mb-2" >
+                <input type="number" name="rating" placeholder="Rating..." class="myratings" id="myText" value=""  hidden>
             </div>
             <div class="d-flex justify-content-center mt-3 login_container">
                 <input class="btn login_btn btn-outline-danger" type="submit" value="Submit Review">
@@ -75,7 +75,10 @@
         $("input[type='radio']").click(function(){
             var sim = $("input[type='radio']:checked").val();
 //alert(sim);
-            if (sim<3) { $('.myratings').css('color','red'); $(".myratings").text(sim); }else{ $('.myratings').css('color','green'); $(".myratings").text(sim); } }); });
+            if (sim<3) { $('.myratings').css('color','red'); $(".myratings").text(sim); }else{ $('.myratings').css('color','green'); $(".myratings").text(sim); }
+            document.getElementById("myText").value = sim;
+        });
+        });
 
     //Query All input fields
     var form_fields = document.getElementsByTagName('input')

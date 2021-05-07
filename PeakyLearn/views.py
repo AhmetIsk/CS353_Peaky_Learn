@@ -1276,7 +1276,9 @@ def addReview(request, course_id):
         course_name = cursor.fetchone()[0]
         connection.close()
 
-        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        uname = request.session['username']
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
         return render(request, 'PeakyLearn/review.html', context)
 
 # Redirect into user's page based on user type
@@ -1316,6 +1318,7 @@ def seeCourseReviews(request, course_id):
     if len(all_reviews) > 0:
 
         for review in all_reviews:
+            print(review[3])
             avg += review[3]
 
         avg /= len(all_reviews)
