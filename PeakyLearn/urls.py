@@ -42,7 +42,6 @@ urlpatterns = [
     path('buyCourse/<str:pk>', views.buyCourse, name='buyCourse'),
 
     path('finalExamPage/<str:course_id>', views.finalExamPage, name='finalExamPage'),
-    path('createFinalExam/<str:course_id>', views.createFinalExam, name='createFinalExam'),
 
     path('userPage/', views.userPage, name='userPage'),
 
@@ -53,5 +52,7 @@ urlpatterns = [
     path('certificate/<str:pk>', views.certificate, name='certificate'),
 
     path('seeCourseReviews/<str:course_id>', views.seeCourseReviews, name='seeCourseReviews'),
+    path('seeFinalExam/<str:course_id>', views.seeFinalExam, name='seeFinalExam'),
+    path('addFinalQuestion/<str:course_id>', views.addFinalQuestion, name='addFinalQuestion'),
 
 ]

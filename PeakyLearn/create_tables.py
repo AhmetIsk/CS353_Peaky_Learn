@@ -94,15 +94,26 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS final_exam(\
                     exam_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    exam_question VARCHAR(32765),\
                     c_id INTEGER,\
-                    choiceA VARCHAR(32765),\
-                    choiceB VARCHAR(32765),\
-                    choiceC VARCHAR(32765),\
-                    choiceD VARCHAR(32765),\
-                    choiceE VARCHAR(32765),\
-                    exam_answer INTEGER,\
                     FOREIGN KEY (c_id) REFERENCES course(course_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS has_question(\
+                    exam_id INTEGER,\
+                    question_id INTEGER,\
+                    FOREIGN KEY (exam_id) REFERENCES final_exam(exam_id), \
+                    FOREIGN KEY (question_id) REFERENCES final_question(question_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS final_question(\
+                        question_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                        exam_question VARCHAR(32765),\
+                        c_id INTEGER,\
+                        choiceA VARCHAR(32765),\
+                        choiceB VARCHAR(32765),\
+                        choiceC VARCHAR(32765),\
+                        choiceD VARCHAR(32765),\
+                        choiceE VARCHAR(32765),\
+                        exam_answer INTEGER,\
+                        FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS certificate(\
                     certificate_id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -222,6 +233,13 @@ def create_all():
                 BEGIN \
                 DELETE FROM include WHERE c_id=NEW.course_id AND list_id=(SELECT list_id from wishlist WHERE s_id=NEW.student_id); \
             END;')
+
+    exec_query('CREATE TRIGGER IF NOT EXISTS add_final_exam \
+                    AFTER INSERT \
+                    ON course \
+                    BEGIN \
+                    INSERT INTO final_exam (c_id) VALUES(NEW.course_id); \
+                END;')
 
 
 

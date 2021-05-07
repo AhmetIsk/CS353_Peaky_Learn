@@ -62,7 +62,7 @@ class AddNote(forms.Form):
         'content': content,
     }
 
-class CreateQuiz(forms.Form):
+class AddFinalQuestion(forms.Form):
     quiz_question = forms.CharField(max_length= 1000, label = "Your Question:")
     choiceA = forms.CharField(max_length = 1000, label = "A:")
     choiceB = forms.CharField(max_length = 1000, label = "B:")
@@ -92,12 +92,13 @@ class AddReview(forms.Form):
 
 
 class QuizForm(forms.Form):
+    __name__ = "quizform"
     #choice = forms.IntegerField(min_value=1, max_value=5, label="Find the correct answer (1='A', 2='B', 3='C', 4='D', 5='E'):")
     CHOICES = ((1, 'a'),
                (2, 'b'),
                (3, 'c'),
                (4, 'd'),
                (5, 'e'))
-    picked = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple())
+    picked = forms.ChoiceField(choices=CHOICES)
 
 
