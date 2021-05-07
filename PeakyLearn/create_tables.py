@@ -17,6 +17,7 @@ def exec_query(sql_query):
     conn = create_connection()
     try:
         c = conn.cursor()
+        c.execute("PRAGMA foreign_keys=1")
         c.execute(sql_query)
         conn.commit()
         conn.close()
@@ -24,7 +25,6 @@ def exec_query(sql_query):
         print(e)
 
 def create_all():
-    exec_query("PRAGMA foreign_keys=1")
     exec_query('CREATE TABLE IF NOT EXISTS user(\
                     user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     username VARCHAR(50) UNIQUE NOT NULL,\
@@ -37,7 +37,7 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS admin(\
                     admin_id INTEGER PRIMARY KEY,\
-                    FOREIGN KEY (admin_id) REFERENCES user(user_id));')
+                    FOREIGN KEY (admin_id) REFERENCES user(user_id) ON DELETE CASCADE);')
 
     exec_query('CREATE TABLE IF NOT EXISTS educator(\
                     educator_id INTEGER PRIMARY KEY,\

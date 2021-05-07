@@ -1278,3 +1278,4 @@ def deleteNotes(request, note_id):
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
 
+#def createComplaint(request, course_id):
