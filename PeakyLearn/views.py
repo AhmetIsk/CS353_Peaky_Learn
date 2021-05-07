@@ -1232,28 +1232,32 @@ def addReview(request, course_id):
         return HttpResponse("You have reviewed this course before! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
+        create_all()
 
-        form = AddReview(request.POST)
-        if form.is_valid():
-            s_id = request.session.get('uid')
-            c_id = course_id
-            r_content = form.cleaned_data.get('r_content')
-            rating = form.cleaned_data.get('rating')
+        r_content = request.POST.get('r_content')
+        rating = request.POST.get('rating')
 
-            query = "INSERT INTO review (s_id, c_id, r_content, rating) VALUES (?,?,?,?);"
-            connection = sqlite3.connect('db.sqlite3')
-            cursor = connection.cursor()
-            params = [s_id, c_id, r_content, rating]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
+        # form = AddReview(request.POST)
+        # if form.is_valid():
+        s_id = request.session.get('uid')
+        c_id = course_id
+        #     r_content = form.cleaned_data.get('r_content')
+        #     rating = form.cleaned_data.get('rating')
 
-            connection.commit()
-            connection.close()
+        query = "INSERT INTO review (s_id, c_id, r_content, rating) VALUES (?,?,?,?);"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [s_id, c_id, r_content, rating]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('unsuccessful-review is not created!', status=409)
 
-            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+        connection.commit()
+        connection.close()
+        return redirect('ownedCourses')
+        # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     elif request.method == 'GET':
         form = AddReview()
