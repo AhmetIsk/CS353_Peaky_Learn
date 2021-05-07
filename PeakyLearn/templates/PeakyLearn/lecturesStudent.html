@@ -15,7 +15,6 @@
 
 </head>
 <body>
-<br>
 <div class="modal-body row">
     <div class="col-md-4">
         <div style="align-items: center; background-color: #f6e4e4" class="card card-body">
@@ -23,6 +22,7 @@
                 <img src="../../../static/images/courseImage.jpg" alt="course image" width="450" height="230" >
                 <h1 style="padding-top: 20px; padding-bottom: 20px; text-align: center; color: #060666"><strong>{{ course.1 }}</strong></h1>
                 <h2 style="text-align: center"> Course Rate: <div class="star-ratings-css" title="{{ course.7 }}" style="display: inline"></div> </h2>
+                <h3 style="text-align: center;">Total Lectures: {{ lectures|length }}</h3>
             </div>
         </div>
         <div style="align-items: center; background-color: #f6e4e4" class="card card-body">
@@ -53,8 +53,9 @@
             <th>Lecture Name</th>
             <th>Prereq</th>
             <th>Lecture URL</th>
-
-
+            <th></th>
+            <th></th>
+            <th></th>
         </tr>
       </thead>
       <tbody>
@@ -91,7 +92,9 @@ $(document).ready(function() {
 </div>
         <div style="float: right">
             <p>*to enable to take the final exam button, successfully finish all the quizzes.</p>
-            <a href="{% url 'ownedCourses'%}" class="btn btn-lg btn btn-info disabled" style="width: 300px; float: right">Take the Final Exam</a>
+            {% if qualified %}
+                <a href="{% url 'finalExamPage' course_id %}" class="btn btn-lg btn btn-info" style="width: 300px; float: right">Take the Final Exam</a>
+            {% endif %}
         </div>
     </div>
 </div>

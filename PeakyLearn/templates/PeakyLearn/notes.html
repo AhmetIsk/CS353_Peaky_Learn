@@ -13,7 +13,8 @@
     {% for notes in all_notes %}
         <tr>
 
-            <td>{{ notes.3 }}</td>
+            <td>{{ notes.4 }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteNotes' notes.0 %}">Delete Note</a></td>
         </tr>
     {% endfor %}
     </tbody>

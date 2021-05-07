@@ -39,6 +39,7 @@
             <th>Rate</th>
             <th>Educator ID</th>
             <th></th>
+            <th></th>
 
 
         </tr>
@@ -57,24 +58,10 @@
                     <td>{{ course.7 }}</td>
                     <td>{{ course.8 }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'studentLectures' course.0 %}">See Lectures</a></td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'review' course.0 %}">Add Review</a></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'addReview' course.0 %}">Add Review</a></td>
               </tr>
           {% endfor %}
       </tbody>
-      <tfoot>
-
-             <th>Course ID</th>
-            <th>Course Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Language</th>
-            <th>Lecture Count</th>
-            <th>Certificate ID</th>
-            <th>Rate</th>
-            <th>Educator ID</th>
-      <th></th>
-
-      </tfoot>
     </table>
 
 <script>

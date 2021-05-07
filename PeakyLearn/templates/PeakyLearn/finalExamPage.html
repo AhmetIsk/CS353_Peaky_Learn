@@ -1,0 +1,32 @@
+{% load listtag %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Final Quiz</title>
+</head>
+<body>
+
+<form method="POST" action="">
+        {% csrf_token %}
+
+          {% for q in qs %}
+              <tr>
+                    <p id="q{{ forloop.counter0 }}">Question {{ q.1 }}</p>
+                    <p id="a{{ forloop.counter0 }}">A) {{ q.3 }}</p>
+                    <p id="b{{ forloop.counter0 }}">B) {{ q.4 }}</p>
+                    <p id="c{{ forloop.counter0 }}">C) {{ q.5 }}</p>
+                    <p id="d{{ forloop.counter0 }}">D) {{ q.6 }}</p>
+                    <p id="e{{ forloop.counter0 }}">E) {{ q.7 }}</p>
+                    <p id="{{ forloop.counter0 }}">{{ forms|return_item:forloop.counter0 }}</p>
+          {% endfor %}
+        <input type="submit" value="Submit">
+
+</form>
+
+
+
+
+</body>
+</html>

@@ -32,24 +32,28 @@ urlpatterns = [
     path('shoppingCart/', views.shoppingCart, name='shoppingCart'),
     path('addLecture/<str:course_id>', views.addLecture, name='addLecture'),
     path('deleteCourse/<str:course_id>', views.deleteCourse, name='deleteCourse'),
+
     path('updateCourse/<str:course_id>', views.updateCourse, name='updateCourse'),
     path('notes/<str:course_id>/<str:lecture_id>/', views.notes, name='notes'),
     path('takeNote/<str:course_id>/<str:lecture_id>/', views.takeNote, name='takeNote'),
+    path('deleteNotes/<str:note_id>/', views.deleteNotes, name='deleteNotes'),
 
     path('addToWishlist/<str:course_id>', views.addToWishlist, name='addToWishlist'),
     path('buyCourse/<str:pk>', views.buyCourse, name='buyCourse'),
 
-    path('quizPage/<str:course_id>', views.quizPage, name='quizPage'),
-    path('createQuiz/<str:course_id>', views.createQuiz, name='createQuiz'),
+    path('finalExamPage/<str:course_id>', views.finalExamPage, name='finalExamPage'),
 
     path('userPage/', views.userPage, name='userPage'),
 
-    path('review/<str:course_id>', views.review, name='review'),
+    path('addReview/<str:course_id>', views.addReview, name='addReview'),
 
-    path('certificateList/', views.certificateList, name='certificateList'),
+    path('studentCertificates/', views.studentCertificates, name='studentCertificates'),
 
     path('certificate/<str:pk>', views.certificate, name='certificate'),
 
-    path('seeReviews/<str:course_id>', views.seeReviews, name='seeReviews'),
+    path('seeCourseReviews/<str:course_id>', views.seeCourseReviews, name='seeCourseReviews'),
+    path('seeFinalExam/<str:course_id>', views.seeFinalExam, name='seeFinalExam'),
+    path('addFinalQuestion/<str:course_id>', views.addFinalQuestion, name='addFinalQuestion'),
+    path('deleteFinalQuestion/<str:course_id>/', views.deleteFinalQuestion, name='deleteFinalQuestion'),
 
 ]

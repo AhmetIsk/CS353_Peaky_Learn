@@ -17,21 +17,15 @@
         <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
             <tr>
-                <th>Course ID</th>
-                <th>Course Name</th>
-                <th>Price</th>
-                <th>Rate</th>
-                <th>Certificate</th>
+                <th>Certificate Name</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
-            {% for course in owned_courses %}
+            {% for certificate in certificates %}
                 <tr>
-                    <td>{{ course.0 }}</td>
-                    <td>{{ course.1 }}</td>
-                    <td>{{ course.3 }}</td>
-                    <td>{{ course.7 }}</td>
-                    <td><a class="btn btn-sm btn-warning" style="width: 100%;" href="{% url 'certificate' course.0 %}">Show Certificate</a></td>
+                    <td>{{ certificate.2 }}</td>
+                    <td><a class="btn btn-sm btn-warning" style="width: 100%;" href="{% url 'certificate' certificate.1 %}">Show Certificate</a></td>
                 </tr>
             {% endfor %}
             </tbody>

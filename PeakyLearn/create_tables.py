@@ -17,6 +17,7 @@ def exec_query(sql_query):
     conn = create_connection()
     try:
         c = conn.cursor()
+        c.execute("PRAGMA foreign_keys=1")
         c.execute(sql_query)
         conn.commit()
         conn.close()
@@ -24,7 +25,6 @@ def exec_query(sql_query):
         print(e)
 
 def create_all():
-    exec_query("PRAGMA foreign_keys=1")
     exec_query('CREATE TABLE IF NOT EXISTS user(\
                     user_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     username VARCHAR(50) UNIQUE NOT NULL,\
@@ -37,7 +37,7 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS admin(\
                     admin_id INTEGER PRIMARY KEY,\
-                    FOREIGN KEY (admin_id) REFERENCES user(user_id));')
+                    FOREIGN KEY (admin_id) REFERENCES user(user_id) ON DELETE CASCADE);')
 
     exec_query('CREATE TABLE IF NOT EXISTS educator(\
                     educator_id INTEGER PRIMARY KEY,\
@@ -70,6 +70,7 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS note(\
                     note_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     s_id INTEGER,\
+                    lecture_id INTEGER,\
                     c_id INTEGER,\
                     content VARCHAR(32765),\
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\
@@ -88,16 +89,37 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS quiz(\
                     quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     quiz_question VARCHAR(32765),\
+                    choice VARCHAR(32765),\
                     answer VARCHAR(32765));')
 
-    exec_query('CREATE TABLE IF NOT EXISTS exam(\
+    exec_query('CREATE TABLE IF NOT EXISTS final_exam(\
                     exam_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    exam_question VARCHAR(32765),\
-                    exam_answer VARCHAR(32765));')
+                    c_id INTEGER,\
+                    FOREIGN KEY (c_id) REFERENCES course(course_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS has_question(\
+                    exam_id INTEGER,\
+                    question_id INTEGER,\
+                    FOREIGN KEY (exam_id) REFERENCES final_exam(exam_id), \
+                    FOREIGN KEY (question_id) REFERENCES final_question(question_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS final_question(\
+                        question_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                        exam_question VARCHAR(32765),\
+                        c_id INTEGER,\
+                        choiceA VARCHAR(32765),\
+                        choiceB VARCHAR(32765),\
+                        choiceC VARCHAR(32765),\
+                        choiceD VARCHAR(32765),\
+                        choiceE VARCHAR(32765),\
+                        exam_answer INTEGER,\
+                        FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS certificate(\
                     certificate_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    type VARCHAR(50));')
+                    c_id INTEGER, \
+                    cert_name VARCHAR(32765), \
+                    FOREIGN KEY (c_id) REFERENCES course(course_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS refundRequest(\
                     request_id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -201,8 +223,23 @@ def create_all():
                s_id INTEGER NOT NULL, \
                c_id INTEGER NOT NULL, \
                r_content VARCHAR(32765), \
+               rating INTEGER, \
                FOREIGN KEY(c_id) REFERENCES course(course_id), \
                FOREIGN KEY(s_id) REFERENCES student(student_id));')
+
+    exec_query('CREATE TRIGGER IF NOT EXISTS del_from_wishlist \
+                AFTER INSERT \
+                ON buy \
+                BEGIN \
+                DELETE FROM include WHERE c_id=NEW.course_id AND list_id=(SELECT list_id from wishlist WHERE s_id=NEW.student_id); \
+            END;')
+
+    exec_query('CREATE TRIGGER IF NOT EXISTS add_final_exam \
+                    AFTER INSERT \
+                    ON course \
+                    BEGIN \
+                    INSERT INTO final_exam (c_id) VALUES(NEW.course_id); \
+                END;')
 
 
 
