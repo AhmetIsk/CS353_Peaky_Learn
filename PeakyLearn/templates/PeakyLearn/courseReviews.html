@@ -23,7 +23,7 @@
         <div class="content text-center">
             <div class="ratings"> <span class="product-rating">{{ avg_rating }}</span><span>/5</span>
                 <div> <div class="star-ratings-css" title="{{ avg_rating }}" style="display: inline"></div> </div>
-                <div class="rating-text"> <span>46 ratings & 15 reviews</span> </div>
+                <div class="rating-text"> <span>{{ all_reviews|length }} ratings & {{ all_reviews|length }} reviews</span> </div>
             </div>
         </div>
     </div>
