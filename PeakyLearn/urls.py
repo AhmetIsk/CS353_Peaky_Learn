@@ -36,7 +36,7 @@ urlpatterns = [
     path('updateCourse/<str:course_id>', views.updateCourse, name='updateCourse'),
     path('notes/<str:course_id>/<str:lecture_id>/', views.notes, name='notes'),
     path('takeNote/<str:course_id>/<str:lecture_id>/', views.takeNote, name='takeNote'),
-    path('deleteNotes/<str:course_id>/<str:note_id>/', views.deleteNotes, name='deleteNotes'),
+    path('deleteNotes/<str:note_id>/', views.deleteNotes, name='deleteNotes'),
 
     path('addToWishlist/<str:course_id>', views.addToWishlist, name='addToWishlist'),
     path('buyCourse/<str:pk>', views.buyCourse, name='buyCourse'),

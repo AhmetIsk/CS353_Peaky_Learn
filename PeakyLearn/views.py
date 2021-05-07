@@ -1252,12 +1252,13 @@ def seeCourseReviews(request, course_id):
     context = {'all_reviews': all_reviews}
     return render(request, 'PeakyLearn/courseReviews.html', context)
 
-def deleteNotes(request, course_id,note_id):
+def deleteNotes(request, note_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
+
     # delete course
-    query = "DELETE FROM note WHERE c_id = ? AND note_id=?;"
-    params = [course_id, note_id]
+    query = "DELETE FROM note WHERE note_id=?;"
+    params = [note_id]
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
