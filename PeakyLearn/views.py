@@ -1357,15 +1357,15 @@ def deleteNotes(request, note_id):
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['educator'])
-def deleteFinalQuestion(request, course_id):
+def deleteFinalQuestion(request, question_id, course_id):
 
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
 
     # delete question
 
-    query = "DELETE FROM final_exam WHERE c_id=?;"
-    params = [course_id]
+    query = "DELETE FROM final_question WHERE question_id=?;"
+    params = [question_id]
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
@@ -1375,10 +1375,10 @@ def deleteFinalQuestion(request, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+    return HttpResponse("Deletion Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
 
 @allowed_users(allowed_roles=['educator'])
-def updateFinalQuestion(request, course_id):
+def updateFinalQuestion(request, question_id, course_id):
 
     if request.method == 'POST':
 
@@ -1392,25 +1392,24 @@ def updateFinalQuestion(request, course_id):
             choiceE = form.cleaned_data.get('choiceE')
             answer = form.cleaned_data.get('answer')
 
-            query = "UPDATE final_question SET exam_question=?, choiceA=?, choiceB=?, choiceC=?, choiceD=?, choiceE=?, exam_answer=? WHERE c_id=?;"
-            #query = "INSERT INTO final_question(exam_question, c_id, choiceA, choiceB, choiceC, choiceD, choiceE, exam_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-            params = [exam_question, choiceA, choiceB, choiceC, choiceD, choiceE, answer,course_id]
+            query = "UPDATE final_question SET exam_question=?, choiceA=?, choiceB=?, choiceC=?, choiceD=?, choiceE=?, exam_answer=? WHERE question_id=?;"
+            params = [exam_question, choiceA, choiceB, choiceC, choiceD, choiceE, answer, question_id]
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
 
             try:
-                cursor.execute( query, params )
+                cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('unsuccessful-final exam is not updated!', status=409)
 
             connection.commit()
             connection.close()
-            return HttpResponse("Final Question is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
+            return HttpResponse("Update Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
         form = AddFinalQuestion()
-        context = {'form': form, 'course_id': course_id}
+        context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateFinalQuestion.html', context)
 
 
