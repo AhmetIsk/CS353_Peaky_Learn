@@ -42,6 +42,8 @@
                     <td>{{ q.6 }}</td>
                     <td>{{ q.7 }}</td>
                     <td>{{ q.8 }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'updateQuizQuestion' q.0 lec_id %}">Change Question</a></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteQuizQuestion' q.0 lec_id %}">Delete Question</a></td>
 
               </tr>
           {% endfor %}

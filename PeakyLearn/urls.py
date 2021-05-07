@@ -61,5 +61,7 @@ urlpatterns = [
 
     path('eduSeeQuiz/<str:lec_id>/', views.eduSeeQuiz, name='eduSeeQuiz'),
     path('quizPage/<str:lec_id>', views.quizPage, name='quizPage'),
+    path('deleteQuizQuestion/<str:question_id>/<str:lec_id>', views.deleteQuizQuestion, name='deleteQuizQuestion'),
+    path('updateQuizQuestion/<str:question_id>/<str:lec_id>', views.updateQuizQuestion, name='updateQuizQuestion'),
 
 ]

@@ -1590,3 +1590,60 @@ def quizPage(request, lec_id):
 
         context = {'lec_id': lec_id, 'qs': exam, 'forms': formset}
         return render(request, 'PeakyLearn/studentQuizPage.html', context)
+
+
+@allowed_users(allowed_roles=['educator'])
+def deleteQuizQuestion(request, question_id, lec_id):
+
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    # delete question
+
+    query = "DELETE FROM quiz_question WHERE question_id=?;"
+    params = [question_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in deleteCourse', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Deletion Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+
+@allowed_users(allowed_roles=['educator'])
+def updateQuizQuestion(request, question_id, lec_id):
+
+    if request.method == 'POST':
+
+        form = AddFinalQuestion(request.POST)
+        if form.is_valid():
+            exam_question = form.cleaned_data.get('quiz_question')
+            choiceA = form.cleaned_data.get('choiceA')
+            choiceB = form.cleaned_data.get('choiceB')
+            choiceC = form.cleaned_data.get('choiceC')
+            choiceD = form.cleaned_data.get('choiceD')
+            choiceE = form.cleaned_data.get('choiceE')
+            answer = form.cleaned_data.get('answer')
+
+            query = "UPDATE quiz_question SET exam_question=?, choiceA=?, choiceB=?, choiceC=?, choiceD=?, choiceE=?, exam_answer=? WHERE question_id=?;"
+            params = [exam_question, choiceA, choiceB, choiceC, choiceD, choiceE, answer, question_id]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-final exam is not updated!', status=409)
+
+            connection.commit()
+            connection.close()
+            return HttpResponse("Update Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+
+    elif request.method == 'GET':
+        form = AddFinalQuestion()
+        context = {'form': form, 'question_id': question_id}
+        return render(request, 'PeakyLearn/updateQuizQuestion.html', context)
