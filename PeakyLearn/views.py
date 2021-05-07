@@ -1316,7 +1316,9 @@ def seeCourseReviews(request, course_id):
 
         avg /= len(all_reviews)
 
-    context = {'all_reviews': all_reviews, 'avg_rating': avg}
+    uname = request.session['username']
+
+    context = {'all_reviews': all_reviews, 'avg_rating': avg, 'username': uname}
     return render(request, 'PeakyLearn/courseReviews.html', context)
 
 def deleteNotes(request, note_id):

@@ -1,15 +1,38 @@
-<h3> Reviews </h3>
-<hr>
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+{#    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>#}
+{#    <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>#}
+{#    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>#}
+{#    <link rel="stylesheet" href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>#}
+    <link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
+    <link rel="stylesheet" href='{% static "style/review.css"%}'>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Welcome {{ username }}
+        </title>
+
+    </head>
+    <body>
+    <div class="box d-flex justify-content-center">
+        <div class="content text-center">
+            <div class="ratings"> <span class="product-rating">{{ avg_rating }}</span><span>/5</span>
+                <div> <div class="star-ratings-css" title="{{ avg_rating }}" style="display: inline"></div> </div>
+                <div class="rating-text"> <span>46 ratings & 15 reviews</span> </div>
+            </div>
+        </div>
+    </div>
+    <div class="header text-center" style="padding: 20px">
+        <h1><strong>All Reviews</strong></h1>
+    </div>
 
 <table cellspacing="10" >
     <thead>
-    <tr>
-
-        {% if avg_rating != 0 %}
-            <h2>AVG Rating: {{ avg_rating }}</h2>
-        {% endif %}
-
-    </tr>
     </thead>
     <tbody>
     <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -27,18 +50,16 @@
 
                     <td>{{ review.0 }}</td>
                     <td>{{ review.2 }}</td>
-                    <td>{{ review.3 }}</td>
+                    <td><div class="star-ratings-css" title="{{ review.3 }}" style="display: inline; font-size: 15px;height: 15px;width: 60px;"></div> </td>
               </tr>
           {% endfor %}
       </tbody>
-      <tfoot>
 
-            <th>Student ID</th>
-            <th>Review Comment</th>
-            <th>Rating</th>
-
-      </tfoot>
     </table>
     </tbody>
 
 </table>
+    </body>
+    </html>
+
+{% endblock %}
