@@ -55,5 +55,6 @@ urlpatterns = [
     path('seeFinalExam/<str:course_id>', views.seeFinalExam, name='seeFinalExam'),
     path('addFinalQuestion/<str:course_id>', views.addFinalQuestion, name='addFinalQuestion'),
     path('deleteFinalQuestion/<str:course_id>/', views.deleteFinalQuestion, name='deleteFinalQuestion'),
+    path('updateFinalQuestion/<str:course_id>/', views.updateFinalQuestion, name='updateFinalQuestion'),
 
 ]

@@ -1232,28 +1232,32 @@ def addReview(request, course_id):
         return HttpResponse("You have reviewed this course before! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
+        create_all()
 
-        form = AddReview(request.POST)
-        if form.is_valid():
-            s_id = request.session.get('uid')
-            c_id = course_id
-            r_content = form.cleaned_data.get('r_content')
-            rating = form.cleaned_data.get('rating')
+        r_content = request.POST.get('r_content')
+        rating = request.POST.get('rating')
 
-            query = "INSERT INTO review (s_id, c_id, r_content, rating) VALUES (?,?,?,?);"
-            connection = sqlite3.connect('db.sqlite3')
-            cursor = connection.cursor()
-            params = [s_id, c_id, r_content, rating]
-            try:
-                cursor.execute(query, params)
-            except sqlite3.IntegrityError as e:
-                print(e)
-                return HttpResponse('unsuccessful-review is not created!', status=409)
+        # form = AddReview(request.POST)
+        # if form.is_valid():
+        s_id = request.session.get('uid')
+        c_id = course_id
+        #     r_content = form.cleaned_data.get('r_content')
+        #     rating = form.cleaned_data.get('rating')
 
-            connection.commit()
-            connection.close()
+        query = "INSERT INTO review (s_id, c_id, r_content, rating) VALUES (?,?,?,?);"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [s_id, c_id, r_content, rating]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('unsuccessful-review is not created!', status=409)
 
-            return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+        connection.commit()
+        connection.close()
+        return redirect('ownedCourses')
+        # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     elif request.method == 'GET':
         form = AddReview()
@@ -1359,3 +1363,39 @@ def deleteFinalQuestion(request, course_id):
     connection.close()
 
     return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+@allowed_users(allowed_roles=['educator'])
+def updateFinalQuestion(request, course_id):
+
+    if request.method == 'POST':
+
+        form = AddFinalQuestion(request.POST)
+        if form.is_valid():
+            exam_question = form.cleaned_data.get('quiz_question')
+            choiceA = form.cleaned_data.get('choiceA')
+            choiceB = form.cleaned_data.get('choiceB')
+            choiceC = form.cleaned_data.get('choiceC')
+            choiceD = form.cleaned_data.get('choiceD')
+            choiceE = form.cleaned_data.get('choiceE')
+            answer = form.cleaned_data.get('answer')
+
+            query = "UPDATE final_question SET exam_question=?, choiceA=?, choiceB=?, choiceC=?, choiceD=?, choiceE=?, exam_answer=? WHERE c_id=?;"
+            #query = "INSERT INTO final_question(exam_question, c_id, choiceA, choiceB, choiceC, choiceD, choiceE, exam_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+            params = [exam_question, choiceA, choiceB, choiceC, choiceD, choiceE, answer,course_id]
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute( query, params )
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-final exam is not updated!', status=409)
+
+            connection.commit()
+            connection.close()
+            return HttpResponse("Final Question is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
+
+    elif request.method == 'GET':
+        form = AddFinalQuestion()
+        context = {'form': form, 'course_id': course_id}
+        return render(request, 'PeakyLearn/updateFinalQuestion.html', context)

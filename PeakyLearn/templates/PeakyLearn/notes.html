@@ -1,22 +1,53 @@
-<h3> Notes </h3>
-<hr>
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
 
-<table cellspacing="10" >
-    <thead>
-    <tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>certificate</title>
+</head>
+<style>
+    body {
+        background-image: url('../../../static/images/notes.png');
+        background-repeat: repeat-y;
+        background-size: cover;
+    }
+</style>
+<body>
+    <h1 style="padding-top: 50px; color: #860202; text-align: center"> Notes of Lecture </h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-2">
 
-        <th>content</th>
+        </div>
+        <div class="col-md-9">
+            <table cellspacing="10" style="width: 100%" >
+                <thead>
+                <tr>
 
-    </tr>
-    </thead>
-    <tbody>
-    {% for notes in all_notes %}
-        <tr>
+                    <th style="padding-bottom: 10px">Contents</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for notes in all_notes %}
+                    <tr style="border-bottom:1px solid #0551ee; ">
+                        <td>{{ notes.4 }}</td>
+                        <td style="float: right"><a class="btn btn-sm btn-outline-danger" href="{% url 'deleteNotes' notes.0 %}">Delete Note</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
 
-            <td>{{ notes.4 }}</td>
-            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteNotes' notes.0 %}">Delete Note</a></td>
-        </tr>
-    {% endfor %}
-    </tbody>
+            </table>
+        </div>
+    </div>
 
-</table>
+
+</body>
+
+
+</html>
+
+{% endblock %}
