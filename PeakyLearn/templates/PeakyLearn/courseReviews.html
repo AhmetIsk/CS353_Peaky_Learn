@@ -1,5 +1,51 @@
-<h3> Reviews </h3>
-<hr>
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+<script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+<link rel="stylesheet" href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
+
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+    .box {
+        margin: 0;
+        padding: 0;
+        font-family: 'Open Sans', serif;
+        background: #eee
+    }
+
+    .content {
+        width: 420px;
+        margin-top: 100px
+    }
+
+    .ratings {
+        background-color: #fff;
+        padding: 54px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 10px 10px #E0E0E0
+    }
+
+    .product-rating {
+        font-size: 50px
+    }
+
+    .rating-text {
+        margin-top: 10px
+    }
+</style>
+    <div class="box d-flex justify-content-center">
+        <div class="content text-center">
+            <div class="ratings"> <span class="product-rating">{{ avg_rating }}</span><span>/5</span>
+                <div> <div class="star-ratings-css" title="{{ avg_rating }}" style="display: inline"></div> </div>
+                <div class="rating-text"> <span>46 ratings & 15 reviews</span> </div>
+            </div>
+        </div>
+    </div>
 
 <table cellspacing="10" >
     <thead>
@@ -27,18 +73,14 @@
 
                     <td>{{ review.0 }}</td>
                     <td>{{ review.2 }}</td>
-                    <td>{{ review.3 }}</td>
+                    <td><div class="star-ratings-css" title="{{ review.3 }}" style="display: inline; font-size: 15px;height: 15px;width: 60px;"></div> </td>
               </tr>
           {% endfor %}
       </tbody>
-      <tfoot>
 
-            <th>Student ID</th>
-            <th>Review Comment</th>
-            <th>Rating</th>
-
-      </tfoot>
     </table>
     </tbody>
 
 </table>
+
+{% endblock %}
