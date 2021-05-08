@@ -65,4 +65,6 @@ urlpatterns = [
     path('updateQuizQuestion/<str:question_id>/<str:lec_id>', views.updateQuizQuestion, name='updateQuizQuestion'),
     path('refundReqStudent/<str:course_id>', views.refundReqStudent, name='refundReqStudent'),
 
+    path('searchCourse/', views.searchCourse, name='searchCourse'),
+
 ]

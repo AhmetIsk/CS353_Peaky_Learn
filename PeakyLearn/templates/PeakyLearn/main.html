@@ -30,18 +30,19 @@
             <!-- Center elements -->
             <ul class="navbar-nav flex-row d-none d-md-flex">
                 <!-- Search form -->
-                <form class="input-group w-auto my-auto d-none d-sm-flex">
+                <form class="input-group w-auto my-auto d-none d-sm-flex" method=POST action="{% url 'searchCourse' %}">
+                    {% csrf_token %}
                     <input
                             style="width: 600px!important;"
                             autocomplete="off"
                             type="search"
                             class="form-control rounded"
-                            placeholder="Search"
+                            placeholder="Search Course..."
                             style="min-width: 125px;"
+                            name="searched"
                     />
-                    <span class="input-group-text border-0 d-none d-lg-flex"
-                    ><i  class="fas fa-search"></i
-                    ></span>
+                    <span class="input-group-text border-0 d-none d-lg-flex">
+                    <button class="fas fa-search" type="submit"> </button></span>
                 </form>
             </ul>
             <!-- Center elements -->

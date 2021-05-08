@@ -1648,6 +1648,24 @@ def updateQuizQuestion(request, question_id, lec_id):
         context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateQuizQuestion.html', context)
 
+
+def searchCourse(request):
+    context = {}
+    courseArr = []
+    if request.method == "POST":
+        searched = request.POST['searched']
+        for course in get_all_courses():
+            if str(course.__getitem__(1)).lower().__eq__(str(searched).lower()):
+                context = {'username': " ",'course': course}
+                return render(request, 'PeakyLearn/courseDetails.html', context)
+            elif str(course.__getitem__(1)).lower().__contains__(str(searched).lower()):
+                courseArr.append(course.__getitem__(1))
+                context = {'searched': searched, 'courses': courseArr}
+                (request, 'PeakyLearn/searchCourse.html', context)
+        return render(request, 'PeakyLearn/searchCourse.html', context)
+    else:
+        return render(request, 'PeakyLearn/searchCourse.html', context)
+
 @allowed_users(allowed_roles=['student'])
 def refundReqStudent(request, course_id):
 

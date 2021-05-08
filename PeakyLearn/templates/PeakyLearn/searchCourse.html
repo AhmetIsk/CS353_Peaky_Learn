@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+
+<html>
+    <footer class="footer">
+        <div class="container">
+            {% if searched %}
+                <h1><span class="text-muted">Are you searching for</span></h1>
+                {% for course in courses %}
+                    <h1><span class="text-muted">{{course}} ?</span></h1>
+                {% endfor %}
+            {% else %}
+                <h1><span class="text-muted">Hey! There is no such a course...</span></h1>
+            {% endif %}
+    </footer>
+</html>
+{% endblock %}
