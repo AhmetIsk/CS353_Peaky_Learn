@@ -90,6 +90,13 @@ class AddReview(forms.Form):
         'rating': rating
     }
 
+class RefundRequestForm(forms.Form):
+    req_content = forms.CharField(max_length=10000, label="Write your reason for your refund request")
+
+    value = {
+        'req_content' : req_content
+    }
+
 
 class QuizForm(forms.Form):
     __name__ = "quizform"

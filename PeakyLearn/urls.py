@@ -63,5 +63,6 @@ urlpatterns = [
     path('quizPage/<str:lec_id>', views.quizPage, name='quizPage'),
     path('deleteQuizQuestion/<str:question_id>/<str:lec_id>', views.deleteQuizQuestion, name='deleteQuizQuestion'),
     path('updateQuizQuestion/<str:question_id>/<str:lec_id>', views.updateQuizQuestion, name='updateQuizQuestion'),
+    path('refundReqStudent/<str:course_id>', views.refundReqStudent, name='refundReqStudent'),
 
 ]

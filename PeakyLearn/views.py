@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
 from .forms import UserForm, AddCourseForm, LectureForm, UpdateCourseForm, AddNote, QuizForm, AddReview, \
-    AddFinalQuestion
+    AddFinalQuestion,RefundRequestForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -1370,7 +1370,7 @@ def deleteFinalQuestion(request, question_id, course_id):
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
         print(e)
-        return HttpResponse('Error in deleteCourse', status=404)
+        return HttpResponse('Error in delete question', status=404)
 
     connection.commit()
     connection.close()
@@ -1647,3 +1647,71 @@ def updateQuizQuestion(request, question_id, lec_id):
         form = AddFinalQuestion()
         context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateQuizQuestion.html', context)
+
+@allowed_users(allowed_roles=['student'])
+def refundReqStudent(request, course_id):
+
+    student_id = request.session['uid']
+
+    # First check if this user submitted a refund request before for this couse
+    query = "SELECT * FROM refundRequest WHERE studentID=? AND courseID=?;"
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('error in refund request process!', status=409)
+
+    exists = cursor.fetchone()
+    requested_before = 1 if exists else 0
+
+    if requested_before:
+        return HttpResponse("You have already create refund request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+
+    if request.method == 'POST':
+        create_all()
+
+        req_content = request.POST.get('r_content')
+
+        s_id = request.session.get('uid')
+        c_id = course_id
+
+
+        query = "INSERT INTO refundRequest(studentID, courseID, req_content) VALUES (?,?,?);"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [s_id, c_id, req_content]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('unsuccessful-review is not created!', status=409)
+
+        connection.commit()
+        connection.close()
+        return redirect('ownedCourses')
+        # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+
+    elif request.method == 'GET':
+        form = RefundRequestForm()
+
+        # Get course name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('refundReqStudent', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+
+        uname = request.session['username']
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
+        return render(request, 'PeakyLearn/refundReqStudent.html', context)
