@@ -1735,6 +1735,7 @@ def refundReqStudent(request, course_id):
         return render(request, 'PeakyLearn/refundReqStudent.html', context)
 
 
+@allowed_users(allowed_roles=['student'])
 def ask_question(request, course_id):
     if request.method == 'POST':
 
@@ -1792,6 +1793,8 @@ def ask_question(request, course_id):
         context = {'form': form, 'c_id': course_id, 'cname': course_name}
         return render(request, 'PeakyLearn/takeNote.html', context)
 
+
+@allowed_users(allowed_roles=['educator'])
 def course_q_edu(request, course_id):
     query = "SELECT * FROM question WHERE c_id=?;"
     connection = sqlite3.connect('db.sqlite3')
@@ -1806,7 +1809,49 @@ def course_q_edu(request, course_id):
     qs = cursor.fetchall()
     connection.close()
 
-    context = {'qs': qs}
+    context = {'qs': qs, 'course_id': course_id}
     return render(request, 'PeakyLearn/edu_course_questions.html', context)
 
+@allowed_users(allowed_roles=['educator'])
+def answer_q(request, q_id, course_id):
+    if request.method == 'POST':
 
+        form = AskQuestionForm(request.POST)
+        if form.is_valid():
+            edu_id = request.session.get('uid')
+            content = form.cleaned_data.get('q_content')
+
+            query = "INSERT INTO answer (q_id, content, edu_id) VALUES (?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [q_id, content, edu_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('answer is not created!', status=409)
+
+            return HttpResponse("Answer question Succesful. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(course_id))
+
+    elif request.method == 'GET':
+        form = AskQuestionForm()
+
+        # Get course name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('takenote', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        return render(request, 'PeakyLearn/answer_q.html', context)
+
+#@allowed_users(allowed_roles=['student'])
+#def student_questions(request, course_id):

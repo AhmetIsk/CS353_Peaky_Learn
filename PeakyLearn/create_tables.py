@@ -211,6 +211,7 @@ def create_all():
                     q_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     a_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                     edu_id INTEGER NOT NULL,\
+                    content VARCHAR(32765),\
                     FOREIGN KEY (q_id) REFERENCES question(question_id),\
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 

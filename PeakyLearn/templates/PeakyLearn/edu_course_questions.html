@@ -40,7 +40,7 @@
                         <td>{{ q.2 }}</td>
                         <td>{{ q.3 }}</td>
                         <td>{{ q.4 }}</td>
-                        <td><a class="btn btn-sm btn-outline-primary" href="">Answer</a></td>
+                        <td><a class="btn btn-sm btn-outline-primary" href="{% url 'answer_q' q.0 course_id %}">Answer</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
