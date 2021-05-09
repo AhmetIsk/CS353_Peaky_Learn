@@ -1,27 +1,71 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
 
-<form method="POST" action="">
-    <h2>Ask Question in course {{ cname }}</h2>
-    <div class="d-flex justify-content-center form_container">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>certificate</title>
+</head>
+<style>
+        body {
+            background-image: url('../../../static/images/notes.png');
+            background-repeat: repeat-y;
+            background-size: cover;
+        }
+        input {
+            margin: auto;
+            width: 100%;
 
-        <form method="POST" action="">
-            {% csrf_token %}
-            {{ form }}
+        }
+    </style>
+<body>
+<h1 style="padding-top: 50px; color: #860202; text-align: center"> Ask Question about the course {{ cname }} </h1>
+<hr>
 
-            <div class="d-flex justify-content-center mt-3 login_container">
-                <input class="btn login_btn" type="submit" value="Enter">
+<div class="container h-100">
+    <div class="d-flex justify-content-center h-100">
+        <div class="user_card">
+
+            <div class="d-flex justify-content-center form_container">
+
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    {{ form }}
+
+                    <br>
+                    <div class="d-flex justify-content-center links">
+                        <input class="btn login_btn" type="submit" value="Ask">
+                    </div>
+                </form>
             </div>
-        </form>
+
+            {{ form.errors }}
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-center links">
+                    <a href="{% url 'studentMainPage' %}" class="ml-2">Back</a>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    {{ form.errors }}
 
-</form>
 
+</body>
+
+
+</html>
+
+
+{% endblock %}
 
 <script>
     //Query All input fields
     var form_fields = document.getElementsByTagName('input')
-
+    form_fields[1].placeholder='Ask Question...';
 
     for (var field in form_fields){
         form_fields[field].className += ' form-control'
