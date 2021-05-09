@@ -1796,7 +1796,7 @@ def ask_question(request, course_id):
 
 @allowed_users(allowed_roles=['educator'])
 def course_q_edu(request, course_id):
-    query = "SELECT * FROM question WHERE c_id=?;"
+    query = "SELECT * FROM question WHERE c_id=? AND question_id NOT IN (SELECT q_id FROM answer);"
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [course_id]
@@ -1830,6 +1830,9 @@ def answer_q(request, q_id, course_id):
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('answer is not created!', status=409)
+
+            connection.commit()
+            connection.close()
 
             return HttpResponse("Answer question Succesful. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(course_id))
 
