@@ -1736,7 +1736,7 @@ def refundReqStudent(request, course_id):
     student_id = request.session['uid']
 
     # First check if this user submitted a refund request before for this couse
-    query = "SELECT * FROM refundRequest WHpythoERE studentID=? AND courseID=?;"
+    query = "SELECT * FROM refundRequest WHERE studentID=? AND courseID=?;"
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [student_id, course_id]
