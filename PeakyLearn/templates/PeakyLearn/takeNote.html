@@ -1,6 +1,6 @@
 
 <form method="POST" action="">
-    <h2>Taking Note on Lecture {{ lec_name }} in course {{ cname }}</h2>
+    <h2>Ask Question in course {{ cname }}</h2>
     <div class="d-flex justify-content-center form_container">
 
         <form method="POST" action="">
@@ -21,7 +21,7 @@
 <script>
     //Query All input fields
     var form_fields = document.getElementsByTagName('input')
-        form_fields[1].placeholder='Take note...';
+
 
     for (var field in form_fields){
         form_fields[field].className += ' form-control'
