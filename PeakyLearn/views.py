@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
 from .forms import UserForm, AddCourseForm, LectureForm, UpdateCourseForm, AddNote, QuizForm, AddReview, \
-    AddFinalQuestion, RefundRequestForm, AskQuestionForm
+    AddFinalQuestion, RefundRequestForm, AskQuestionForm, AnnouncementForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -759,10 +759,18 @@ def student_lectures(request, course_id):
     if passed_course or (pass_amt < lec_amt):
         qualified = False
 
+
+    # Get announcements:
+    query = "SELECT * FROM announcement WHERE announcement_id IN (SELECT announcement_id FROM makes WHERE c_id=?);"
+    param = [course_id]
+    cursor.execute(query, param)
+    announcements = cursor.fetchall()
+
+
     connection.close()
     context = {'course': course, 'username': uname,
                'lectures': lectures, 'course_id': course_id,
-               'qualified': qualified}
+               'qualified': qualified, 'announcements': announcements}
 
 
     return render(request, 'PeakyLearn/lecturesStudent.html', context)
@@ -1884,3 +1892,58 @@ def student_questions(request, course_id):
 
     context = {'qs': qs, 'username': uname}
     return render(request, 'PeakyLearn/student_course_q.html', context)
+
+
+@allowed_users(allowed_roles=['educator'])
+def make_announcement(request, course_id):
+
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST)
+        if form.is_valid():
+            edu_id = request.session.get('uid')
+            content = form.cleaned_data.get('q_content')
+
+            query = "INSERT INTO announcement (content) VALUES (?)"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [content]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('announcement is not created!', status=409)
+
+            connection.commit()
+
+            ann_id = cursor.lastrowid
+            params = [request.session['uid'], course_id, ann_id]
+            query = "INSERT INTO makes (edu_id, c_id, announcement_id) VALUES (?, ?, ?)"
+            cursor.execute(query, params)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse(
+                "Announcement Created. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(
+                    course_id))
+
+    elif request.method == 'GET':
+        form = AnnouncementForm()
+
+        # Get course name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('make annc', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+        uname = request.session['username']
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
+        return render(request, 'PeakyLearn/answer_q.html', context)

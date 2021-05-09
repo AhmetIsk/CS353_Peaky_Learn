@@ -251,6 +251,19 @@ def create_all():
                FOREIGN KEY(c_id) REFERENCES course(course_id), \
                FOREIGN KEY(s_id) REFERENCES student(student_id));')
 
+    exec_query('CREATE TABLE IF NOT EXISTS makes(\
+                   edu_id INTEGER NOT NULL, \
+                   c_id INTEGER NOT NULL, \
+                   announcement_id INTEGER NOT NULL, \
+                   FOREIGN KEY(announcement_id) REFERENCES announcement(announcement_id), \
+                   FOREIGN KEY(edu_id) REFERENCES educator(educator_id));')
+
+    exec_query('CREATE TABLE IF NOT EXISTS announcement(\
+                       announcement_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                       content VARCHAR(32765) NOT NULL, \
+                       ann_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+                       FOREIGN KEY(announcement_id) REFERENCES announcement(announcement_id));')
+
     exec_query('CREATE TRIGGER IF NOT EXISTS del_from_wishlist \
                 AFTER INSERT \
                 ON buy \

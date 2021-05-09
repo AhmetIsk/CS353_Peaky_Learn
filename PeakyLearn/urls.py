@@ -73,5 +73,6 @@ urlpatterns = [
 
     path('answer_q/<str:q_id>/<str:course_id>', views.answer_q, name='answer_q'),
     path('student_questions/<str:course_id>', views.student_questions, name='student_questions'),
+    path('make_announcement/<str:course_id>', views.make_announcement, name='make_announcement'),
 
 ]

@@ -117,3 +117,11 @@ class AskQuestionForm(forms.Form):
     }
 
 
+class AnnouncementForm(forms.Form):
+    q_content = forms.CharField(max_length=10000, label="Write your announcement for the course.")
+
+    value = {
+        'q_content': q_content
+    }
+
+

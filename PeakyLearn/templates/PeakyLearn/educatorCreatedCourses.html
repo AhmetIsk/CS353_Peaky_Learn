@@ -61,6 +61,7 @@
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'educatorLectures' course.0 %}">See Lectures</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteCourse' course.0%}">Delete Course</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'updateCourse' course.0%}">Update </a></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'make_announcement' course.0%}">Make Announcement </a></td>
               </tr>
           {% endfor %}
       </tbody>
