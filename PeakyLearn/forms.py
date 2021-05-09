@@ -109,3 +109,11 @@ class QuizForm(forms.Form):
     picked = forms.ChoiceField(choices=CHOICES)
 
 
+class AskQuestionForm(forms.Form):
+    q_content = forms.CharField(max_length=10000, label="Write your question for the course.")
+
+    value = {
+        'q_content': q_content
+    }
+
+

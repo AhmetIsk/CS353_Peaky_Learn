@@ -1,0 +1,58 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>certificate</title>
+</head>
+<style>
+    body {
+        background-image: url('../../../static/images/notes.png');
+        background-repeat: repeat-y;
+        background-size: cover;
+    }
+</style>
+<body>
+    <h1 style="padding-top: 50px; color: #860202; text-align: center"> Course Questions </h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-2">
+
+        </div>
+        <div class="col-md-9">
+            <table cellspacing="10" style="width: 100%" >
+                <thead>
+                <tr>
+
+                    <th>Student ID</th>
+                    <th>Date</th>
+                    <th>Content</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for q in qs %}
+                    <tr style="border-bottom:1px solid #0551ee; ">
+
+                        <td>{{ q.2 }}</td>
+                        <td>{{ q.3 }}</td>
+                        <td>{{ q.4 }}</td>
+                        <td><a class="btn btn-sm btn-outline-primary" href="">Answer</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+
+</body>
+
+
+</html>
+
+{% endblock %}

@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
 from .forms import UserForm, AddCourseForm, LectureForm, UpdateCourseForm, AddNote, QuizForm, AddReview, \
-    AddFinalQuestion,RefundRequestForm
+    AddFinalQuestion, RefundRequestForm, AskQuestionForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -1733,3 +1733,80 @@ def refundReqStudent(request, course_id):
 
         context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
         return render(request, 'PeakyLearn/refundReqStudent.html', context)
+
+
+def ask_question(request, course_id):
+    if request.method == 'POST':
+
+        form = AskQuestionForm(request.POST)
+        if form.is_valid():
+            s_id = request.session.get('uid')
+            c_id = course_id
+            content = form.cleaned_data.get('q_content')
+
+
+            query = "INSERT INTO question (s_id, c_id, q_content) VALUES (?,?,?);"
+            connection = sqlite3.connect('db.sqlite3')
+            cursor = connection.cursor()
+            params = [s_id, c_id, content]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-note is not created!', status=409)
+
+            connection.commit()
+
+            q_id = cursor.lastrowid
+
+            query = "INSERT INTO ask (s_id, q_id) VALUES (?,?);"
+            params = [s_id, q_id]
+            try:
+                cursor.execute(query, params)
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return HttpResponse('unsuccessful-note is not created!', status=409)
+
+            connection.commit()
+            connection.close()
+
+            return HttpResponse("Ask question Succesful. Back to Course Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
+
+    elif request.method == 'GET':
+        form = AskQuestionForm()
+
+        # Get course name and lecture name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('takenote', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        return render(request, 'PeakyLearn/takeNote.html', context)
+
+def course_q_edu(request, course_id):
+    query = "SELECT * FROM question WHERE c_id=?;"
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('takenote', status=409)
+
+    qs = cursor.fetchall()
+    connection.close()
+
+    context = {'qs': qs}
+    return render(request, 'PeakyLearn/edu_course_questions.html', context)
+
+

@@ -67,4 +67,8 @@ urlpatterns = [
 
     path('searchCourse/', views.searchCourse, name='searchCourse'),
 
+
+    path('ask_question/<str:course_id>', views.ask_question, name='ask_question'),
+    path('course_q_edu/<str:course_id>', views.course_q_edu, name='course_q_edu'),
+
 ]
