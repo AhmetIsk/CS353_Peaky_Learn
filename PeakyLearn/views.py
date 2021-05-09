@@ -377,8 +377,9 @@ def courseDetails(request, pk):
     query = "SELECT AVG(rating) FROM review WHERE c_id=?;"
     cursor.execute(query, params)
     rating = cursor.fetchone()[0]
-
-
+    if not rating:
+        rating = 0
+    print(rating)
     connection.close()
     uname = request.session['username']
     context = {'username': uname, 'course': course, 'avg_rating': rating}
@@ -801,11 +802,20 @@ def student_lectures(request, course_id):
     cursor.execute(query, param)
     announcements = cursor.fetchall()
 
+    query = "SELECT AVG(rating) FROM review WHERE c_id=?;"
+    params = [course_id]
+    cursor.execute(query, params)
+    rating = cursor.fetchone()[0]
+    if not rating:
+        rating = 0
+    print(rating)
+
 
     connection.close()
     context = {'course': course, 'username': uname,
                'lectures': lectures, 'course_id': course_id,
-               'qualified': qualified, 'announcements': announcements}
+               'qualified': qualified, 'announcements': announcements,
+               'avg_rating': rating}
 
 
     return render(request, 'PeakyLearn/lecturesStudent.html', context)
