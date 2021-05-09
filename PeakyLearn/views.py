@@ -332,10 +332,24 @@ def certificate(request, pk):
 @allowed_users(allowed_roles=['student'])
 def studentMainPage(request):
     uname = request.session['username']
-
     all_courses = get_all_courses()
 
-    context = {'username': uname, 'all_courses': all_courses }
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    avg_ratings = []
+    for course in all_courses:
+        print(course)
+        c_id = course[0]
+        param = [c_id]
+        query = "SELECT AVG(rating) FROM review WHERE c_id=?;"
+        cursor.execute(query, param)
+        avg = cursor.fetchone()[0]
+        if avg is None:
+            avg = 0
+        avg_ratings.append(avg)
+    connection.close()
+
+    context = {'username': uname, 'all_courses': all_courses, 'avg_rating': avg_ratings }
     return render(request, 'PeakyLearn/studentMainPage.html', context)
 
 @allowed_users(allowed_roles=['student', 'educator', 'admin'])
@@ -359,10 +373,15 @@ def courseDetails(request, pk):
         return HttpResponse('404! error in courseDetails', status=404)
 
     course = cursor.fetchone()
-    print(course)
+
+    query = "SELECT AVG(rating) FROM review WHERE c_id=?;"
+    cursor.execute(query, params)
+    rating = cursor.fetchone()[0]
+
+
     connection.close()
     uname = request.session['username']
-    context = {'username': uname,'course': course}
+    context = {'username': uname, 'course': course, 'avg_rating': rating}
     return render(request, 'PeakyLearn/courseDetails.html', context)
 
 @allowed_users(allowed_roles=['student'])
@@ -420,7 +439,22 @@ def educatorMainPage(request):
     context = {'username': request.session['username']}
     all_courses = get_all_courses()
 
-    context = {'username': request.session['username'], 'all_courses': all_courses}
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    avg_ratings = []
+    for course in all_courses:
+        print(course)
+        c_id = course[0]
+        param = [c_id]
+        query = "SELECT AVG(rating) FROM review WHERE c_id=?;"
+        cursor.execute(query, param)
+        avg = cursor.fetchone()[0]
+        if avg is None:
+            avg = 0
+        avg_ratings.append(avg)
+    connection.close()
+
+    context = {'username': request.session['username'], 'all_courses': all_courses, 'avg_rating': avg_ratings}
     return render(request, 'PeakyLearn/educatorMainPage.html', context)
 
 def get_user_data(uid):

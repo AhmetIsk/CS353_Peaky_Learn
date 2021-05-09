@@ -1,6 +1,7 @@
 {%  extends 'PeakyLearn/main.html' %}
 
 {% block content %}
+    {% load listtag %}
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
@@ -39,6 +40,7 @@
             <th>Certificate ID</th>
             <th>Rate</th>
             <th>Educator ID</th>
+            <th>Average Rating</th>
             <th></th>
 
 
@@ -57,6 +59,7 @@
                     <td>{{ course.6 }}</td>
                     <td>{{ course.7 }}</td>
                     <td>{{ course.8 }}</td>
+                    <td>{{ avg_rating|return_item:forloop.counter0 }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
               </tr>
           {% endfor %}
@@ -72,6 +75,7 @@
             <th>Certificate ID</th>
             <th>Rate</th>
             <th>Educator ID</th>
+            <th>Average Rating</th>
             <th></th>
 
       </tfoot>
