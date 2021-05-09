@@ -1843,7 +1843,7 @@ def ask_question(request, course_id):
         uname = request.session['username']
 
         context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
-        return render(request, 'PeakyLearn/takeNote.html', context)
+        return render(request, 'PeakyLearn/askQuestion.html', context)
 
 
 @allowed_users(allowed_roles=['educator'])
