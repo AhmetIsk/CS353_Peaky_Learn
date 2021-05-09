@@ -4,12 +4,13 @@ body {
 
 .initialP{
     background-image: url('../images/Untitled.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-repeat: repeat-y;
+    background-attachment: scroll;
     background-size: cover;
     background-position: top;
-    position: absolute;
+    position: fixed;
     width: 100%;
+    height:100%;
 }
 .initialPH {
     font-family: "Times New Roman";
@@ -77,10 +78,8 @@ body {
     word-spacing: 2px;
     font-size: 20px;
 }
-#header-nav {
-    background-color: #1d1d1d;
-    border-radius: 0;
-    border: 0;
+.navbar-brand {
+    margin-left: 30px;
 }
 
 .navbar-brand {

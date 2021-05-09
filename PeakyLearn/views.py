@@ -687,9 +687,9 @@ def educator_lectures(request, course_id):
 
     lectures = cursor.fetchall()
     connection.close()
+    uname = request.session['username']
 
-
-    context = {'lectures': lectures, 'course_id': course_id}
+    context = {'lectures': lectures, 'course_id': course_id, 'username': uname}
 
 
     return render(request, 'PeakyLearn/lecturesEducator.html', context)
@@ -915,8 +915,9 @@ def takeNote(request, course_id, lecture_id):
 
         lecture_name = cursor.fetchone()[0]
         connection.close()
+        uname = request.session['username']
 
-        context = {'form': form, 'c_id': course_id, 'cname':course_name, 'lec_id': lecture_id, 'lec_name': lecture_name}
+        context = {'form': form, 'c_id': course_id, 'cname':course_name, 'lec_id': lecture_id, 'lec_name': lecture_name, 'username': uname}
         return render(request, 'PeakyLearn/takeNote.html', context)
 
 # Returns all of the notes taken by the student in the specifies lecture
@@ -942,7 +943,8 @@ def get_all_notes(uid, course_id, lecture_id):
 def notes(request, course_id, lecture_id):
     all_notes = get_all_notes(request.session['uid'], course_id, lecture_id)
     print(all_notes)
-    context = {'all_notes': all_notes}
+    uname = request.session['username']
+    context = {'all_notes': all_notes, 'username': uname}
     return render(request, 'PeakyLearn/notes.html', context)
 
 @allowed_users(allowed_roles=['educator', 'admin', 'student'])
@@ -1140,8 +1142,9 @@ def finalExamPage(request, course_id):
 
         formset = formset_factory(QuizForm, extra=len(exam))  # Create 8 forms.
         formset = formset()
+        uname = request.session['username']
 
-        context = {'course_id': course_id, 'qs': exam, 'forms': formset}
+        context = {'course_id': course_id, 'qs': exam, 'forms': formset, 'username': uname}
         return render(request, 'PeakyLearn/finalExamPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
@@ -1215,7 +1218,8 @@ def seeFinalExam(request, course_id):
         return HttpResponse('err in seefinalexam!', status=409)
 
     questions = cursor.fetchall()
-    context = {'qs': questions, 'course_id': course_id}
+    uname = request.session['username']
+    context = {'qs': questions, 'course_id': course_id, 'username': uname}
     return render(request, 'PeakyLearn/eduFinalExam.html', context)
 
 
@@ -1484,7 +1488,8 @@ def eduSeeQuiz(request, lec_id):
         return HttpResponse('err in seefinalexam!', status=409)
 
     questions = cursor.fetchall()
-    context = {'qs': questions, 'lec_id': lec_id}
+    uname = request.session['username']
+    context = {'qs': questions, 'lec_id': lec_id, 'username': uname}
     return render(request, 'PeakyLearn/eduQuiz.html', context)
 
 
@@ -1587,8 +1592,9 @@ def quizPage(request, lec_id):
 
         formset = formset_factory(QuizForm, extra=len(exam))  # Create 8 forms.
         formset = formset()
+        uname = request.session['username']
 
-        context = {'lec_id': lec_id, 'qs': exam, 'forms': formset}
+        context = {'lec_id': lec_id, 'qs': exam, 'forms': formset, 'username': uname}
         return render(request, 'PeakyLearn/studentQuizPage.html', context)
 
 
@@ -1648,19 +1654,22 @@ def updateQuizQuestion(request, question_id, lec_id):
         context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateQuizQuestion.html', context)
 
-
+@allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def searchCourse(request):
-    context = {}
+    uname = request.session['username']
+    context = {'username': uname}
     courseArr = []
     if request.method == "POST":
         searched = request.POST['searched']
-        for course in get_all_courses():
+        all_courses = get_all_courses()
+
+        for course in all_courses:
             if str(course.__getitem__(1)).lower().__eq__(str(searched).lower()):
-                context = {'username': " ",'course': course}
+                context = {'course': course, 'username': uname}
                 return render(request, 'PeakyLearn/courseDetails.html', context)
             elif str(course.__getitem__(1)).lower().__contains__(str(searched).lower()):
-                courseArr.append(course.__getitem__(1))
-                context = {'searched': searched, 'courses': courseArr}
+                courseArr.append(course)
+                context = {'searched': searched, 'courses': courseArr, 'username': uname}
                 (request, 'PeakyLearn/searchCourse.html', context)
         return render(request, 'PeakyLearn/searchCourse.html', context)
     else:
@@ -1789,8 +1798,9 @@ def ask_question(request, course_id):
 
         course_name = cursor.fetchone()[0]
         connection.close()
+        uname = request.session['username']
 
-        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
         return render(request, 'PeakyLearn/takeNote.html', context)
 
 
@@ -1808,8 +1818,9 @@ def course_q_edu(request, course_id):
 
     qs = cursor.fetchall()
     connection.close()
+    uname = request.session['username'];
 
-    context = {'qs': qs, 'course_id': course_id}
+    context = {'qs': qs, 'course_id': course_id, 'username': uname}
     return render(request, 'PeakyLearn/edu_course_questions.html', context)
 
 @allowed_users(allowed_roles=['educator'])
@@ -1852,8 +1863,9 @@ def answer_q(request, q_id, course_id):
 
         course_name = cursor.fetchone()[0]
         connection.close()
+        uname = request.session['username']
 
-        context = {'form': form, 'c_id': course_id, 'cname': course_name}
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
         return render(request, 'PeakyLearn/answer_q.html', context)
 
 @allowed_users(allowed_roles=['student'])
@@ -1868,6 +1880,7 @@ def student_questions(request, course_id):
     cursor.execute(query, params)
     qs = cursor.fetchall()
     connection.close()
+    uname = request.session['username']
 
-    context = {'qs': qs}
+    context = {'qs': qs, 'username': uname}
     return render(request, 'PeakyLearn/student_course_q.html', context)
