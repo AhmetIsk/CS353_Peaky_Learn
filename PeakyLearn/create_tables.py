@@ -53,11 +53,8 @@ def create_all():
                     course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     courseName VARCHAR(50) NOT NULL,\
                     category VARCHAR(50) NOT NULL,\
-                    price VARCHAR(20) NOT NULL,\
+                    price INTEGER NOT NULL,\
                     language VARCHAR(20) NOT NULL,\
-                    lec_cnt INTEGER,\
-                    certificate_id VARCHAR(50) NOT NULL,\
-                    rate INTEGER NOT NULL,\
                     edu_id INTEGER NOT NULL,\
                     description VARCHAR(32765), \
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')

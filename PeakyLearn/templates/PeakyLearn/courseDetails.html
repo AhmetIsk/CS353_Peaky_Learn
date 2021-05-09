@@ -35,11 +35,11 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Language</th>
-                        <th>Lecture Count</th>
-                        <th>Certificate ID</th>
-                        <th>Rate</th>
                         <th>Educator ID</th>
+                        <th>Description</th>
                         <th>Average Rating</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -50,9 +50,7 @@
                                 <td>{{ course.3 }}</td>
                                 <td>{{ course.4 }}</td>
                                 <td>{{ course.5 }}</td>
-                                <td>{{ course.6 }}</td>
-                                <td>{{ course.7 }}</td>
-                                <td>{{ course.8 }}</td>
+                              <td>{{ course.6 }}</td>
                               <td>{{ avg_rating }}</td>>
                                 <td><a class="btn btn-sm btn-outline-primary" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
                                 <td><a class="btn btn-sm btn-outline-primary" href="{% url 'seeCourseReviews' course.0 %}">See Reviews</a></td>

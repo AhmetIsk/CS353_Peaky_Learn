@@ -34,10 +34,9 @@
             <th>Category</th>
             <th>Price</th>
             <th>Language</th>
-            <th>Lecture Count</th>
-            <th>Certificate ID</th>
-            <th>Rate</th>
             <th>Educator ID</th>
+            <th>Description</th>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -56,8 +55,6 @@
                     <td>{{ course.4 }}</td>
                     <td>{{ course.5 }}</td>
                     <td>{{ course.6 }}</td>
-                    <td>{{ course.7 }}</td>
-                    <td>{{ course.8 }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'educatorLectures' course.0 %}">See Lectures</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'deleteCourse' course.0%}">Delete Course</a></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'updateCourse' course.0%}">Update </a></td>
@@ -67,18 +64,17 @@
       </tbody>
       <tfoot>
 
-             <th>Course ID</th>
+      <th>Course ID</th>
             <th>Course Name</th>
             <th>Category</th>
             <th>Price</th>
             <th>Language</th>
-            <th>Lecture Count</th>
-            <th>Certificate ID</th>
-            <th>Rate</th>
             <th>Educator ID</th>
-      <th></th>
-      <th></th>
-      <th></th>
+            <th>Description</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
 
       </tfoot>
     </table>

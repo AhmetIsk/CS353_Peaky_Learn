@@ -218,8 +218,8 @@ def signup(request, type):
 def default_insert():
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
-    query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
-    params = ['CS101', 'CS', 4, 'Eng', 4, 0, 0, 0 ]
+    query = "INSERT INTO course (courseName, category, price, language, edu_id) VALUES (?,?,?,?,?);"
+    params = ['CS101', 'CS', 4, 'Eng', 0]
 
     #cursor.execute(query, params)
 
@@ -538,12 +538,12 @@ def addCourse(request):
             language = form.cleaned_data.get('language')
             description = form.cleaned_data.get('description')
 
-            query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id,description) VALUES (?,?,?,?,?,?,?,?,?);"
+            query = "INSERT INTO course (courseName, category, price, language, edu_id, description) VALUES (?,?,?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params = [courseName, category, price, language, 0, "1", 0, request.session['uid'],description ]
+            params = [courseName, category, price, language, request.session['uid'], description]
             try:
-                cursor.execute( query, params )
+                cursor.execute(query, params)
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('unsuccessful-course is not created!', status=409)

@@ -17,7 +17,7 @@ class UserForm(forms.Form):
 class AddCourseForm(forms.Form):
     courseName = forms.CharField(max_length= 50, label = "Course Name")
     category = forms.CharField(max_length= 50, label = "Category - Topic")
-    price = forms.CharField(max_length= 50,label = "Price")
+    price = forms.IntegerField(min_value=0, label = "Price")
     language = forms.CharField(max_length= 50, label = "Language")
     description = forms.CharField(max_length= 1000, label = "Description")
 

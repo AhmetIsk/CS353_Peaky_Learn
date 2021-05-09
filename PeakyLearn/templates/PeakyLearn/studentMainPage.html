@@ -42,10 +42,8 @@
                     <th>Category</th>
                     <th>Price</th>
                     <th>Language</th>
-                    <th>Lecture Count</th>
-                    <th>Certificate ID</th>
-                    <th>Rate</th>
                     <th>Educator ID</th>
+                    <th>Description</th>
                     <th>Average Rating</th>
                     <th></th>
                     <th></th>
@@ -66,8 +64,6 @@
                         <td>{{ course.4 }}</td>
                         <td>{{ course.5 }}</td>
                         <td>{{ course.6 }}</td>
-                        <td>{{ course.7 }}</td>
-                        <td>{{ course.8 }}</td>
                         <td>{{ avg_rating|return_item:forloop.counter0 }}</td>
                         <td><a class="btn btn-sm btn-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
                         <td><a class="btn btn-sm btn-success" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
