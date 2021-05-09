@@ -83,7 +83,7 @@ def create_all():
                FOREIGN KEY(lec_id) REFERENCES lecture(lecture_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS question(\
-                    question_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                    q_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     s_id INTEGER NOT NULL, \
                     c_id INTEGER NOT NULL,\
                     q_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -212,7 +212,7 @@ def create_all():
                     a_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                     edu_id INTEGER NOT NULL,\
                     content VARCHAR(32765),\
-                    FOREIGN KEY (q_id) REFERENCES question(question_id),\
+                    FOREIGN KEY (q_id) REFERENCES question(q_id),\
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS take(\
@@ -226,7 +226,7 @@ def create_all():
                     q_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     s_id INTEGER NOT NULL,\
                     FOREIGN KEY (s_id) REFERENCES student(student_id),\
-                    FOREIGN KEY (q_id) REFERENCES question(question_id));')
+                    FOREIGN KEY (q_id) REFERENCES question(q_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS  pass_t(\
                     s_id INTEGER NOT NULL,\

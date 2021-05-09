@@ -1796,7 +1796,7 @@ def ask_question(request, course_id):
 
 @allowed_users(allowed_roles=['educator'])
 def course_q_edu(request, course_id):
-    query = "SELECT * FROM question WHERE c_id=? AND question_id NOT IN (SELECT q_id FROM answer);"
+    query = "SELECT * FROM question WHERE c_id=? AND q_id NOT IN (SELECT q_id FROM answer);"
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [course_id]
@@ -1856,5 +1856,18 @@ def answer_q(request, q_id, course_id):
         context = {'form': form, 'c_id': course_id, 'cname': course_name}
         return render(request, 'PeakyLearn/answer_q.html', context)
 
-#@allowed_users(allowed_roles=['student'])
-#def student_questions(request, course_id):
+@allowed_users(allowed_roles=['student'])
+def student_questions(request, course_id):
+    params = [request.session['uid'], course_id]
+    query = "SELECT q_content, content " \
+            "FROM question " \
+            "LEFT OUTER JOIN answer ON question.q_id " \
+            "WHERE s_id=? AND c_id=?;"
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    qs = cursor.fetchall()
+    connection.close()
+
+    context = {'qs': qs}
+    return render(request, 'PeakyLearn/student_course_q.html', context)
