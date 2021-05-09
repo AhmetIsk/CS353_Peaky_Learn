@@ -538,10 +538,10 @@ def addCourse(request):
             language = form.cleaned_data.get('language')
             description = form.cleaned_data.get('description')
 
-            query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id) VALUES (?,?,?,?,?,?,?,?);"
+            query = "INSERT INTO course (courseName, category, price, language, lec_cnt, certificate_id, rate, edu_id,description) VALUES (?,?,?,?,?,?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params = [courseName, category, price, language, 0, "1", 0, request.session['uid'] ]
+            params = [courseName, category, price, language, 0, "1", 0, request.session['uid'],description ]
             try:
                 cursor.execute( query, params )
             except sqlite3.IntegrityError as e:
@@ -865,8 +865,8 @@ def updateCourse(request, course_id):
             language = form.cleaned_data.get('language')
             description = form.cleaned_data.get('description')
 
-            query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ? WHERE course_id = ?"
-            params = [courseName, category, price, language,course_id]
+            query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ?, description=?  WHERE course_id = ?"
+            params = [courseName, category, price, language,course_id,description]
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
 

@@ -59,6 +59,7 @@ def create_all():
                     certificate_id VARCHAR(50) NOT NULL,\
                     rate INTEGER NOT NULL,\
                     edu_id INTEGER NOT NULL,\
+                    description VARCHAR(32765), \
                     FOREIGN KEY (edu_id) REFERENCES educator(educator_id));')
 
     exec_query('CREATE TABLE IF NOT EXISTS lecture(\
