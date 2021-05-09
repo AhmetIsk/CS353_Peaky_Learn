@@ -17,7 +17,6 @@
         input {
             margin: auto;
             width: 100%;
-
         }
     </style>
     <body>
@@ -28,21 +27,20 @@
 
         </div>
         <div class="col-md-9">
-            <table cellspacing="10" style="width: 100%" >
+
                 </thead>
                 <tbody>
-                <tr style="border-bottom:1px solid #0551ee; ">
+
                     <form method="POST" action="">
                         <div class="d-flex justify-content-center form_container">
 
                             <form method="POST" action="">
-
+                                {{ form }}
                                 {% csrf_token %}
                                 <div class="d-flex justify-content-center mt-3 login_container">
-
-                                    <input class="btn login_btn" type="submit" value="Send your note..." >
+                                    <input class="btn login_btn" type="submit" value="Click to send." >
                                 </div>
-                                {{ form }}
+
                             </form>
 
 
@@ -51,10 +49,9 @@
                         {{ form.errors }}
 
                     </form>
-                </tr>
+
                 </tbody>
 
-            </table>
         </div>
     </div>
 
