@@ -1,27 +1,75 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
 
-<form method="POST" action="">
-    <h2>Take note in lecture {{ lec_name }} in course {{ cname }}</h2>
-    <div class="d-flex justify-content-center form_container">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>certificate</title>
+    </head>
+    <style>
+        body {
+            background-image: url('../../../static/images/notes.png');
+            background-repeat: repeat-y;
+            background-size: cover;
+        }
+        input {
+            margin: auto;
+            width: 100%;
 
-        <form method="POST" action="">
-            {% csrf_token %}
-            {{ form }}
+        }
+    </style>
+    <body>
+    <h1 style="padding-top: 50px; color: #860202; text-align: center"> Taking Note on Lecture {{ lec_name }} in course {{ cname }} </h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-2">
 
-            <div class="d-flex justify-content-center mt-3 login_container">
-                <input class="btn login_btn" type="submit" value="Enter">
-            </div>
-        </form>
+        </div>
+        <div class="col-md-9">
+            <table cellspacing="10" style="width: 100%" >
+                </thead>
+                <tbody>
+                <tr style="border-bottom:1px solid #0551ee; ">
+                    <form method="POST" action="">
+                        <div class="d-flex justify-content-center form_container">
+
+                            <form method="POST" action="">
+
+                                {% csrf_token %}
+                                <div class="d-flex justify-content-center mt-3 login_container">
+                                    <input class="btn login_btn" type="submit" value="Send your note..." >
+                                </div>
+                                {{ form }}
+                            </form>
+
+
+                        </div>
+
+                        {{ form.errors }}
+
+                    </form>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
     </div>
 
-    {{ form.errors }}
 
-</form>
+    </body>
 
+
+    </html>
+
+
+{% endblock %}
 
 <script>
     //Query All input fields
     var form_fields = document.getElementsByTagName('input')
-
+    form_fields[1].placeholder='Take note...';
 
     for (var field in form_fields){
         form_fields[field].className += ' form-control'

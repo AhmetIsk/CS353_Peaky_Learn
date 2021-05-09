@@ -60,7 +60,7 @@ class LectureForm(forms.Form):
     }
 
 class AddNote(forms.Form):
-    content = forms.CharField(max_length=10000, label="Note")
+    content = forms.CharField(max_length=10000, label="")
 
     values = {
         'content': content,
