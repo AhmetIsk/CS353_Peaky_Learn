@@ -87,7 +87,7 @@ class AddFinalQuestion(forms.Form):
 
 class AddReview(forms.Form):
     r_content = forms.CharField(max_length=10000, label="Comments on this course")
-    rating = forms.FloatField(min_value=1, max_value=5, label="Rate from 1 to 5:")
+    rating = forms.DecimalField(max_digits=5, decimal_places=1, label="Rate from 1 to 5:")
 
     values = {
         'r_content': r_content,
