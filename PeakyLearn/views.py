@@ -430,9 +430,10 @@ def adminMainPage(request):
     except sqlite3.OperationalError:
         return HttpResponse('404! error in adminpage', status=404)
     educators = cursor.fetchall()
+    uname = request.session['username']
     connection.close()
 
-    context = {'students': students, 'educators': educators, 'all_users': all_users}
+    context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
