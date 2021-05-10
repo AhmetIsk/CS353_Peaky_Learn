@@ -811,12 +811,31 @@ def student_lectures(request, course_id):
         rating = 0
     print(rating)
 
+    # Get amount of lectures
+    query = "SELECT COUNT(*) FROM contain WHERE course_id=?;"
+    param = [course_id]
+    cursor.execute(query, param)
+    lec_amt = cursor.fetchone()[0]
+
+    # Get amount of PASSED lectures
+    query = "SELECT COUNT(*) FROM pass_t WHERE lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
+    param = [course_id]
+    cursor.execute(query, param)
+    pass_amt = cursor.fetchone()[0]
+
+    print("PASS AMT: ", pass_amt, "LEC AMT", lec_amt)
+
+    progress = 0
+    if lec_amt != 0:
+        progress = pass_amt/lec_amt
+
 
     connection.close()
     context = {'course': course, 'username': uname,
                'lectures': lectures, 'course_id': course_id,
                'qualified': qualified, 'announcements': announcements,
-               'avg_rating': rating}
+               'avg_rating': rating, 'progress': progress}
+    print("Progress", progress)
 
 
     return render(request, 'PeakyLearn/lecturesStudent.html', context)
