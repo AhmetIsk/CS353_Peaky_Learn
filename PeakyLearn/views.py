@@ -2084,3 +2084,49 @@ def make_announcement(request, course_id):
 
         context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
         return render(request, 'PeakyLearn/answer_q.html', context)
+
+
+def get_all_refund_request():
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT * FROM refundRequest;"
+
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_all_refund_request', status=404)
+
+    refundRequest = cursor.fetchall()
+    connection.close()
+
+    print(refundRequest)
+    return refundRequest
+
+
+
+
+def refundReqShowAdmin(request):
+    refunds = get_all_refund_request()
+    context = {'refunds': refunds }
+    return render(request, 'PeakyLearn/refundReqShowAdmin.html', context)
+
+@allowed_users(allowed_roles=['admin'])
+def acceptRefundRequest(request, student_id, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    # delete request
+    #query = "DELETE FROM refundRequest WHERE studentID = ? AND  courseID = ?;"
+    query = "DELETE FROM buy WHERE student_id = ? AND course_id = ?;"
+    params = [student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in acceptRefundRequest', status=404)
+
+    connection.commit()
+    connection.close()
+
+
+
+    return HttpResponse("Refund Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
