@@ -248,12 +248,13 @@ def get_refund_request(uid):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [uid]
-    print(uid)
-    query = "SELECT * FROM refundRequest WHERE course_id IN (SELECT course_id FROM buy WHERE student_id = ?);"
+    query = "SELECT * FROM refundRequest WHERE studentID = ?;"
+
+
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
-        return HttpResponse('404! error in get_owned_courses', status=404)
+        return HttpResponse('404! error in get_refund_request', status=404)
 
     refundRequest = cursor.fetchall()
     connection.close()
@@ -303,7 +304,7 @@ def refundRequestShow(request):
     uname = request.session['username']
     refunds = get_refund_request(request.session['uid'])
     context = {'username': uname, 'refunds': refunds }
-    return render(request, 'PeakyLearn/get_refund_request.html', context)
+    return render(request, 'PeakyLearn/refundRequestShow.html', context)
 
 def get_owned_certificates(uid):
     connection = sqlite3.connect('db.sqlite3')
