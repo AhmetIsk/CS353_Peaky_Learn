@@ -34,10 +34,9 @@
             <th>Category</th>
             <th>Price</th>
             <th>Language</th>
-            <th>Lecture Count</th>
-            <th>Certificate ID</th>
-            <th>Rate</th>
             <th>Educator ID</th>
+            <th>Certificate ID</th>
+            <th>Lecture Count</th>
             <th></th>
             <th></th>
 
@@ -45,7 +44,7 @@
         </tr>
       </thead>
       <tbody>
-          {% for course in owned_courses %}
+          {% for lectures,course in owned_courses %}
               <tr>
 
                     <td>{{ course.0 }}</td>
@@ -55,11 +54,10 @@
                     <td>{{ course.4 }}</td>
                     <td>{{ course.5 }}</td>
                     <td>{{ course.6 }}</td>
-                    <td>{{ course.7 }}</td>
-                    <td>{{ course.8 }}</td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'studentLectures' course.0 %}">See Lectures</a></td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'addReview' course.0 %}">Add Review</a></td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'refundReqStudent' course.0 %}">Create Refund Request</a></td>
+                    <td>{{ lectures }}</td>
+                    <td><a class="btn btn-sm btn-info" href="{% url 'studentLectures' course.0 %}">See Lectures</a></td>
+                    <td><a class="btn btn-sm btn-warning" href="{% url 'addReview' course.0 %}">Add Review</a></td>
+                    <td><a class="btn btn-sm btn-danger" href="{% url 'refundReqStudent' course.0 %}">Create Refund Request</a></td>
               </tr>
           {% endfor %}
       </tbody>

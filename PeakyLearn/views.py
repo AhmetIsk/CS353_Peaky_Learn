@@ -297,7 +297,26 @@ def get_all_courses():
 def ownedCourses(request):
     uname = request.session['username']
     owned_courses = get_owned_courses(request.session['uid'])
-    context = {'username': uname, 'owned_courses': owned_courses }
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    lectureCounts = []
+    for course in owned_courses:
+        course_id = course[0]
+        params = [course_id]
+        query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in lectures', status=404)
+
+        lectures = cursor.fetchall()
+        lectureCounts.append(len(lectures))
+    connection.close()
+
+    zippedData = zip(lectureCounts, owned_courses)
+
+    context = {'username': uname, 'owned_courses': zippedData }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
 def refundRequestShow(request):
@@ -509,8 +528,36 @@ def studentProfile(request):
     uname = request.session['username']
     regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
     owned_courses = get_owned_courses(request.session['uid'])
-    context = {'username': uname, 'owned_courses': owned_courses, 'fname': fname, 'lname': lname,
-               'email': email, 'phone': phone, 'regDate': regDate }
+    progresses = []
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    for course in owned_courses:
+        course_id = course[0]
+        # Get amount of lectures
+        query = "SELECT COUNT(*) FROM contain WHERE course_id=?;"
+        param = [course_id]
+        cursor.execute(query, param)
+        lec_amt = cursor.fetchone()[0]
+
+        # Get amount of PASSED lectures
+        query = "SELECT COUNT(*) FROM pass_t WHERE lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
+        param = [course_id]
+        cursor.execute(query, param)
+        pass_amt = cursor.fetchone()[0]
+
+        print("PASS AMT: ", pass_amt, "LEC AMT", lec_amt)
+
+        progress = 0
+        if lec_amt != 0:
+            progress = pass_amt/lec_amt
+            progress *= 100
+
+        progresses.append(progress)
+
+    zippedData = zip(progresses, owned_courses)
+    connection.close()
+    context = {'username': uname, 'owned_courses': zippedData, 'fname': fname, 'lname': lname,
+               'email': email, 'phone': phone, 'regDate': regDate}
     return render(request, 'PeakyLearn/studentProfile.html', context)
 
 def get_wishlist(uid):
@@ -851,6 +898,7 @@ def student_lectures(request, course_id):
     progress = 0
     if lec_amt != 0:
         progress = pass_amt/lec_amt
+        progress *= 100
 
 
     connection.close()
