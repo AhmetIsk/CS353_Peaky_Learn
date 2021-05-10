@@ -244,6 +244,22 @@ def default_insert():
     connection.commit()
     connection.close()
 
+def get_refund_request(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    print(uid)
+    query = "SELECT * FROM refundRequest WHERE course_id IN (SELECT course_id FROM buy WHERE student_id = ?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_owned_courses', status=404)
+
+    refundRequest = cursor.fetchall()
+    connection.close()
+
+    print(refundRequest)
+    return refundRequest
 
 def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
@@ -282,6 +298,12 @@ def ownedCourses(request):
     owned_courses = get_owned_courses(request.session['uid'])
     context = {'username': uname, 'owned_courses': owned_courses }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
+
+def refundRequestShow(request):
+    uname = request.session['username']
+    refunds = get_refund_request(request.session['uid'])
+    context = {'username': uname, 'refunds': refunds }
+    return render(request, 'PeakyLearn/get_refund_request.html', context)
 
 def get_owned_certificates(uid):
     connection = sqlite3.connect('db.sqlite3')

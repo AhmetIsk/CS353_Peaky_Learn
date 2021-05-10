@@ -75,4 +75,6 @@ urlpatterns = [
     path('student_questions/<str:course_id>', views.student_questions, name='student_questions'),
     path('make_announcement/<str:course_id>', views.make_announcement, name='make_announcement'),
 
+     path('get_refund_request/', views.get_refund_request, name='get_refund_request'),
+
 ]
