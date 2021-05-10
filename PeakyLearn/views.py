@@ -1798,8 +1798,7 @@ def refundReqStudent(request, course_id):
     if request.method == 'POST':
         create_all()
 
-        req_content = request.POST.get('r_content')
-
+        req_content = request.POST.get('req_content')
         s_id = request.session.get('uid')
         c_id = course_id
 
