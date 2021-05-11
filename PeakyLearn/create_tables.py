@@ -148,6 +148,7 @@ def create_all():
                     studentID INTEGER,\
                     courseID INTEGER,\
                     req_content VARCHAR(32765),\
+                    req_situation VARCHAR(32765),\
                     FOREIGN KEY (studentID) REFERENCES student(student_id),\
                     FOREIGN KEY (courseID) REFERENCES course(course_id));')
 
@@ -283,6 +284,12 @@ def create_all():
                         INSERT INTO quiz (lec_id) VALUES(NEW.lecture_id); \
                     END;')
 
+    exec_query('CREATE TRIGGER IF NOT EXISTS after_accept_req \
+                            AFTER DELETE \
+                            ON buy \
+                            FOR EACH ROW\
+                            UPDATE refundRequest SET refundRequest.req_situation="Accepted" WHERE refundRequest.studentID=OLD.studentID; \
+                        END;')
 
 
 

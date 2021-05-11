@@ -525,6 +525,7 @@ def get_user_data(uid):
 
 @allowed_users(allowed_roles=['student', 'educator', 'admin'])
 def studentProfile(request):
+
     uname = request.session['username']
     regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
     owned_courses = get_owned_courses(request.session['uid'])
@@ -1851,10 +1852,11 @@ def refundReqStudent(request, course_id):
         c_id = course_id
 
 
-        query = "INSERT INTO refundRequest(studentID, courseID, req_content) VALUES (?,?,?);"
+        query = "INSERT INTO refundRequest(studentID, courseID, req_content, req_situation) VALUES (?,?,?,?);"
         connection = sqlite3.connect('db.sqlite3')
         cursor = connection.cursor()
-        params = [s_id, c_id, req_content]
+        situation = "Waiting"
+        params = [s_id, c_id, req_content,situation]
         try:
             cursor.execute(query, params)
         except sqlite3.IntegrityError as e:
@@ -2124,9 +2126,12 @@ def acceptRefundRequest(request, student_id, course_id):
         print(e)
         return HttpResponse('Error in acceptRefundRequest', status=404)
 
+
+
     connection.commit()
     connection.close()
 
 
-
     return HttpResponse("Refund Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+
+
