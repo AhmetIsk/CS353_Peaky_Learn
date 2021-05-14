@@ -51,7 +51,7 @@ def create_all():
 
     exec_query('CREATE TABLE IF NOT EXISTS course(\
                     course_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    courseName VARCHAR(50) NOT NULL,\
+                    courseName VARCHAR(50) UNIQUE NOT NULL,\
                     category VARCHAR(50) NOT NULL,\
                     price INTEGER NOT NULL,\
                     language VARCHAR(20) NOT NULL,\
@@ -263,6 +263,16 @@ def create_all():
                        ann_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                        FOREIGN KEY(announcement_id) REFERENCES announcement(announcement_id));')
 
+    exec_query('CREATE TABLE IF NOT EXISTS discountRequest(\
+                        request_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                        studentID INTEGER,\
+                        courseID INTEGER,\
+                        req_content VARCHAR(32765),\
+                        discount_rate FLOAT,\
+                        req_situation VARCHAR(32765),\
+                        FOREIGN KEY (studentID) REFERENCES student(student_id),\
+                        FOREIGN KEY (courseID) REFERENCES course(course_id));')
+
     exec_query('CREATE TRIGGER IF NOT EXISTS del_from_wishlist \
                 AFTER INSERT \
                 ON buy \
@@ -284,13 +294,22 @@ def create_all():
                         INSERT INTO quiz (lec_id) VALUES(NEW.lecture_id); \
                     END;')
 
-    exec_query('CREATE TRIGGER IF NOT EXISTS after_accept_req \
+    exec_query("CREATE TRIGGER IF NOT EXISTS after_accept_req \
                             AFTER DELETE \
                             ON buy \
-                            FOR EACH ROW\
-                            UPDATE refundRequest SET refundRequest.req_situation="Accepted" WHERE refundRequest.studentID=OLD.studentID; \
-                        END;')
+                            FOR EACH ROW \
+                            BEGIN \
+                            UPDATE refundRequest SET req_situation='Accepted' WHERE OLD.student_id=studentID AND OLD.course_id=courseID; \
+                        END;")
 
+    exec_query("CREATE TRIGGER IF NOT EXISTS after_accept_discount_req \
+                                AFTER UPDATE OF req_situation\
+                                ON discountRequest \
+                                FOR EACH ROW \
+                                WHEN NEW.req_situation=='Accepted' \
+                                BEGIN \
+                                UPDATE course SET price=CAST(price*OLD.discount_rate AS int) WHERE OLD.courseID=course_id; \
+                            END;")
 
 
 

@@ -64,6 +64,7 @@ urlpatterns = [
     path('deleteQuizQuestion/<str:question_id>/<str:lec_id>', views.deleteQuizQuestion, name='deleteQuizQuestion'),
     path('updateQuizQuestion/<str:question_id>/<str:lec_id>', views.updateQuizQuestion, name='updateQuizQuestion'),
     path('refundReqStudent/<str:course_id>', views.refundReqStudent, name='refundReqStudent'),
+    path('discountReqStudent/<str:course_id>', views.discountReqStudent, name='discountReqStudent'),
 
     path('searchCourse/', views.searchCourse, name='searchCourse'),
 
@@ -75,9 +76,14 @@ urlpatterns = [
     path('student_questions/<str:course_id>', views.student_questions, name='student_questions'),
     path('make_announcement/<str:course_id>', views.make_announcement, name='make_announcement'),
 
-     path('refundRequestShow/', views.refundRequestShow, name='refundRequestShow'),
+    path('refundRequestShow/', views.refundRequestShow, name='refundRequestShow'),
 
     path('refundReqShowAdmin/', views.refundReqShowAdmin, name='refundReqShowAdmin'),
     path('acceptRefundRequest/<str:student_id>/<str:course_id>', views.acceptRefundRequest, name='acceptRefundRequest'),
+
+
+    path('rejectRefundRequest/<str:student_id>/<str:course_id>', views.rejectRefundRequest, name='rejectRefundRequest'),
+    path('acceptDiscountRequest/<str:student_id>/<str:course_id>', views.acceptDiscountRequest, name='acceptDiscountRequest'),
+    path('rejectDiscountRequest/<str:student_id>/<str:course_id>', views.rejectDiscountRequest, name='rejectDiscountRequest'),
 
 ]

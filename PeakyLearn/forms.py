@@ -51,7 +51,7 @@ class UpdateCourseForm(forms.Form):
 class LectureForm(forms.Form):
     lecName = forms.CharField(max_length= 50, label="Lecture Name")
     lec_url = forms.URLField(label = "Lecture URL")
-    prereq = forms.BooleanField(label="Prerequisite")
+    prereq = forms.BooleanField(label="Please accept the terms and conditions.")
 
     values = {
             'lecName': lecName,
@@ -99,6 +99,16 @@ class RefundRequestForm(forms.Form):
 
     value = {
         'req_content' : req_content
+    }
+
+
+class DiscountRequestForm(forms.Form):
+    req_content = forms.CharField(max_length=10000, label="Convince the admin to make a discount.")
+    discount_rate = forms.IntegerField(min_value=0, max_value=100, label="Write your desired discount percentage.")
+
+    value = {
+        'req_content': req_content,
+        'discount_rate': discount_rate,
     }
 
 

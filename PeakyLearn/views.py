@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 
 from .decorators import allowed_users
 from .forms import UserForm, AddCourseForm, LectureForm, UpdateCourseForm, AddNote, QuizForm, AddReview, \
-    AddFinalQuestion, RefundRequestForm, AskQuestionForm, AnnouncementForm
+    AddFinalQuestion, RefundRequestForm, AskQuestionForm, AnnouncementForm, DiscountRequestForm
 
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -1892,6 +1892,76 @@ def refundReqStudent(request, course_id):
 
 
 @allowed_users(allowed_roles=['student'])
+def discountReqStudent(request, course_id):
+
+    student_id = request.session['uid']
+
+    # First check if this user submitted a refund request before for this couse
+    query = "SELECT * FROM discountRequest WHERE studentID=? AND courseID=?;"
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('error in discount request process!', status=409)
+
+    exists = cursor.fetchone()
+    requested_before = 1 if exists else 0
+
+    if requested_before:
+        return HttpResponse("You have already created discount request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+
+    if request.method == 'POST':
+        create_all()
+
+        req_content = request.POST.get('req_content')
+        discount_rate = int(request.POST.get('discount_rate')) / 100
+        s_id = request.session.get('uid')
+        c_id = course_id
+
+
+        query = "INSERT INTO discountRequest(studentID, courseID, req_content, discount_rate, req_situation) VALUES (?,?,?,?,?);"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        situation = "Waiting"
+        params = [s_id, c_id, req_content, discount_rate, situation]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('unsuccessful-review is not created!', status=409)
+
+        connection.commit()
+        connection.close()
+        return redirect('ownedCourses')
+        # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+
+    elif request.method == 'GET':
+        form = DiscountRequestForm()
+
+        # Get course name
+        query = "SELECT courseName FROM course WHERE course_id=?;"
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return HttpResponse('refundReqStudent', status=409)
+
+        course_name = cursor.fetchone()[0]
+        connection.close()
+
+        uname = request.session['username']
+
+        context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
+        return render(request, 'PeakyLearn/refundReqStudent.html', context)
+
+
+@allowed_users(allowed_roles=['student'])
 def ask_question(request, course_id):
     if request.method == 'POST':
 
@@ -2105,11 +2175,29 @@ def get_all_refund_request():
     return refundRequest
 
 
+def get_all_discount_request():
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT * FROM discountRequest;"
+
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_all_discount_request', status=404)
+
+    discRequest = cursor.fetchall()
+    connection.close()
+
+    return discRequest
 
 
 def refundReqShowAdmin(request):
     refunds = get_all_refund_request()
-    context = {'refunds': refunds }
+
+    disc_req = get_all_discount_request()
+
+
+    context = {'refunds': refunds, 'dreq': disc_req }
     return render(request, 'PeakyLearn/refundReqShowAdmin.html', context)
 
 @allowed_users(allowed_roles=['admin'])
@@ -2135,3 +2223,57 @@ def acceptRefundRequest(request, student_id, course_id):
     return HttpResponse("Refund Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
+@allowed_users(allowed_roles=['admin'])
+def rejectRefundRequest(request, student_id, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    # delete request
+    #query = "DELETE FROM refundRequest WHERE studentID = ? AND  courseID = ?;"
+    query = "UPDATE refundRequest SET req_situation = ? WHERE studentID = ? AND courseID = ?;"
+    params = ["Rejected", student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in acceptRefundRequest', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Refund rejection Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+
+
+def acceptDiscountRequest(request, student_id, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    query = "UPDATE discountRequest SET req_situation = ? WHERE studentID = ? AND courseID = ?;"
+    params = ["Accepted", student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in acceptDiscountRequest', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Discount accepted. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+
+def rejectDiscountRequest(request, student_id, course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    # delete request
+    # query = "DELETE FROM refundRequest WHERE studentID = ? AND  courseID = ?;"
+    query = "UPDATE discountRequest SET req_situation = ? WHERE studentID = ? AND courseID = ?;"
+    params = ["Rejected", student_id, course_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in rejectDiscountRequest', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return HttpResponse("Discount rejected. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")

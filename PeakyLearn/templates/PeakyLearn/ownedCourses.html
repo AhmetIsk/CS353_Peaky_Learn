@@ -39,6 +39,9 @@
             <th>Lecture Count</th>
             <th></th>
             <th></th>
+            <th></th>
+            <th></th>
+
 
 
         </tr>
@@ -58,6 +61,7 @@
                     <td><a class="btn btn-sm btn-info" href="{% url 'studentLectures' course.0 %}">See Lectures</a></td>
                     <td><a class="btn btn-sm btn-warning" href="{% url 'addReview' course.0 %}">Add Review</a></td>
                     <td><a class="btn btn-sm btn-danger" href="{% url 'refundReqStudent' course.0 %}">Create Refund Request</a></td>
+                    <td><a class="btn btn-sm btn-danger" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
               </tr>
           {% endfor %}
       </tbody>
