@@ -312,15 +312,16 @@ def create_all():
                             END;")
 
 
-
-
-
-
-
-
-
-
-
+    exec_query("CREATE TRIGGER IF NOT EXISTS pay_educator \
+                                    AFTER INSERT \
+                                    ON buy \
+                                    BEGIN \
+                                    UPDATE educator \
+                                    SET wallet = wallet + ( \
+                                                   SELECT price FROM course WHERE course_id=NEW.course_id \
+                                                    ) \
+                                    WHERE educator_id IN ( SELECT edu_id FROM course WHERE course_id=NEW.course_id );\
+                                END;")
 
 
 

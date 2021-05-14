@@ -731,7 +731,8 @@ def purchaseCourse(request, pk):
     query = "INSERT INTO buy VALUES( ?, ? )"
     try:
         cursor.execute(query, params)
-    except sqlite3.OperationalError:
+    except sqlite3.OperationalError as e:
+        print(e)
         return HttpResponse('Error in purchaseCourse', status=404)
 
     connection.commit()
