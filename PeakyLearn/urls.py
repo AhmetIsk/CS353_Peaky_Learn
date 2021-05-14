@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('educatorCreatedCourses', views.educatorCreatedCourses, name='educatorCreatedCourses'),
     path('studentProfile/', views.studentProfile, name='studentProfile'),
-    path('shoppingCart/', views.shoppingCart, name='shoppingCart'),
+    path('wishlist/', views.wishlist, name='wishlist'),
     path('addLecture/<str:course_id>', views.addLecture, name='addLecture'),
     path('deleteCourse/<str:course_id>', views.deleteCourse, name='deleteCourse'),
 

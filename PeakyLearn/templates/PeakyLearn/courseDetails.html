@@ -35,8 +35,6 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Language</th>
-                        <th>Lecture Count</th>
-                        <th>Certificate ID</th>
                         <th>Educator ID</th>
                         <th></th>
                     </tr>
@@ -49,12 +47,16 @@
                                 <td>{{ course.3 }}</td>
                                 <td>{{ course.4 }}</td>
                                 <td>{{ course.5 }}</td>
-                                <td>{{ course.6 }}</td>
-                                <td>{{ course.8 }}</td>
                                 <td><a class="btn btn-sm btn-outline-primary" href="{% url 'seeCourseReviews' course.0 %}">See Reviews</a></td>
                           </tr>
                   </tbody>
             </table>
+            <div class="card card-body">
+                <h2 style="text-align: center">Course Description</h2>
+            </div>
+            <div class="card card-body">
+                <p style="text-align: center"><strong>{{ course.6 }}</strong></p>
+            </div>
         </body>
     </html>
 

@@ -1,29 +1,22 @@
 body {
     margin: 0px;
+    background-image: url('../images/Untitled.jpg');
+    background-position: top center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
-.initialP{
-    background-image: url('../images/Untitled.jpg');
-    background-repeat: repeat-y;
-    background-attachment: scroll;
-    background-size: cover;
-    background-position: top;
-    position: fixed;
-    width: 100%;
-    height:100%;
-}
 .initialPH {
     font-family: "Times New Roman";
     font-weight: bolder;
     color: black;
-    font-size: 150px;
-    margin: 20px 20px 20px 20px;
-    padding-left: 200px;
+    font-size: 130px;
 }
 .second {
     font-family: "Times New Roman";
     font-weight: bolder;
-    font-size: 150px;
+    font-size: 130px;
 }
 .color1 {
     color: blue;
@@ -34,26 +27,7 @@ body {
 .color3 {
     color: #2b5d08;
 }
-.leftdv {
 
-    width:50%;
-
-    Text-align:center;
-
-    float:left;
-
-}
-.rightdv {
-
-    width:35%;
-    padding-top: 10px;
-    padding-left: 150px;
-    margin: 40px 140px 50px 20px;
-    Text-align:center;
-
-    float:right;
-
-}
 .initialPHeader {
     font-family: "Berlin Sans FB";
     font-weight: bolder;
@@ -83,7 +57,7 @@ body {
 }
 
 .navbar-brand {
-    padding-top: 25px;
+/*{#padding-top: 25px;#}*/
 }
 .navbar-brand h1 {
     font-family: 'Lora', serif;
@@ -99,7 +73,7 @@ body {
     font-size: 3em;
     font-weight: bold;
     text-shadow: 3px 3px 3px #222;
-    margin-top: 2;
-    margin-bottom: 2;
     line-height: .75;
+    margin-bottom: -20px;
+    margin-top: -20px;
 }

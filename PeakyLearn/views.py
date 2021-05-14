@@ -245,6 +245,7 @@ def default_insert():
     connection.close()
 
 def get_refund_request(uid):
+    create_all()
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     params = [uid]
@@ -593,11 +594,11 @@ def get_wishlist(uid):
 
     return wishlist
 
-
-def shoppingCart(request):
+@allowed_users(allowed_roles=['educator', 'student'])
+def wishlist(request):
     wishlist = get_wishlist(request.session['uid'])
     context = {'username': request.session['username'], 'wishlist': wishlist}
-    return render(request, 'PeakyLearn/shoppingCart.html', context)
+    return render(request, 'PeakyLearn/wishlist.html', context)
 
 
 @allowed_users(allowed_roles=['educator'])
@@ -652,8 +653,11 @@ def addCourse(request):
 
             connection.commit()
             connection.close()
+
+            messages.info(request, 'Course creation is successful.')
+            return redirect('educatorMainPage')
             
-            return HttpResponse("Course Creation Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+            # return HttpResponse("Course Creation Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
         form = AddCourseForm()
@@ -697,7 +701,9 @@ def addLecture(request, course_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorLectures/{}'>Back</a>".format(course_id))
+            messages.info(request, 'Lecture is successfully added.')
+            return redirect(f'/educatorLectures/{course_id}')
+            # return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorLectures/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
         form = LectureForm()
@@ -724,7 +730,9 @@ def purchaseCourse(request, pk):
     already_bought = 1 if course else 0
 
     if already_bought:
-        return HttpResponse("You have already purchased this course. Back to Main: <a href='/studentMainPage'>Back</a>")
+        messages.warning(request, 'You have already purchased this course.')
+        return redirect('studentMainPage')
+        # return HttpResponse("You have already purchased this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course
     params = [pk, uid]
@@ -738,7 +746,9 @@ def purchaseCourse(request, pk):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Success!. Back to Main: <a href='/studentMainPage'>Back</a>")
+    messages.info(request, 'You have successfully purchased this course !')
+    return redirect('studentMainPage')
+    # return HttpResponse("Success!. Back to Main: <a href='/studentMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['admin'])
 def deleteUser(request, pk):
@@ -752,7 +762,9 @@ def deleteUser(request, pk):
 
     if user_type == 3:  # Admin
         connection.close()
-        return HttpResponse("Cannot delete admin. Back to Main: <a href='/adminMainPage'>Back</a>")
+        messages.warning(request, 'You Cannot delete admin.')
+        return redirect('adminMainPage')
+        # return HttpResponse("Cannot delete admin. Back to Main: <a href='/adminMainPage'>Back</a>")
 
     print("USER TYPE: ", user_type, " PK: ", pk)
 
@@ -780,7 +792,9 @@ def deleteUser(request, pk):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
+    messages.info(request, 'Deletion successful!')
+    return redirect('adminMainPage')
+    # return HttpResponse("Deletion Succesful. Back to Main: <a href='/adminMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['educator'])
 def educator_lectures(request, course_id):
@@ -818,7 +832,9 @@ def student_lectures(request, course_id):
     bought_course = 1 if bought else 0
 
     if not bought:
-        return HttpResponse("You do not own this course. Back to Main: <a href='/userPage'>Back</a>")
+        messages.warning(request, 'You do not own this course.')
+        return redirect('userPage')
+        # return HttpResponse("You do not own this course. Back to Main: <a href='/userPage'>Back</a>")
 
     params = [course_id]
     query = "SELECT * FROM lecture WHERE lecture_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
@@ -969,7 +985,9 @@ def deleteCourse(request, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
+    messages.warning(request, 'You deleted the course successfully!')
+    return redirect('educatorMainPage')
+    # return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['educator', 'admin'])
 def updateCourse(request, course_id):
@@ -997,7 +1015,9 @@ def updateCourse(request, course_id):
 
             connection.commit()
             connection.close()
-            return HttpResponse("Course is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
+            messages.info(request, 'Course is Updated successfully!')
+            return redirect('educatorMainPage')
+            # return HttpResponse("Course is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
         form = UpdateCourseForm()
@@ -1050,7 +1070,9 @@ def takeNote(request, course_id, lecture_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Note Creation Succesful. Back to Lectures Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
+            messages.info(request, 'Note created successfully!')
+            return redirect(f'/studentLectures/{course_id}')
+            # return HttpResponse("Note Creation Succesful. Back to Lectures Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
 
     elif request.method == 'GET':
         form = AddNote()
@@ -1110,7 +1132,7 @@ def notes(request, course_id, lecture_id):
     context = {'all_notes': all_notes, 'username': uname}
     return render(request, 'PeakyLearn/notes.html', context)
 
-@allowed_users(allowed_roles=['educator', 'admin', 'student'])
+@allowed_users(allowed_roles=['educator', 'student'])
 def addToWishlist(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -1131,7 +1153,9 @@ def addToWishlist(request, course_id):
     already_wishlisted = 1 if course else 0
 
     if already_wishlisted:
-        return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/studentMainPage'>Back</a>")
+        messages.warning(request, 'You have already wished this course!')
+        return redirect('studentMainPage')
+        # return HttpResponse("You have already wishlisted this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # And check if the course is already bought
     query = "SELECT * FROM buy WHERE course_id=? AND student_id=?;"
@@ -1146,8 +1170,10 @@ def addToWishlist(request, course_id):
     already_bought = 1 if course else 0
 
     if already_bought:
-        return HttpResponse(
-            "You have already bought this course. Back to Main: <a href='/studentMainPage'>Back</a>")
+        messages.warning(request, 'You have already bought this course!')
+        return redirect('studentMainPage')
+        # return HttpResponse(
+        #     "You have already bought this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course into wishlist
     # Create the student's own wishlist, if not created yet
@@ -1208,8 +1234,9 @@ def addToWishlist(request, course_id):
 
         connection.commit()
         connection.close()
-
-    return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
+    messages.info(request, 'Course added to wishlist!')
+    return redirect('userPage')
+    # return HttpResponse("Course addded to wishlist!. Back to Main: <a href='/userPage'>Back</a>")
 
 # Exam page for student:
 @allowed_users(allowed_roles=['student'])
@@ -1252,7 +1279,9 @@ def finalExamPage(request, course_id):
             if int(answer) == corr_answer[0]:
                 print("answer ", answer, " is correct")
             else:
-                return HttpResponse("You have failed. Back to Main: <a href='/userPage'>Back</a>")
+                messages.warning(request, 'You have failed...')
+                return redirect('userPage')
+                # return HttpResponse("You have failed. Back to Main: <a href='/userPage'>Back</a>")
 
         # SUCCESS!
         # Give the student certificate
@@ -1281,8 +1310,10 @@ def finalExamPage(request, course_id):
         connection.commit()
         connection.close()
 
-        return HttpResponse(
-            "Yay! You have passed the exam and gained your certificate! Back to Main: <a href='/userPage'>Back</a>")
+        messages.info(request, 'Yay! You have passed the exam and gained your certificate! ')
+        return redirect('userPage')
+        # return HttpResponse(
+        #     "Yay! You have passed the exam and gained your certificate! Back to Main: <a href='/userPage'>Back</a>")
     else:
         # Get the exam contents:
         connection = sqlite3.connect('db.sqlite3')
@@ -1299,7 +1330,9 @@ def finalExamPage(request, course_id):
         print("exam: ", exam)
 
         if len(exam) == 0:
-            return HttpResponse("A final quiz has not been created for this course yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
+            messages.warning(request, 'A final quiz has not been created for this course yet. Contact the course owner. ')
+            return redirect('userPage')
+            # return HttpResponse("A final quiz has not been created for this course yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
 
         connection.close()
 
@@ -1356,7 +1389,9 @@ def addFinalQuestion(request, course_id):
 
             connection.commit()
             connection.close()
-            return HttpResponse("New final exam question is added. Back to Exam Page: <a href='/seeFinalExam/{}'>Back</a>".format(exam_id))
+            messages.info(request, 'New final exam question is added.')
+            return redirect(f'/seeFinalExam/{exam_id}')
+            # return HttpResponse("New final exam question is added. Back to Exam Page: <a href='/seeFinalExam/{}'>Back</a>".format(exam_id))
 
     elif request.method == 'GET':
         form = AddFinalQuestion()
@@ -1406,7 +1441,9 @@ def addReview(request, course_id):
     reviewed_before = 1 if exists else 0
 
     if reviewed_before:
-        return HttpResponse("You have reviewed this course before! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+        messages.warning(request, 'You have reviewed this course before!')
+        return redirect('ownedCourses')
+        # return HttpResponse("You have reviewed this course before! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
         create_all()
@@ -1433,6 +1470,7 @@ def addReview(request, course_id):
 
         connection.commit()
         connection.close()
+        messages.info(request, 'Review created successfully!')
         return redirect('ownedCourses')
         # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
@@ -1520,8 +1558,9 @@ def deleteNotes(request, note_id):
 
     connection.commit()
     connection.close()
-
-    return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
+    messages.info(request, 'Deletion Successful!')
+    return redirect('studentMainPage')
+    # return HttpResponse("Deletion Succesful. Back to Main: <a href='/studentMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['educator'])
 def deleteFinalQuestion(request, question_id, course_id):
@@ -1542,7 +1581,9 @@ def deleteFinalQuestion(request, question_id, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Deletion Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
+    messages.info(request, 'Deletion successful!')
+    return redirect(f'/seeFinalExam/{course_id}')
+    # return HttpResponse("Deletion Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
 
 @allowed_users(allowed_roles=['educator'])
 def updateFinalQuestion(request, question_id, course_id):
@@ -1572,7 +1613,9 @@ def updateFinalQuestion(request, question_id, course_id):
 
             connection.commit()
             connection.close()
-            return HttpResponse("Update Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
+            messages.warning(request, 'Update successful!')
+            return redirect(f'/seeFinalExam/{course_id}')
+            # return HttpResponse("Update Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
         form = AddFinalQuestion()
@@ -1626,7 +1669,9 @@ def add_quiz_question(request, lec_id):
 
             connection.commit()
             connection.close()
-            return HttpResponse("New quiz question is added. Back to Quiz Page: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+            messages.info(request, 'New quiz question is added.')
+            return redirect(f'/eduSeeQuiz/{lec_id}')
+            # return HttpResponse("New quiz question is added. Back to Quiz Page: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
 
     elif request.method == 'GET':
         form = AddFinalQuestion()
@@ -1700,7 +1745,9 @@ def quizPage(request, lec_id):
             if int(answer) == corr_answer[0]:
                 print("answer ", answer, " is correct")
             else:
-                return HttpResponse("You have failed. Back to Main: <a href='/userPage'>Back</a>")
+                messages.warning(request, 'You have failed. Try again.')
+                return redirect('userPage')
+                # return HttpResponse("You have failed. Back to Main: <a href='/userPage'>Back</a>")
 
         # SUCCESS!
         # Student passes to quiz: Insert into pass
@@ -1721,8 +1768,10 @@ def quizPage(request, lec_id):
         connection.commit()
         connection.close()
 
-        return HttpResponse(
-            "Yay! You have passed the quiz and passed this lecture! Back to Main: <a href='/userPage'>Back</a>")
+        messages.info(request, 'Yay! You have passed the quiz and passed this lecture!')
+        return redirect('userPage')
+        # return HttpResponse(
+        #     "Yay! You have passed the quiz and passed this lecture! Back to Main: <a href='/userPage'>Back</a>")
     else:
         # Get the exam contents:
         connection = sqlite3.connect('db.sqlite3')
@@ -1735,7 +1784,9 @@ def quizPage(request, lec_id):
         p = cursor.fetchone()
         ap = 1 if p else 0
         if ap:
-            return HttpResponse("You have passed this quiz before.<a href='/userPage'>Back</a>")
+            messages.warning(request, 'You have passed this quiz before! Try other quizzes!')
+            return redirect('userPage')
+            # return HttpResponse("You have passed this quiz before.<a href='/userPage'>Back</a>")
 
         # Select all Questions:
         # Return all final exam questions
@@ -1748,7 +1799,9 @@ def quizPage(request, lec_id):
         print("exam: ", exam)
 
         if len(exam) == 0:
-            return HttpResponse("A quiz has not been created for this lecture yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
+            messages.warning(request, 'The quiz has not been created for this lecture yet. Contact the course educator.')
+            return redirect('userPage')
+            # return HttpResponse("A quiz has not been created for this lecture yet. Contact the course owner. Back to Main: <a href='/userPage'>Back</a>")
 
 
         connection.close()
@@ -1780,7 +1833,9 @@ def deleteQuizQuestion(request, question_id, lec_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Deletion Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+    messages.info(request, 'Deletion successful!')
+    return redirect(f'/eduSeeQuiz/{lec_id}')
+    # return HttpResponse("Deletion Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
 
 @allowed_users(allowed_roles=['educator'])
 def updateQuizQuestion(request, question_id, lec_id):
@@ -1810,7 +1865,9 @@ def updateQuizQuestion(request, question_id, lec_id):
 
             connection.commit()
             connection.close()
-            return HttpResponse("Update Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
+            messages.info(request, 'Update successful!')
+            return redirect(f'/eduSeeQuiz/{lec_id}')
+            # return HttpResponse("Update Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
 
     elif request.method == 'GET':
         form = AddFinalQuestion()
@@ -1859,7 +1916,9 @@ def refundReqStudent(request, course_id):
     requested_before = 1 if exists else 0
 
     if requested_before:
-        return HttpResponse("You have already create refund request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+        messages.warning(request, 'You have already create refund request!')
+        return redirect('ownedCourses')
+        # return HttpResponse("You have already create refund request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
         create_all()
@@ -1882,6 +1941,7 @@ def refundReqStudent(request, course_id):
 
         connection.commit()
         connection.close()
+        messages.info(request, 'Refund request created successfully!')
         return redirect('ownedCourses')
         # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
@@ -1928,7 +1988,9 @@ def discountReqStudent(request, course_id):
     requested_before = 1 if exists else 0
 
     if requested_before:
-        return HttpResponse("You have already created discount request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
+        messages.warning(request, 'You have already created discount request!')
+        return redirect('ownedCourses')
+        # return HttpResponse("You have already created discount request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
         create_all()
@@ -1952,6 +2014,7 @@ def discountReqStudent(request, course_id):
 
         connection.commit()
         connection.close()
+        messages.info(request, 'Discount request created successfully!')
         return redirect('ownedCourses')
         # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
@@ -2014,7 +2077,9 @@ def ask_question(request, course_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Ask question Succesful. Back to Course Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
+            messages.info(request, 'Question asked successfully!')
+            return redirect(f'/studentLectures/{course_id}')
+            # return HttpResponse("Ask question Succesful. Back to Course Page: <a href='/studentLectures/{}'>Back</a>:".format(course_id))
 
     elif request.method == 'GET':
         form = AskQuestionForm()
@@ -2079,7 +2144,9 @@ def answer_q(request, q_id, course_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse("Answer question Succesful. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(course_id))
+            messages.info(request, 'Question is answered successfully!')
+            return redirect(f'/educatorLectures/{course_id}')
+            # return HttpResponse("Answer question Succesful. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(course_id))
 
     elif request.method == 'GET':
         form = AskQuestionForm()
@@ -2149,9 +2216,11 @@ def make_announcement(request, course_id):
             connection.commit()
             connection.close()
 
-            return HttpResponse(
-                "Announcement Created. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(
-                    course_id))
+            messages.info(request, 'Announcement created!')
+            return redirect(f'/educatorLectures/{course_id}')
+            # return HttpResponse(
+            #     "Announcement Created. Back to Course Page: <a href='/educatorLectures/{}'>Back</a>:".format(
+            #         course_id))
 
     elif request.method == 'GET':
         form = AnnouncementForm()
@@ -2219,6 +2288,7 @@ def refundReqShowAdmin(request):
 
 @allowed_users(allowed_roles=['admin'])
 def acceptRefundRequest(request, student_id, course_id):
+    create_all()
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     # delete request
@@ -2230,14 +2300,12 @@ def acceptRefundRequest(request, student_id, course_id):
     except sqlite3.OperationalError as e:
         print(e)
         return HttpResponse('Error in acceptRefundRequest', status=404)
-
-
-
     connection.commit()
     connection.close()
 
-
-    return HttpResponse("Refund Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+    messages.info(request, 'Refund request accepted!')
+    return redirect('refundReqShowAdmin')
+    # return HttpResponse("Refund Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
 @allowed_users(allowed_roles=['admin'])
@@ -2257,7 +2325,9 @@ def rejectRefundRequest(request, student_id, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Refund rejection Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+    messages.warning(request, 'Refund request rejected!')
+    return redirect('refundReqShowAdmin')
+    # return HttpResponse("Refund rejection Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
 def acceptDiscountRequest(request, student_id, course_id):
@@ -2275,7 +2345,9 @@ def acceptDiscountRequest(request, student_id, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Discount accepted. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+    messages.info(request, 'Discount request accepted!')
+    return redirect('refundReqShowAdmin')
+    # return HttpResponse("Discount accepted. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 def rejectDiscountRequest(request, student_id, course_id):
     connection = sqlite3.connect('db.sqlite3')
@@ -2293,7 +2365,9 @@ def rejectDiscountRequest(request, student_id, course_id):
     connection.commit()
     connection.close()
 
-    return HttpResponse("Discount rejected. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+    messages.warning(request, 'Discount request rejected!')
+    return redirect('refundReqShowAdmin')
+    # return HttpResponse("Discount rejected. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
 def student_watch_lecture(request, course_id, lec_id):

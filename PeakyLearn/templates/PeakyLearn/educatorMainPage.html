@@ -17,14 +17,14 @@
 
 </head>
 <body>
-<br>
-<td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
-<a class="btn btn-sm btn-outline-primary" href="{% url 'educatorCreatedCourses' %}">See My Created Courses</a>
-<a class="btn btn-sm btn-outline-secondary" href="{% url 'addCourse' %}">Add Courses</a>
+
+{% if messages %}
+{% endif %}
 
 <div class = "jumbotron text-center" >
     <h1>Welcome {{ username }} [Educator]</h1>
-
+    <a style="margin: 20px" class="btn btn-sm btn-primary" href="{% url 'educatorCreatedCourses' %}">See My Created Courses</a>
+    <a style="margin: 20px" class="btn btn-sm btn-success" href="{% url 'addCourse' %}">Add a Course</a>
     <h3> All Courses </h3>
     <hr>
 

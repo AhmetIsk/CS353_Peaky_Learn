@@ -69,13 +69,7 @@ html {
 }
 
 .split {
-    height: 100%;
-    width: 40%;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    overflow-x: hidden;
-    padding-top: 20px;
+
 }
 
 .alert {
@@ -103,28 +97,22 @@ html {
     color: black;
 }
 
+
 /* Control the left side */
 .signIn {
-    background-image: url('../images/SignIn.jpg');
+
 }
 
 .signUp {
-    background-image: url('../images/SignUp.jpg');
+
 }
 
 .left {
 
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-size: cover;
-    background-position: top;
-    width: 60%;
-    position: absolute;
 }
 
 /* Control the right side */
 .right {
-    right: 0;
 }
 
 /* If you want the content centered horizontally and vertically */
@@ -134,4 +122,41 @@ html {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+
+    .split {
+        height: 100%;
+        width: 40%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+    /* Control the left side */
+    .signIn {
+        background-image: url('../images/SignIn.jpg');
+    }
+
+    .signUp {
+        background-image: url('../images/SignUp.jpg');
+    }
+
+    .left {
+
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: top;
+        width: 60%;
+        position: absolute;
+    }
+
+    /* Control the right side */
+    .right {
+        right: 0;
+    }
+
 }
