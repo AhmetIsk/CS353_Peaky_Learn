@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.contrib import messages
 import sqlite3
 
 
@@ -41,7 +42,9 @@ def allowed_users(allowed_roles=[]):
             if role_dict[user_type] in allowed_roles:
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponse('You do not have permission.')
+                messages.info(request, 'You do not have permission!')
+                return redirect('userPage')
+                # return HttpResponse('You do not have permission.')
 
         return wrapper_func
 

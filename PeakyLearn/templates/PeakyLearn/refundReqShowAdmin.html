@@ -13,8 +13,6 @@
 
     </head>
     <body>
-    <br>
-    <td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
 
     <div class = "jumbotron text-center" >
         <h1>All Refund Requests</h1>
@@ -27,6 +25,7 @@
                 <th>Student ID</th>
                 <th>Course ID</th>
                 <th>Refund Reason</th>
+                <th></th>
 
             </tr>
             </thead>
@@ -49,12 +48,6 @@
                         <td><a class="btn btn-sm btn-outline-danger" href="{% url 'rejectRefundRequest' refundRequest.1 refundRequest.2 %}">Reject Request</a></td>
                     {% endif %}
 
-                    <td>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 40%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </td>
-
                 </tr>
             {% endfor %}
             </tbody>
@@ -74,6 +67,7 @@
                 <th>Course ID</th>
                 <th>Student Comment</th>
                 <th>Discount Rate</th>
+                <th></th>
 
             </tr>
             </thead>
@@ -96,12 +90,6 @@
                     <td><a class="btn btn-sm btn-outline-info" href="{% url 'acceptDiscountRequest' dq.1 dq.2 %}">Accept Request</a></td>
                         <td><a class="btn btn-sm btn-outline-danger" href="{% url 'rejectDiscountRequest' dq.1 dq.2 %}">Reject Request</a></td>
                     {% endif %}
-
-                    <td>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 40%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </td>
 
                 </tr>
             {% endfor %}

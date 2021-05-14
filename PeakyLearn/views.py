@@ -2278,12 +2278,13 @@ def get_all_discount_request():
 
 
 def refundReqShowAdmin(request):
+    uname = request.session['username']
     refunds = get_all_refund_request()
 
     disc_req = get_all_discount_request()
 
 
-    context = {'refunds': refunds, 'dreq': disc_req }
+    context = {'refunds': refunds, 'dreq': disc_req, 'username': uname }
     return render(request, 'PeakyLearn/refundReqShowAdmin.html', context)
 
 @allowed_users(allowed_roles=['admin'])
