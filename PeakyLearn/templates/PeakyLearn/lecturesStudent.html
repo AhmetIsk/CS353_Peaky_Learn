@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 
+    {% load listtag %}
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 
@@ -93,6 +95,11 @@
                             <td>{{ lecture.1 }}</td>
                             <td>{{ lecture.2 }}</td>
                             <td>{{ lecture.3 }}</td>
+                          {% if watched|return_item:forloop.counter0 %}
+                            <td><a class="btn btn-sm btn-warning" href="{% url 'student_watch_lecture' course_id lecture.0 %}">Watch Again</a></td>
+                          {% else %}
+                            <td><a class="btn btn-sm btn-primary" href="{% url 'student_watch_lecture' course_id lecture.0 %}">Watch For The First Time</a></td>
+                          {% endif %}
                             <td><a class="btn btn-sm btn-info" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a></td>
                             <td><a class="btn btn-sm btn-success" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a></td>
                             <td><a class="btn btn-sm btn-danger" href="{% url 'quizPage' lecture.0 %}">Go to Quiz</a></td>

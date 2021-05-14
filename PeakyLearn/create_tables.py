@@ -263,6 +263,13 @@ def create_all():
                        ann_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
                        FOREIGN KEY(announcement_id) REFERENCES announcement(announcement_id));')
 
+    exec_query('CREATE TABLE IF NOT EXISTS watch(\
+                           lec_id INTEGER NOT NULL,\
+                           s_id INTEGER NOT NULL, \
+                           watch_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, \
+                           FOREIGN KEY(s_id) REFERENCES student(student_id), \
+                           FOREIGN KEY(lec_id) REFERENCES lecture(lecture_id));')
+
     exec_query('CREATE TABLE IF NOT EXISTS discountRequest(\
                         request_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                         studentID INTEGER,\

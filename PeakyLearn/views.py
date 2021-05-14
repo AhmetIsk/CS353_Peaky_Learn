@@ -902,12 +902,28 @@ def student_lectures(request, course_id):
         progress = pass_amt/lec_amt
         progress *= 100
 
+    query = "SELECT lec_id FROM contain WHERE course_id=?;"
+    cursor.execute(query, param)
+    lec_ids = cursor.fetchall()
+
+    watched = []
+    for lec in lec_ids:
+        query = "SELECT * FROM watch WHERE lec_id=? and s_id=?;"
+        param = [lec[0], request.session['uid']]
+        cursor.execute(query, param)
+        watched_lec = cursor.fetchone()
+
+        watched_lec = 1 if watched_lec else 0
+        watched.append(watched_lec)
+
+    watched = tuple(watched)
+    print("watched", watched)
 
     connection.close()
     context = {'course': course, 'username': uname,
                'lectures': lectures, 'course_id': course_id,
                'qualified': qualified, 'announcements': announcements,
-               'avg_rating': rating, 'progress': progress}
+               'avg_rating': rating, 'progress': progress, 'watched': watched}
     print("Progress", progress)
 
 
@@ -2278,3 +2294,41 @@ def rejectDiscountRequest(request, student_id, course_id):
     connection.close()
 
     return HttpResponse("Discount rejected. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
+
+
+def student_watch_lecture(request, course_id, lec_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+
+    student_id = request.session['uid']
+
+    query = "SELECT * FROM watch WHERE lec_id=? AND s_id=?;"
+    params = [lec_id, student_id]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return HttpResponse('error in refund request process!', status=409)
+
+    exists = cursor.fetchone()
+    watched_before = 1 if exists else 0
+
+    if watched_before:
+        return redirect('/studentLectures/{}'.format(course_id))
+
+
+    query = "INSERT INTO watch (lec_id, s_id) VALUES (?, ?);"
+    params = [lec_id, request.session['uid']]
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError as e:
+        print(e)
+        return HttpResponse('Error in watch', status=404)
+
+    connection.commit()
+    connection.close()
+
+    return redirect('/studentLectures/{}'.format(course_id))
+
+
+

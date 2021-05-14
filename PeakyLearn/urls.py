@@ -86,4 +86,6 @@ urlpatterns = [
     path('acceptDiscountRequest/<str:student_id>/<str:course_id>', views.acceptDiscountRequest, name='acceptDiscountRequest'),
     path('rejectDiscountRequest/<str:student_id>/<str:course_id>', views.rejectDiscountRequest, name='rejectDiscountRequest'),
 
+    path('student_watch_lecture/<str:course_id>/<str:lec_id>', views.student_watch_lecture, name='student_watch_lecture'),
+
 ]
