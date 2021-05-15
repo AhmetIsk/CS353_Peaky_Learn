@@ -1930,7 +1930,21 @@ def updateQuizQuestion(request, question_id, lec_id):
             # return HttpResponse("Update Succesful. Back: <a href='/eduSeeQuiz/{}'>Back</a>".format(lec_id))
 
     elif request.method == 'GET':
-        form = AddFinalQuestion()
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+
+        query = "SELECT exam_question,choiceA,choiceB,choiceC,choiceD,choiceE,exam_answer FROM quiz_question WHERE question_id=?"
+        params =[question_id]
+        cursor.execute(query,params)
+        quiz_values = cursor.fetchone()
+        exam_question=quiz_values[0]
+        choiceA = quiz_values[1]
+        choiceB = quiz_values[2]
+        choiceC = quiz_values[3]
+        choiceD = quiz_values[4]
+        choiceE = quiz_values[5]
+        exam_answer = quiz_values[6]
+        form = AddFinalQuestion(initial = {'quiz_question':exam_question,'choiceA':choiceA,'choiceB':choiceB,'choiceC':choiceC,'choiceD':choiceD,'choiceE':choiceE,'answer':exam_answer})
         context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateQuizQuestion.html', context)
 
