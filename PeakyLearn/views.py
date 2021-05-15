@@ -1661,7 +1661,24 @@ def updateFinalQuestion(request, question_id, course_id):
             # return HttpResponse("Update Succesful. Back: <a href='/seeFinalExam/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
-        form = AddFinalQuestion()
+
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+
+        query = "SELECT exam_question,choiceA,choiceB,choiceC,choiceD,choiceE,exam_answer FROM final_question WHERE question_id=?"
+        params =[question_id]
+        cursor.execute(query,params)
+        question_values = cursor.fetchone()
+
+        exam_question=question_values[0]
+        choiceA = question_values[1]
+        choiceB = question_values[2]
+        choiceC = question_values[3]
+        choiceD = question_values[4]
+        choiceE = question_values[5]
+        exam_answer = question_values[6]
+
+        form = AddFinalQuestion(initial={'quiz_question':exam_question,'choiceA':choiceA,'choiceB':choiceB,'choiceC':choiceC,'choiceD':choiceD,'choiceE':choiceE,'answer':exam_answer})
         context = {'form': form, 'question_id': question_id}
         return render(request, 'PeakyLearn/updateFinalQuestion.html', context)
 
