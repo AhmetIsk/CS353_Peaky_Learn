@@ -301,6 +301,7 @@ def ownedCourses(request):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
     lectureCounts = []
+    original_prices = []
     for course in owned_courses:
         course_id = course[0]
         params = [course_id]
@@ -313,11 +314,27 @@ def ownedCourses(request):
 
         lectures = cursor.fetchall()
         lectureCounts.append(len(lectures))
-    connection.close()
+
+        query = "SELECT price FROM buy WHERE course_id=?;"
+        params = [course_id]
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError as e:
+            print(e)
+            return HttpResponse('Error in lectures', status=404)
+
+        old_price = cursor.fetchone()[0]
+        original_prices.append(old_price)
+
+
+
+
 
     zippedData = zip(lectureCounts, owned_courses)
+    connection.close()
 
-    context = {'username': uname, 'owned_courses': zippedData }
+
+    context = {'username': uname, 'owned_courses': zippedData, 'original_price': original_prices }
     return render(request, 'PeakyLearn/ownedCourses.html', context)
 
 def refundRequestShow(request):
@@ -735,8 +752,16 @@ def purchaseCourse(request, pk):
         # return HttpResponse("You have already purchased this course. Back to Main: <a href='/studentMainPage'>Back</a>")
 
     # Add the course
-    params = [pk, uid]
-    query = "INSERT INTO buy VALUES( ?, ? )"
+
+
+    query = "SELECT price FROM course WHERE course_id=?;"
+    params = [pk]
+    cursor.execute(query, params)
+    price = cursor.fetchone()[0]
+
+    params = [pk, uid, price]
+
+    query = "INSERT INTO buy VALUES( ?, ?, ? )"
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
@@ -1989,7 +2014,7 @@ def discountReqStudent(request, course_id):
 
     if requested_before:
         messages.warning(request, 'You have already created discount request!')
-        return redirect('ownedCourses')
+        return redirect('studentMainPage')
         # return HttpResponse("You have already created discount request! Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     if request.method == 'POST':
@@ -2015,7 +2040,7 @@ def discountReqStudent(request, course_id):
         connection.commit()
         connection.close()
         messages.info(request, 'Discount request created successfully!')
-        return redirect('ownedCourses')
+        return redirect('studentMainPage')
         # return HttpResponse("Review Creation Succesful. Back to Lectures Page: <a href='/ownedCourses/'>Back</a>:")
 
     elif request.method == 'GET':
@@ -2331,6 +2356,7 @@ def rejectRefundRequest(request, student_id, course_id):
     # return HttpResponse("Refund rejection Succesful. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
+@allowed_users(allowed_roles=['admin', 'educator'])
 def acceptDiscountRequest(request, student_id, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -2350,6 +2376,7 @@ def acceptDiscountRequest(request, student_id, course_id):
     return redirect('refundReqShowAdmin')
     # return HttpResponse("Discount accepted. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
+@allowed_users(allowed_roles=['admin', 'educator'])
 def rejectDiscountRequest(request, student_id, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -2371,6 +2398,7 @@ def rejectDiscountRequest(request, student_id, course_id):
     # return HttpResponse("Discount rejected. Back to Main: <a href='/refundReqShowAdmin'>Back</a>")
 
 
+@allowed_users(allowed_roles=['student'])
 def student_watch_lecture(request, course_id, lec_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()

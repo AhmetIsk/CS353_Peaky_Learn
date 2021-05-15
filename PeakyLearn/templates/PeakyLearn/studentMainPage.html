@@ -49,6 +49,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
 
 
                 </tr>
@@ -69,6 +70,7 @@
                         <td><a class="btn btn-sm btn-success" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
                         <td><a class="btn btn-sm btn-danger" href="{% url 'addToWishlist' course.0 %}">Add to Wishlist</a></td>
                         <td><a class="btn btn-sm btn-warning" href="{% url 'seeCourseReviews' course.0 %}">See reviews</a></td>
+                        <td><a class="btn btn-sm btn-danger" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -197,6 +197,7 @@ def create_all():
     exec_query('CREATE TABLE IF NOT EXISTS buy(\
                     course_id INTEGER NOT NULL,\
                     student_id INTEGER NOT NULL,\
+                    price INTEGER NOT NULL, \
                     FOREIGN KEY (course_id) REFERENCES course(course_id),\
                     FOREIGN KEY (student_id) REFERENCES student(student_id));')
 
