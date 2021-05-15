@@ -1029,14 +1029,18 @@ def updateCourse(request, course_id):
 
             query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ?, description=?  WHERE course_id = ?"
             params = [courseName, category, price, language,course_id,description]
+
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
+
 
             try:
                 cursor.execute( query, params )
             except sqlite3.IntegrityError as e:
                 print(e)
                 return HttpResponse('unsuccessful-course is not updated!', status=409)
+
+
 
             connection.commit()
             connection.close()
@@ -1045,8 +1049,25 @@ def updateCourse(request, course_id):
             # return HttpResponse("Course is Updated Succesfully. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
     elif request.method == 'GET':
-        form = UpdateCourseForm()
-        context = {'form': form, 'course_id': course_id}
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+
+        query = "SELECT courseName,category,price,language,description FROM course WHERE course_id=?"
+        params = [course_id]
+        cursor.execute(query, params)
+        arr = cursor.fetchone()
+        print(arr)
+
+        courseName= arr[0]
+        category=arr[1]
+        price = arr[2]
+        language=arr[3]
+        description=arr[4]
+
+
+
+        form = UpdateCourseForm(initial={'courseName': courseName, 'category':category, 'price': price, 'language':language, 'description':description})
+        context = {'form': form, 'course_id': course_id, 'courseName': courseName}
         return render(request, 'PeakyLearn/updateCourse.html', context)
 
 @allowed_users(allowed_roles=['student', 'educator', 'admin'])

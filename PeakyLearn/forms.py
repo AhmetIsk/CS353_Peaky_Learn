@@ -32,7 +32,9 @@ class AddCourseForm(forms.Form):
     }
 
 class UpdateCourseForm(forms.Form):
-    courseName = forms.CharField(max_length= 50, label = "Change Course Name")
+
+
+    courseName = forms.CharField(max_length= 50, label = "Change Course Name",initial='courseName')
     category = forms.CharField(max_length= 50, label = "Change Category - Topic")
     price = forms.CharField(max_length= 50,label = "Change Price")
     language = forms.CharField(max_length= 50, label = "Change Language")
@@ -40,7 +42,7 @@ class UpdateCourseForm(forms.Form):
 
     values = {
 
-            'coursneName' : courseName,
+            'courseName' : courseName,
             'category' : category,
             'price' : price,
             'language' : language,
