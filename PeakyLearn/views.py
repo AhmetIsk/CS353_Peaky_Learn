@@ -1056,15 +1056,12 @@ def updateCourse(request, course_id):
         params = [course_id]
         cursor.execute(query, params)
         arr = cursor.fetchone()
-        print(arr)
 
         courseName= arr[0]
         category=arr[1]
         price = arr[2]
         language=arr[3]
         description=arr[4]
-
-
 
         form = UpdateCourseForm(initial={'courseName': courseName, 'category':category, 'price': price, 'language':language, 'description':description})
         context = {'form': form, 'course_id': course_id, 'courseName': courseName}
