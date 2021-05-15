@@ -20,8 +20,8 @@ urlpatterns = [
     path('educatorMainPage/', views.educatorMainPage, name='educatorMainPage'),
     path('ownedCourses/', views.ownedCourses, name='ownedCourses'),
     path('purchaseCourse/<str:pk>', views.purchaseCourse, name='purchaseCourse'),
-    path('studentProfile/<str:pk>', views.purchaseCourse, name='studentProfile'),
-    path('educatorProfile/<str:pk>', views.purchaseCourse, name='educatorProfile'),
+    # path('studentProfile/<str:pk>', views.purchaseCourse, name='studentProfile'),
+    # path('educatorProfile/<str:pk>', views.purchaseCourse, name='educatorProfile'),
     path('deleteUser/<str:pk>', views.deleteUser, name='deleteUser'),
 
     path('studentLectures/<str:course_id>', views.student_lectures, name='studentLectures'),
@@ -29,6 +29,8 @@ urlpatterns = [
 
     path('educatorCreatedCourses', views.educatorCreatedCourses, name='educatorCreatedCourses'),
     path('studentProfile/', views.studentProfile, name='studentProfile'),
+    path('educatorProfile/', views.educatorProfile, name='educatorProfile'),
+    path('userProfile/', views.userProfile, name='userProfile'),
     path('wishlist/', views.wishlist, name='wishlist'),
     path('addLecture/<str:course_id>', views.addLecture, name='addLecture'),
     path('deleteCourse/<str:course_id>', views.deleteCourse, name='deleteCourse'),

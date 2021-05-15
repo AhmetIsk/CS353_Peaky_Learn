@@ -18,7 +18,7 @@
 
 <div class = "jumbotron text-center" >
     <h1 style="padding-bottom: 20px">Welcome ADMIN</h1>
-    <a style="margin-bottom: 30px" class="btn btn-sm btn-warning" href="{% url 'refundReqShowAdmin' %}">Show Refund Requests</a>
+    <a style="margin-bottom: 30px" class="btn btn-sm btn-warning" href="{% url 'refundReqShowAdmin' %}">Show Refund & Discount Requests</a>
 
     <h3> All Students </h3>
     <hr>
@@ -27,7 +27,8 @@
       <thead>
         <tr>
             <th>Student ID</th>
-            <th>Level</th>
+            <th>first Name</th>
+            <th>last Name</th>
 
         </tr>
       </thead>
@@ -36,13 +37,14 @@
               <tr>
 
                     <td>{{ student.0 }}</td>
-                    <td>{{ student.1 }}</td>
+
               </tr>
           {% endfor %}
       </tbody>
       <tfoot>
             <th>Student ID</th>
-            <th>Level</th>
+            <th>first Name</th>
+            <th>last Name</th>
       </tfoot>
     </table>
 

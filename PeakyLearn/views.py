@@ -263,6 +263,23 @@ def get_refund_request(uid):
     print(refundRequest)
     return refundRequest
 
+def  get_sold_courses(uid):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    params = [uid]
+    print(uid)
+    query = "SELECT COUNT(student_id) FROM buy WHERE course_id IN (SELECT course_id FROM creates WHERE edu_id = ?);"
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_sold_courses', status=404)
+
+    sold_count = cursor.fetchall()
+    connection.close()
+
+    print(sold_count)
+    return sold_count
+
 def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -477,7 +494,7 @@ def adminMainPage(request):
 
     all_users = cursor.fetchall()
 
-    query = "SELECT * FROM student;"
+    query = "SELECT * FROM user WHERE user_id IN (SELECT student_id FROM student);"
     try:
         cursor.execute(query)
     except sqlite3.OperationalError:
@@ -541,6 +558,16 @@ def get_user_data(uid):
 
     return regDate, fname, lname, email, phone
 
+@allowed_users(allowed_roles=['student', 'educator'])
+def userProfile(request):
+    userid = request.session['uid']
+    user_type = get_user_type(userid)
+
+    if user_type == 2:
+        return redirect('studentProfile')
+    else:
+        return redirect('educatorProfile')
+
 @allowed_users(allowed_roles=['student'])
 def studentProfile(request):
 
@@ -578,6 +605,43 @@ def studentProfile(request):
     context = {'username': uname, 'owned_courses': zippedData, 'fname': fname, 'lname': lname,
                'email': email, 'phone': phone, 'regDate': regDate}
     return render(request, 'PeakyLearn/studentProfile.html', context)
+
+@allowed_users(allowed_roles=['educator'])
+def educatorProfile(request):
+    created_courses = get_created_courses(request.session['uid'])
+    uname = request.session['username']
+    regDate, fname, lname, email, phone = get_user_data(request.session['uid'])
+    # sold_courses_count = get_sold_courses(request.session['uid'])
+    progresses = []
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    for course in created_courses:
+        course_id = course[0]
+        # Get amount of lectures
+        query = "SELECT COUNT(student_id) FROM buy WHERE course_id=?;"
+        param = [course_id]
+        cursor.execute(query, param)
+        sold_count = cursor.fetchone()[0]
+
+        progress = sold_count
+        progresses.append(progress)
+
+    zippedData = zip(progresses, created_courses)
+    edu_id = request.session['uid']
+    query = "SELECT wallet FROM educator WHERE educator_id=?;"
+    param = [edu_id]
+    try:
+        cursor.execute(query, param)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in adminpage', status=404)
+    educator = cursor.fetchone()[0]
+
+    connection.close()
+    context = {'username': uname, 'created_courses': zippedData, 'fname': fname, 'lname': lname,
+               'email': email, 'phone': phone, 'regDate': regDate, 'educator': educator}
+    return render(request, 'PeakyLearn/educatorProfile.html', context)
+
+
 
 def get_wishlist(uid):
     connection = sqlite3.connect('db.sqlite3')
@@ -740,7 +804,7 @@ def purchaseCourse(request, pk):
     try:
         cursor.execute(query, params)
     except sqlite3.OperationalError:
-        return HttpResponse('404! error in purchaseCourse', status=404)
+        return HttpResponse('404! error in purchaseCourse already bought', status=404)
 
     course = cursor.fetchone()
     print(course)
