@@ -79,6 +79,7 @@ urlpatterns = [
     path('refundRequestShow/', views.refundRequestShow, name='refundRequestShow'),
 
     path('refundReqShowAdmin/', views.refundReqShowAdmin, name='refundReqShowAdmin'),
+    path('discountReqShowEducator/<str:course_id>', views.discountReqShowEducator, name='discountReqShowEducator'),
     path('acceptRefundRequest/<str:student_id>/<str:course_id>', views.acceptRefundRequest, name='acceptRefundRequest'),
 
 

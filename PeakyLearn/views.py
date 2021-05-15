@@ -2302,6 +2302,25 @@ def get_all_discount_request():
     return discRequest
 
 
+
+def get_all_discount_request_course(course_id):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    query = "SELECT * FROM discountRequest WHERE courseID=?;"
+    param = [course_id]
+
+    try:
+        cursor.execute(query, param)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_all_discount_request', status=404)
+
+    discRequest = cursor.fetchall()
+    connection.close()
+
+    return discRequest
+
+
+@allowed_users(allowed_roles=['admin'])
 def refundReqShowAdmin(request):
     uname = request.session['username']
     refunds = get_all_refund_request()
@@ -2311,6 +2330,16 @@ def refundReqShowAdmin(request):
 
     context = {'refunds': refunds, 'dreq': disc_req, 'username': uname }
     return render(request, 'PeakyLearn/refundReqShowAdmin.html', context)
+
+
+@allowed_users(allowed_roles=['educator'])
+def discountReqShowEducator(request, course_id):
+    disc_req = get_all_discount_request_course(course_id)
+
+    context = {'dreq': disc_req, 'username': request.session['uid']}
+    return render(request, 'PeakyLearn/discountReqEducator.html', context)
+
+
 
 @allowed_users(allowed_roles=['admin'])
 def acceptRefundRequest(request, student_id, course_id):
