@@ -611,7 +611,7 @@ def get_wishlist(uid):
 
     return wishlist
 
-@allowed_users(allowed_roles=['educator', 'student'])
+@allowed_users(allowed_roles=['student'])
 def wishlist(request):
     wishlist = get_wishlist(request.session['uid'])
     context = {'username': request.session['username'], 'wishlist': wishlist}
