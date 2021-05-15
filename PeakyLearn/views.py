@@ -1011,7 +1011,7 @@ def deleteCourse(request, course_id):
     connection.close()
 
     messages.warning(request, 'You deleted the course successfully!')
-    return redirect('educatorMainPage')
+    return redirect('educatorCreatedCourses')
     # return HttpResponse("Deletion Succesful. Back to Main: <a href='/educatorMainPage'>Back</a>")
 
 @allowed_users(allowed_roles=['educator', 'admin'])
