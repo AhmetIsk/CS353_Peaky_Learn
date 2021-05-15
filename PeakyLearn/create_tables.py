@@ -316,7 +316,7 @@ def create_all():
                                 FOR EACH ROW \
                                 WHEN NEW.req_situation=='Accepted' \
                                 BEGIN \
-                                UPDATE course SET price=CAST(price*OLD.discount_rate AS int) WHERE OLD.courseID=course_id; \
+                                UPDATE course SET price=CAST(price - (price*OLD.discount_rate) AS int) WHERE OLD.courseID=course_id; \
                             END;")
 
 
