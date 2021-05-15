@@ -541,7 +541,7 @@ def get_user_data(uid):
 
     return regDate, fname, lname, email, phone
 
-@allowed_users(allowed_roles=['student', 'educator', 'admin'])
+@allowed_users(allowed_roles=['student'])
 def studentProfile(request):
 
     uname = request.session['username']
