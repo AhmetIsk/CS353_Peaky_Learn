@@ -2383,9 +2383,10 @@ def refundReqShowAdmin(request):
 
 @allowed_users(allowed_roles=['educator'])
 def discountReqShowEducator(request, course_id):
+    uname = request.session['username']
     disc_req = get_all_discount_request_course(course_id)
 
-    context = {'dreq': disc_req, 'username': request.session['uid']}
+    context = {'dreq': disc_req, 'username': request.session['uid'], 'username': uname}
     return render(request, 'PeakyLearn/discountReqEducator.html', context)
 
 

@@ -56,7 +56,7 @@
                     <td>{{ course.5 }}</td>
                     <td>{{ course.6 }}</td>
                     <td>{{ avg_rating|return_item:forloop.counter0 }}</td>
-                    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
+                    <td><a class="btn btn-sm btn-dark" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
               </tr>
           {% endfor %}
       </tbody>
