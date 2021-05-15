@@ -1239,7 +1239,7 @@ def notes(request, course_id, lecture_id):
     context = {'all_notes': all_notes, 'username': uname}
     return render(request, 'PeakyLearn/notes.html', context)
 
-@allowed_users(allowed_roles=['educator', 'student'])
+@allowed_users(allowed_roles=['student'])
 def addToWishlist(request, course_id):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
