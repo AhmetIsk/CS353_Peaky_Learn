@@ -32,7 +32,6 @@
         <tr>
             <th>Lecture ID</th>
             <th>Lecture Name</th>
-            <th>Prereq</th>
             <th>Lecture URL</th>
 
 
@@ -44,7 +43,6 @@
 
                     <td>{{ lecture.0 }}</td>
                     <td>{{ lecture.1 }}</td>
-                    <td>{{ lecture.2 }}</td>
                     <td>{{ lecture.3 }}</td>
                     <a class="btn btn-sm btn-outline-primary" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a>
                     <a class="btn btn-sm btn-outline-primary" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a>
@@ -54,7 +52,6 @@
       <tfoot>
             <th>Lecture ID</th>
             <th>Lecture Name</th>
-            <th>Prereq</th>
             <th>Lecture URL</th>
 
 

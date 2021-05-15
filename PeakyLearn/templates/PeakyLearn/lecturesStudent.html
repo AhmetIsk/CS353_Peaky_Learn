@@ -80,7 +80,6 @@
                 <tr>
                     <th>Lecture ID</th>
                     <th>Lecture Name</th>
-                    <th>Prereq</th>
                     <th>Lecture URL</th>
                     <th></th>
                     <th></th>
@@ -93,7 +92,6 @@
 
                             <td>{{ lecture.0 }}</td>
                             <td>{{ lecture.1 }}</td>
-                            <td>{{ lecture.2 }}</td>
                             <td>{{ lecture.3 }}</td>
                           {% if watched|return_item:forloop.counter0 %}
                             <td><a class="btn btn-sm btn-warning" href="{% url 'student_watch_lecture' course_id lecture.0 %}">Watch Again</a></td>
@@ -109,7 +107,6 @@
               <tfoot>
                     <th>Lecture ID</th>
                     <th>Lecture Name</th>
-                    <th>Prereq</th>
                     <th>Lecture URL</th>
 
 
