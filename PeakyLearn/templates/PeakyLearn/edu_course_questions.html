@@ -16,13 +16,20 @@
     }
 </style>
 <body>
-    <h1 style="padding-top: 50px; color: #860202; text-align: center"> Unanswered Course Questions </h1>
+
+    <h1 style="padding-top: 50px; color: #860202; text-align: center"> Unanswered Course Questions
+        <a class="btn btn-sm btn-danger"  href="{% url 'educatorLectures' course_id %}">Go Back</a>
+    </h1>
+
     <hr>
+
     <div class="row">
         <div class="col-md-2">
 
         </div>
+
         <div class="col-md-9">
+
             <table cellspacing="10" style="width: 100%" >
                 <thead>
                 <tr>

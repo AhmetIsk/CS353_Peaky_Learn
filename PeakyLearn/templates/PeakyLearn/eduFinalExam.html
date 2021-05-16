@@ -12,6 +12,7 @@
 <body>
 
 <h1 style="padding: 30px; text-align: center"> Here is the Final Exam questions:</h1>
+<a class="btn btn-sm btn-danger"  href="{% url 'educatorLectures' course_id %}">Go Back</a>
 
 <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
       <thead>
@@ -49,7 +50,7 @@
           {% endfor %}
       </tbody>
       <tfoot>
-          <th><a class="btn btn-sm btn-danger"  href="{% url 'educatorLectures' course_id %}">Go Back</a></th>
+
           <th></th>
           <th></th>
           <th></th>
