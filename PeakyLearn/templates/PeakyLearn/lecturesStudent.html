@@ -84,6 +84,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -92,7 +93,7 @@
 
                             <td>{{ lecture.0 }}</td>
                             <td>{{ lecture.1 }}</td>
-                            <td>{{ lecture.3 }}</td>
+                            <td><a href="{{ lecture.3 }}">{{ lecture.3 }}</a></td>
                           {% if watched|return_item:forloop.counter0 %}
                             <td><a class="btn btn-sm btn-warning" href="{% url 'student_watch_lecture' course_id lecture.0 %}">Watch Again</a></td>
                           {% else %}

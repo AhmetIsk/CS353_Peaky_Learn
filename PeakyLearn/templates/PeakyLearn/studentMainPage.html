@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<meta charset="UTF-8">
+
 {%  extends 'PeakyLearn/main.html' %}
 {% load static %}
 {% block content %}
@@ -10,27 +8,53 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 {#<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap.min.css">#}
 {#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">#}
-
-
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
 <head>
+    <meta charset="UTF-8">
+    <title>Welcome {{ username }}
+    </title>
 
 </head>
-
-<title>Welcome {{ username }}
-</title>
 <body>
-    <br>
-    <a class="btn btn-sm btn-outline-primary" href="{% url 'ownedCourses' %}">See My Purchased Courses</a>
     <div class="modal-body row">
         <div class="col-md-3">
             <div style="align-items: center; background-color: #eee" class="card card-body">
-                <h2> Do your filter at here</h2>
+                <h2> Specify your search</h2>
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <hr>
+                    <div class="accordion">Type Category</div>
+                    <div class="panel">
+                        <input type="text" name="category" placeholder="Category..." class="form-control">
+                    </div>
+                    <hr>
+                    <div class="accordion">Type Language</div>
+                    <div class="panel">
+                        <input type="text" name="language" placeholder="Language..." class="form-control">
+                    </div>
+                    <hr>
+                    <div class="accordion">Type Min Price</div>
+                    <div class="panel">
+                        <input type="number" name="price" placeholder="Min Price..." class="form-control" value="0">
+                    </div>
+                    <hr>
+                    <div class="accordion">Type Max Price</div>
+                    <div class="panel">
+                        <input type="number" name="maxprice" placeholder="Max Price..." class="form-control">
+                    </div>
+                    <hr>
+
+                    <input class="btn btn-lg btn-outline-secondary" type="submit" value="Filter Search">
+                </form>
+
             </div>
         </div>
         <div class="col-md-9">
         <div class = "jumbotron text-center" >
             <h1>Welcome {{ username }} [Student]</h1>
-
+            <a style="margin: 20px" class="btn btn-lg btn-outline-danger" href="{% url 'ownedCourses' %}">See My Purchased Courses</a>
             <h3> All Courses </h3>
             <hr>
 
@@ -70,7 +94,7 @@
                         <td><a class="btn btn-sm btn-success" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
                         <td><a class="btn btn-sm btn-danger" href="{% url 'addToWishlist' course.0 %}">Add to Wishlist</a></td>
                         <td><a class="btn btn-sm btn-warning" href="{% url 'seeCourseReviews' course.0 %}">See reviews</a></td>
-                        <td><a class="btn btn-sm btn-danger" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -94,6 +118,24 @@
                 $(document).ready(function() {
                     $('#products').DataTable();
                 } );
+                var acc = document.getElementsByClassName("accordion");
+                var i;
+
+                for (i = 0; i < acc.length; i++) {
+                    acc[i].addEventListener("click", function() {
+                        /* Toggle between adding and removing the "active" class,
+                        to highlight the button that controls the panel */
+                        this.classList.toggle("active");
+
+                        /* Toggle between hiding and showing the active panel */
+                        var panel = this.nextElementSibling;
+                        if (panel.style.display === "block") {
+                            panel.style.display = "none";
+                        } else {
+                            panel.style.display = "block";
+                        }
+                    });
+                }
 
             </script>
 

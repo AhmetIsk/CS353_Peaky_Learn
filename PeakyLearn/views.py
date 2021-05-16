@@ -424,6 +424,22 @@ def studentMainPage(request):
         if avg is None:
             avg = 0
         avg_ratings.append(avg)
+
+
+    if request.method == 'POST':
+
+        language = request.POST.get('language')
+        price = request.POST.get('price')
+        maxprice = request.POST.get('maxprice')
+        category = request.POST.get('category')
+
+        params = [category, language, price, maxprice]
+        query = "SELECT * FROM course WHERE category LIKE '%' || ? || '%' AND language LIKE '%' || ? || '%' AND price BETWEEN ? AND ?;"
+        cursor.execute(query, params)
+
+        all_courses = cursor.fetchall()
+        print(all_courses)
+
     connection.close()
 
     context = {'username': uname, 'all_courses': all_courses, 'avg_rating': avg_ratings }
