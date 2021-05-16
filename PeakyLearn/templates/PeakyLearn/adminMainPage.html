@@ -294,13 +294,15 @@
                 <th>Language</th>
                 <th>Educator ID</th>
                 <th>Description</th>
+                <th>Total Sold</th>
                 <th></th>
 
 
             </tr>
             </thead>
             <tbody>
-            {% for course in all_courses %}
+            {% for count, course in sold_courses %}
+                {% if count != 0 %}
                 <tr>
 
                     <td>{{ course.0 }}</td>
@@ -310,9 +312,10 @@
                     <td>{{ course.4 }}</td>
                     <td>{{ course.5 }}</td>
                     <td>{{ course.6 }}</td>
-                    <td><a class="btn btn-sm btn-info" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
+                    <td>{{count}}</td>
                     <td><a class="btn btn-sm btn-dark" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
                 </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
             <tfoot>
@@ -324,6 +327,7 @@
             <th>Language</th>
             <th>Educator ID</th>
             <th>Description</th>
+            <th></th>
             <th></th>
 
             </tfoot>
