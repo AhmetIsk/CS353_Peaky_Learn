@@ -343,7 +343,8 @@ def create_all():
                                 END;")
 
 
-
+    #secondary indice usage
+    exec_query("CREATE INDEX sec_c_id ON final_question(c_id);")
 
 
 
