@@ -280,6 +280,32 @@ def  get_sold_courses(uid):
     print(sold_count)
     return sold_count
 
+def get_total_sold_courses():
+    all_courses = get_all_courses();
+    connection = sqlite3.connect('db.sqlite3')
+    progresses = []
+    cursor = connection.cursor()
+    for course in all_courses:
+        course_id = course[0]
+        params = [course_id]
+        print(course_id)
+        query = "SELECT COUNT(student_id) FROM buy WHERE course_id = ? ORDER BY COUNT(student_id) DESC;"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError:
+            return HttpResponse('404! error in get_sold_courses', status=404)
+
+        sold_count = cursor.fetchone()[0]
+        print(sold_count)
+        progress = sold_count
+        progresses.append(progress)
+
+    zippedData = zip(progresses, all_courses)
+    connection.close()
+
+    print(zippedData)
+    return zippedData
+
 def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -500,6 +526,7 @@ def buyCourse(request, pk):
 @allowed_users(allowed_roles=['admin'])
 def adminMainPage(request):
     connection = sqlite3.connect('db.sqlite3')
+    all_courses = get_all_courses()
     cursor = connection.cursor()
 
     query = "SELECT * FROM user;"
@@ -526,7 +553,9 @@ def adminMainPage(request):
     uname = request.session['username']
     connection.close()
 
-    context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname}
+    sold_courses = get_total_sold_courses()
+
+    context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname, 'sold_courses': sold_courses, 'all_courses': all_courses}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
@@ -2123,7 +2152,7 @@ def refundReqStudent(request, course_id):
         return render(request, 'PeakyLearn/refundReqStudent.html', context)
 
 
-@allowed_users(allowed_roles=['student'])
+@allowed_users(allowed_roles=['student', 'admin'])
 def discountReqStudent(request, course_id):
 
     student_id = request.session['uid']

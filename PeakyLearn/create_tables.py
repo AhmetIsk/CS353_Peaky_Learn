@@ -331,8 +331,18 @@ def create_all():
                                     WHERE educator_id IN ( SELECT edu_id FROM course WHERE course_id=NEW.course_id );\
                                 END;")
 
-    #secondary indice usage
-    exec_query("CREATE INDEX sec_c_id ON final_question(c_id);")
+    exec_query("CREATE TRIGGER IF NOT EXISTS retake_educator \
+                                    AFTER DELETE \
+                                    ON buy \
+                                    BEGIN \
+                                    UPDATE educator \
+                                    SET wallet = wallet - ( \
+                                                   SELECT price FROM course WHERE course_id=OLD.course_id \
+                                                    ) \
+                                    WHERE educator_id IN ( SELECT edu_id FROM course WHERE course_id=OLD.course_id );\
+                                END;")
+
+
 
 
 
