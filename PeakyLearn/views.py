@@ -799,12 +799,13 @@ def addLecture(request, course_id):
             connection.close()
 
             messages.info(request, 'Lecture is successfully added.')
-            return redirect(f'/educatorLectures/{course_id}')
+            context = {'form': form, 'course_id': course_id}
+            return redirect(f'/educatorLectures/{course_id}',context)
             # return HttpResponse("Lecture Succesfully Added. Back to Main: <a href='/educatorLectures/{}'>Back</a>".format(course_id))
 
     elif request.method == 'GET':
         form = LectureForm()
-        context = {'form': form}
+        context = {'form': form, 'course_id': course_id}
         return render(request, 'PeakyLearn/addLecture.html', context)
 
 @allowed_users(allowed_roles=['student'])
