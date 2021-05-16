@@ -47,8 +47,6 @@
     <h1 style="padding-bottom: 20px">Welcome ADMIN</h1>
     <a style="margin-bottom: 30px" class="btn btn-sm btn-warning" href="{% url 'refundReqShowAdmin' %}">Show Refund Requests</a>
 
-    <h3> All Students </h3>
-    <hr>
     <div class="row">
         <div class="col-md-6">
             <div id="piechart"></div>
@@ -109,11 +107,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for count, course in sold_courses %}
+                {% for spend, student in spending_students %}
                     <tr>
 
-                        <td>{{ course.1 }}</td>
-                        <td>{{ count }}</td>
+                        <td>{{ student.1 }}</td>
+                        <td>{{ spend }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -121,7 +119,7 @@
         </div>
     </div>
 
-
+    <h3> All Students </h3>
     <table id="students" class="table table-striped table-bordered" cellspacing="0" width="100%">
       <thead>
         <tr>
