@@ -558,6 +558,7 @@ def adminMainPage(request):
     connection.close()
 
     sold_courses = get_total_sold_courses()
+    sold_courses = sold_courses[:10]
 
     context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname, 'sold_courses': sold_courses, 'all_courses': all_courses}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
