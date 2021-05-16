@@ -14,10 +14,13 @@
     </head>
     <body>
     <br>
+    <a class="btn btn-sm btn-danger"  href="{% url 'educatorCreatedCourses' %}">Go Back</a>
     <div class="modal-body row">
+
         <div class="col-md-5">
             <!-- Your first column here -->
             <div style="align-items: center" class="card card-body">
+
                 <img class="round" width="300" height="300" avatar= "{{ fname }} {{ lname }}">
                 <hr>
                 <h3 style="text-align: center">Name: {{ fname }} {{ lname }}</h3>
