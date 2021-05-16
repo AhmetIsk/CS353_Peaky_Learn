@@ -1,4 +1,5 @@
 import sqlite3
+import operator
 from sqlite3 import Error
 
 from django.http import HttpResponse
@@ -280,6 +281,55 @@ def  get_sold_courses(uid):
     print(sold_count)
     return sold_count
 
+def get_most_earning_educators(educators):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    educator_names = []
+    query = "SELECT username, wallet FROM user INNER JOIN educator WHERE user.user_id = educator_id;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_sold_courses', status=404)
+
+    name = cursor.fetchall()
+    educator_names.append(name)
+
+    # zippedData = zip(name, educators)
+    # zippedData = list(zippedData)
+    # print(zippedData)
+    # res = sorted(zippedData, key = operator.itemgetter(0), reverse=True)
+
+    connection.close()
+    return name
+
+
+def get_total_spent_money(students):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    students_spent = []
+    for student in students:
+        student_id = student[0]
+        params = [student_id]
+        print(params)
+        query = "SELECT SUM(price) FROM buy WHERE student_id = ?;"
+        try:
+            cursor.execute(query, params)
+        except sqlite3.OperationalError:
+            return HttpResponse('404! error in get_sold_courses', status=404)
+
+        spent_money = cursor.fetchone()[0]
+        students_spent.append(spent_money)
+
+    zippedData = zip(students_spent, students)
+    zippedData = list(zippedData)
+    print(zippedData)
+    res = sorted(zippedData, key = operator.itemgetter(0), reverse=True)
+    print(spent_money)
+
+    connection.close()
+    return res
+
+
 def get_total_sold_courses():
     all_courses = get_all_courses();
     connection = sqlite3.connect('db.sqlite3')
@@ -289,7 +339,7 @@ def get_total_sold_courses():
         course_id = course[0]
         params = [course_id]
         print(course_id)
-        query = "SELECT COUNT(student_id) FROM buy WHERE course_id = ? ORDER BY COUNT(student_id) DESC;"
+        query = "SELECT COUNT(student_id) FROM buy WHERE course_id = ?;"
         try:
             cursor.execute(query, params)
         except sqlite3.OperationalError:
@@ -301,10 +351,13 @@ def get_total_sold_courses():
         progresses.append(progress)
 
     zippedData = zip(progresses, all_courses)
+    zippedData = list(zippedData)
+    res = sorted(zippedData, key = operator.itemgetter(0), reverse=True)
+    print(res)
     connection.close()
 
-    print(zippedData)
-    return zippedData
+    print(res)
+    return res
 
 def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
@@ -554,8 +607,16 @@ def adminMainPage(request):
     connection.close()
 
     sold_courses = get_total_sold_courses()
+    sold_courses = sold_courses[:10]
 
-    context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname, 'sold_courses': sold_courses, 'all_courses': all_courses}
+    spent_money = get_total_spent_money(students)
+    spent_money = spent_money[:10]
+
+    earning_educators = get_most_earning_educators(students)
+    earning_educators = earning_educators[:10]
+
+    context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname,
+               'sold_courses': sold_courses, 'all_courses': all_courses, 'spending_students': spent_money, 'earning_educators':earning_educators}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
