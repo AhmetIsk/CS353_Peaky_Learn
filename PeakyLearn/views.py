@@ -1102,8 +1102,8 @@ def student_lectures(request, course_id):
     lec_amt = cursor.fetchone()[0]
 
     # Get amount of PASSED lectures
-    query = "SELECT COUNT(*) FROM pass_t WHERE lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
-    param = [course_id]
+    query = "SELECT COUNT(*) FROM pass_t WHERE s_id=? AND lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
+    param = [request.session['uid'], course_id]
     cursor.execute(query, param)
     pass_amt = cursor.fetchone()[0]
 
@@ -1115,6 +1115,7 @@ def student_lectures(request, course_id):
         progress *= 100
 
     query = "SELECT lec_id FROM contain WHERE course_id=?;"
+    param = [course_id]
     cursor.execute(query, param)
     lec_ids = cursor.fetchall()
 
