@@ -63,7 +63,8 @@ def create_all():
                     lecture_id INTEGER PRIMARY KEY AUTOINCREMENT,\
                     lecName VARCHAR(50), \
                     prereq BOOLEAN, \
-                    lec_url VARCHAR(50));')
+                    lec_url VARCHAR(50), \
+                    video_length VARCHAR(50));')
 
     exec_query('CREATE TABLE IF NOT EXISTS note(\
                     note_id INTEGER PRIMARY KEY AUTOINCREMENT,\

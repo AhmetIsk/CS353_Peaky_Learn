@@ -860,12 +860,13 @@ def addLecture(request, course_id):
         if form.is_valid():
             lecName = form.cleaned_data.get('lecName')
             lec_url = form.cleaned_data.get('lec_url')
+            video_length = form.cleaned_data.get('video_length')
             prereq = form.cleaned_data.get('prereq')
 
-            query = "INSERT INTO lecture (lecName, prereq, lec_url) VALUES (?,?,?);"
+            query = "INSERT INTO lecture (lecName, prereq, lec_url,video_length) VALUES (?,?,?,?);"
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
-            params = [lecName, prereq, lec_url]
+            params = [lecName, prereq, lec_url,video_length]
             try:
                 cursor.execute(query, params)
             except sqlite3.IntegrityError as e:

@@ -35,6 +35,7 @@
             <th>Lecture ID</th>
             <th>Lecture Name</th>
             <th>Lecture URL</th>
+            <th>Lecture Time(minutes)</th>
             <th></th>
 
 
@@ -47,6 +48,7 @@
                     <td>{{ lecture.0 }}</td>
                     <td>{{ lecture.1 }}</td>
                     <td><a href="{{ lecture.3 }}">{{ lecture.3 }}</a></td>
+                    <td>{{ lecture.4 }}</td>
                     <!--<a class="btn btn-sm btn-outline-primary" href="{% url 'takeNote' course_id lecture.0 %}">Add Note</a>-->
                     <!--<a class="btn btn-sm btn-outline-primary" href="{% url 'notes' course_id lecture.0 %}">See My Notes</a>-->
                     <td><a class="btn btn-sm btn-outline-primary" href="{% url 'eduSeeQuiz' lecture.0 %}">See Quiz</a></td>
@@ -57,6 +59,7 @@
             <th>Lecture ID</th>
             <th>Lecture Name</th>
             <th>Lecture URL</th>
+            <th>Lecture Time(minutes)</th>
             <th></th>
 
 
