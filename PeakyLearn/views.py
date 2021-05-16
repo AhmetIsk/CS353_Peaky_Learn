@@ -191,7 +191,7 @@ def signup(request, type):
                 id = cursor.fetchone()
 
                 query = "INSERT INTO educator (educator_id, wallet) VALUES (?, ?);"
-                params = [id[0], 1000]
+                params = [id[0], 0]
 
                 try:
                     cursor.execute(query, params)
@@ -2193,7 +2193,7 @@ def discountReqStudent(request, course_id):
         uname = request.session['username']
 
         context = {'form': form, 'c_id': course_id, 'cname': course_name, 'username': uname}
-        return render(request, 'PeakyLearn/refundReqStudent.html', context)
+        return render(request, 'PeakyLearn/discountReqStudent.html', context)
 
 
 @allowed_users(allowed_roles=['student'])

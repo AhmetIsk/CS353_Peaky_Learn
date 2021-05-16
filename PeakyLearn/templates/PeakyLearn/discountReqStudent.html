@@ -1,0 +1,57 @@
+{%  extends 'PeakyLearn/main.html' %}
+{% load static %}
+{% block content %}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+
+    <link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
+    <link rel="stylesheet" href='{% static "style/review.css"%}'>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Welcome {{ username }}
+        </title>
+
+    </head>
+
+    <body>
+    <form method="POST" action="">
+        <div style="justify-content: center">
+            <div class="card card-body">
+                <h2 style="text-align: center"><span style="padding-right: 20px"><img src="../../../static/images/mascot.png" ></span>
+                    <strong>Hello {{ username }}! You can request discount and decrease the course price. </strong>
+                    <span style="padding-left: 20px"><img src="../../../static/images/dollar.png" style="width: 80px"></span></h2>
+            </div>
+        </div>
+        <h2 style="text-align: center; padding: 30px"> Discount Request for {{cname}}</h2>
+        <div class="">
+
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{ form }}
+
+                <div class="d-flex justify-content-center mt-3 login_container">
+                    <input class="btn login_btn btn-outline-danger" type="submit" value="Submit Request">
+                </div>
+            </form>
+        </div>
+
+        {{ form.errors }}
+
+    </form>
+
+
+    <script>
+        //Query All input fields
+        var form_fields = document.getElementsByTagName('input')
+        form_fields[1].placeholder='Refund Request Reason...';
+
+        for (var field in form_fields){
+            form_fields[field].className += ' form-control'
+        }
+    </script>
+    </body>
+    </html>
+{% endblock %}
