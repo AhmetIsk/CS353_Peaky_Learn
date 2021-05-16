@@ -1017,7 +1017,6 @@ def educator_lectures(request, course_id):
 
     course_Name = cursor.fetchone()[0]
     courseName = course_Name
-    print(courseName)
 
     connection.close()
     uname = request.session['username']
@@ -1138,11 +1137,22 @@ def student_lectures(request, course_id):
     print("watched", watched)
     print("qualified: ", qualified)
 
+    query2 = "SELECT courseName FROM course WHERE course_id = ?"
+    param2 = course_id
+
+    try:
+        cursor.execute(query2, param2)
+    except sqlite3.OperationalError:
+        return HttpResponse('Error in lectures', status=404)
+
+    course_Name = cursor.fetchone()[0]
+    courseName = course_Name
+
     connection.close()
     context = {'course': course, 'username': uname,
                'lectures': lectures, 'course_id': course_id,
                'qualified': qualified, 'announcements': announcements,
-               'avg_rating': rating, 'progress': progress, 'watched': watched}
+               'avg_rating': rating, 'progress': progress, 'watched': watched, 'courseName':courseName}
     print("Progress", progress)
 
 

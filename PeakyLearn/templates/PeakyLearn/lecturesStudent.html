@@ -71,7 +71,7 @@
         <div class = "jumbotron text-center" >
             <h1>Welcome {{ username }}</h1>
 
-            <h3> All lectures of course with course id {{ course_id }} </h3>
+            <h3> All lectures of {{ courseName}} </h3>
             <hr>
                     <a class="btn btn-sm btn-info" href="{% url 'ask_question' course_id %}">Ask Question About Course</a>
                 <a class="btn btn-sm btn-info" href="{% url 'student_questions' course_id %}">See My Questions About Course</a>
