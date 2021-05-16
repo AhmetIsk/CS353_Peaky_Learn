@@ -53,11 +53,13 @@ class UpdateCourseForm(forms.Form):
 class LectureForm(forms.Form):
     lecName = forms.CharField(max_length= 50, label="Lecture Name")
     lec_url = forms.URLField(label = "Lecture URL")
+    video_length = forms.CharField(max_length= 50, label="Video Length(in minutes) ")
     prereq = forms.BooleanField(label="Please accept the terms and conditions.")
 
     values = {
             'lecName': lecName,
             'lec_url': lec_url,
+            'video_length': video_length,
             'prereq': prereq,
     }
 
