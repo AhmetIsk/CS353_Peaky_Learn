@@ -18,13 +18,10 @@
 
 </head>
 <body>
-<br>
-<td><a href="/userLogout/" class = "btn btn-danger">Logout</a></td>
-<a class="btn btn-sm btn-outline-secondary" href="{% url 'studentMainPage' %}">See All Courses</a>
 
 <div class = "jumbotron text-center" >
     <h1>Welcome {{ username }}</h1>
-
+    <a class="btn btn-lg btn-outline-primary" href="{% url 'studentMainPage' %}" style="margin: 20px">See All Courses</a>
     <h3> Purchased Courses </h3>
     <hr>
 

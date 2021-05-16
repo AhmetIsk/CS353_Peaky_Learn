@@ -108,5 +108,18 @@
     content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
+p.b {
+    width: 170px;
+    overflow:hidden;
+    line-height: 2rem;
+    max-height: 8rem;
+    -webkit-box-orient: vertical;
+    display: block;
+    display: -webkit-box;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+}
+
 
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
