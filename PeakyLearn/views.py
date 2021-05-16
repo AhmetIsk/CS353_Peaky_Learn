@@ -281,6 +281,28 @@ def  get_sold_courses(uid):
     print(sold_count)
     return sold_count
 
+def get_most_earning_educators(educators):
+    connection = sqlite3.connect('db.sqlite3')
+    cursor = connection.cursor()
+    educator_names = []
+    query = "SELECT username, wallet FROM user INNER JOIN educator WHERE user.user_id = educator_id;"
+    try:
+        cursor.execute(query)
+    except sqlite3.OperationalError:
+        return HttpResponse('404! error in get_sold_courses', status=404)
+
+    name = cursor.fetchall()
+    educator_names.append(name)
+
+    # zippedData = zip(name, educators)
+    # zippedData = list(zippedData)
+    # print(zippedData)
+    # res = sorted(zippedData, key = operator.itemgetter(0), reverse=True)
+
+    connection.close()
+    return name
+
+
 def get_total_spent_money(students):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
@@ -590,8 +612,11 @@ def adminMainPage(request):
     spent_money = get_total_spent_money(students)
     spent_money = spent_money[:10]
 
+    earning_educators = get_most_earning_educators(students)
+    earning_educators = earning_educators[:10]
+
     context = {'students': students, 'educators': educators, 'all_users': all_users, 'username': uname,
-               'sold_courses': sold_courses, 'all_courses': all_courses, 'spending_students': spent_money}
+               'sold_courses': sold_courses, 'all_courses': all_courses, 'spending_students': spent_money, 'earning_educators':earning_educators}
     return render(request, 'PeakyLearn/adminMainPage.html', context)
 
 @allowed_users(allowed_roles=['educator'])
