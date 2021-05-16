@@ -23,15 +23,16 @@
     <div class="card">
         <div class="card-body">
             <div class="row upper"> <span id="payment"><span id="three">3</span>Payment</span> </div>
-            <div class="row">
+            <form class="row" action="{% url 'purchaseCourse' course.0 %}">
+                <div class="row">
                 <div class="col-md-7">
                     <div class="left border">
                         <div class="row"> <span class="header">Payment</span>
                             <div class="icons"> <img src="https://img.icons8.com/color/48/000000/visa.png" /> <img src="https://img.icons8.com/color/48/000000/mastercard-logo.png" /> <img src="https://img.icons8.com/color/48/000000/maestro.png" /> </div>
                         </div>
-                        <form> <span>Cardholder's name:</span> <input placeholder="Your Name and Surname"> <span>Card Number:</span> <input placeholder="0125 6780 4567 9909">
+                        <form> <span>Cardholder's name:</span> <input placeholder="Your Name and Surname" required> <span>Card Number:</span> <input placeholder="0125 6780 4567 9909" required>
                             <div class="row">
-                                <div class="col-4"><span>Expiry date:</span> <input placeholder="YY/MM"> </div>
+                                <div class="col-4"><span>Expiry date:</span> <input placeholder="YY/MM" required> </div>
                                 <div class="col-4"><span>CVV:</span> <input id="cvv"> </div>
                             </div> <input type="checkbox" id="save_card" class="align-left"> <label for="save_card">Save card details to wallet</label>
                         </form>
@@ -62,17 +63,41 @@
                             <div class="col text-left"><b>Total to pay</b></div>
                             <div class="col text-right"><b>$ {{ course.3 }}</b></div>
                         </div>
-                        <div class="row lower">
-                            <div class="col text-left"><a href="#"><u>Add promo code</u></a></div>
-                        </div> <a class="btn btn3" href="{% url 'purchaseCourse' course.0 %}" >Place order</a>
+{#                        <div class="row lower">#}
+{#                            <div class="col text-left"><a href="#"><u>Add promo code</u></a></div>#}
+{#                        </div>#}
+                        <input class="btn btn3" type="submit" value="Place order">
+
                         <p class="text-muted text-center">Complimentary Shipping & Returns</p>
                     </div>
                 </div>
-            </div>
+                </div>
+            </form>
         </div>
         <div> </div>
     </div>
 </body>
+    <script>
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
 </html>
 
 {% endblock %}
