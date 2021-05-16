@@ -1068,19 +1068,6 @@ def student_lectures(request, course_id):
     cursor.execute(query, param)
     lec_amt = cursor.fetchone()[0]
 
-    # Get amount of PASSED lectures
-    query = "SELECT COUNT(*) FROM pass_t WHERE lec_id IN (SELECT lec_id FROM contain WHERE course_id=?);"
-    param = [course_id]
-    cursor.execute(query, param)
-    pass_amt = cursor.fetchone()[0]
-
-    print("PASS AMT: ", pass_amt, "LEC AMT", lec_amt)
-
-    qualified = True
-    if passed_course or (pass_amt < lec_amt):
-        qualified = False
-
-
     # Get announcements:
     query = "SELECT * FROM announcement WHERE announcement_id IN (SELECT announcement_id FROM makes WHERE c_id=?);"
     param = [course_id]
@@ -1109,6 +1096,10 @@ def student_lectures(request, course_id):
 
     print("PASS AMT: ", pass_amt, "LEC AMT", lec_amt)
 
+    qualified = True
+    if passed_course or (pass_amt < lec_amt):
+        qualified = False
+
     progress = 0
     if lec_amt != 0:
         progress = pass_amt/lec_amt
@@ -1131,6 +1122,7 @@ def student_lectures(request, course_id):
 
     watched = tuple(watched)
     print("watched", watched)
+    print("qualified: ", qualified)
 
     connection.close()
     context = {'course': course, 'username': uname,
