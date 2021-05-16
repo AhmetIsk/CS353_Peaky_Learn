@@ -1137,8 +1137,8 @@ def updateCourse(request, course_id):
             language = form.cleaned_data.get('language')
             description = form.cleaned_data.get('description')
 
-            query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ?, description=?  WHERE course_id = ?"
-            params = [courseName, category, price, language,course_id,description]
+            query = "UPDATE course SET courseName = ?, category = ?, price = ?, language = ?, description=?  WHERE course_id = ?;"
+            params = [courseName, category, price, language,description,course_id]
 
             connection = sqlite3.connect('db.sqlite3')
             cursor = connection.cursor()
