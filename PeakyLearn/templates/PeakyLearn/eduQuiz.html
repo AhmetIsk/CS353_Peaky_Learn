@@ -1,7 +1,8 @@
 {%  extends 'PeakyLearn/main.html' %}
 
 {% block content %}
-
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +47,29 @@
                     <td>{{ q.7 }}</td>
                     <td>{{ q.8 }}</td>
                     <td><a class="btn btn-sm btn-outline-success" href="{% url 'updateQuizQuestion' q.0 lec_id %}">Change Question</a></td>
-                    <td><a class="btn btn-sm btn-outline-danger" href="{% url 'deleteQuizQuestion' q.0 lec_id %}">Delete Question</a></td>
+                    <td>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delete Quiz Question</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure to delete question?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <a class="btn btn-danger"  href="{% url 'deleteQuizQuestion' q.0 lec_id %}">Delete Question</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#exampleModal">Delete Question</button></td>
+
 
               </tr>
           {% endfor %}
@@ -67,7 +90,11 @@
     </table>
 
 
-
+<script>
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    })
+</script>
 </body>
 </html>
 
