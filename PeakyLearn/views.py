@@ -1,4 +1,5 @@
 import sqlite3
+import operator
 from sqlite3 import Error
 
 from django.http import HttpResponse
@@ -301,10 +302,13 @@ def get_total_sold_courses():
         progresses.append(progress)
 
     zippedData = zip(progresses, all_courses)
+    zippedData = list(zippedData)
+    res = sorted(zippedData, key = operator.itemgetter(0), reverse=True)
+    print(res)
     connection.close()
 
-    print(zippedData)
-    return zippedData
+    print(res)
+    return res
 
 def get_owned_courses(uid):
     connection = sqlite3.connect('db.sqlite3')
