@@ -331,7 +331,8 @@ def create_all():
                                     WHERE educator_id IN ( SELECT edu_id FROM course WHERE course_id=NEW.course_id );\
                                 END;")
 
-
+    #secondary indice usage
+    exec_query("CREATE INDEX sec_c_id ON final_question(c_id);")
 
 
 
