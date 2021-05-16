@@ -4,9 +4,15 @@
 {%  extends 'PeakyLearn/main.html' %}
 {% load static %}
 {% block content %}
+    {% load listtag %}
 
-    <html>
-    <footer class="footer">
+    <link rel="stylesheet" href='{% static "style/rateStar.css"%}'>
+    <head>
+        <meta charset="UTF-8">
+        <title>Welcome {{ username }}
+        </title>
+    </head>
+    <body>
         {% if searched %}
             <h1  style="text-align: center; padding: 40px"><span class="text-muted">Your searching results on: {{ searched }}</span></h1>
             <table id="products" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -17,10 +23,12 @@
                     <th>Category</th>
                     <th>Price</th>
                     <th>Language</th>
-                    <th>Lecture Count</th>
-                    <th>Certificate ID</th>
-                    <th>Rate</th>
                     <th>Educator ID</th>
+                    <th>Description</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                     <th></th>
 
 
@@ -36,10 +44,12 @@
                         <td>{{ course.3 }}</td>
                         <td>{{ course.4 }}</td>
                         <td>{{ course.5 }}</td>
-                        <td>{{ course.6 }}</td>
-                        <td>{{ course.7 }}</td>
-                        <td>{{ course.8 }}</td>
-                        <td><a class="btn btn-sm btn-outline-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
+                        <td><p class="b">{{ course.6 }}</p></td>
+                        <td><a class="btn btn-sm btn-primary" href="{% url 'courseDetails' course.0 %}">Course Page</a></td>
+                        <td><a class="btn btn-sm btn-success" href="{% url 'buyCourse' course.0 %}">Purchase Course</a></td>
+                        <td><a class="btn btn-sm btn-danger" href="{% url 'addToWishlist' course.0 %}">Add to Wishlist</a></td>
+                        <td><a class="btn btn-sm btn-warning" href="{% url 'seeCourseReviews' course.0 %}">See reviews</a></td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'discountReqStudent' course.0 %}">Create Discount Request</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -50,6 +60,7 @@
                 </tfoot>
         </table>
         {% endif %}
-    </footer>
+    </body>
+
     </html>
 {% endblock %}
