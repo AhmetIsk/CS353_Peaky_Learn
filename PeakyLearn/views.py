@@ -284,7 +284,7 @@ def  get_sold_courses(uid):
 def get_most_earning_educators(educators):
     connection = sqlite3.connect('db.sqlite3')
     cursor = connection.cursor()
-    educator_names = []
+    # educator_names = []
     query = "SELECT username, wallet FROM user INNER JOIN educator WHERE user.user_id = educator_id;"
     try:
         cursor.execute(query)
@@ -292,7 +292,8 @@ def get_most_earning_educators(educators):
         return HttpResponse('404! error in get_sold_courses', status=404)
 
     name = cursor.fetchall()
-    educator_names.append(name)
+    # educator_names.append(name)
+    name.sort(key=lambda tup: tup[1], reverse=True)
 
     # zippedData = zip(name, educators)
     # zippedData = list(zippedData)
